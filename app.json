@@ -1,0 +1,12 @@
+{
+  "name": "AudioLibraria",
+  "displayName": "AudioLibraria",
+  "expo": {
+    "name": "AudioLibraria",
+    "slug": "AudioLibraria",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
