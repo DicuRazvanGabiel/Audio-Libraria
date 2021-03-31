@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { Button, Text } from "react-native-paper";
 
 export default function Home({ navigation }) {
+	function loginFacebook() {}
 	return (
 		<View>
 			<Text>Home Screen</Text>
@@ -12,6 +13,7 @@ export default function Home({ navigation }) {
 			>
 				Settings
 			</Button>
+			<Button onPress={loginFacebook}>Facebook</Button>
 		</View>
 	);
 }
