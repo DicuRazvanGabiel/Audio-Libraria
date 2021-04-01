@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "652266832455",
+    "project_id": "audiolibraria-f71ef",
+    "storage_bucket": "audiolibraria-f71ef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652266832455:android:14236849864eaab939e762",
+        "android_client_info": {
+          "package_name": "com.audiolibraria"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652266832455-8cn50f5pf534odu3er4ll1uq89rdnpfn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBM3d69ZHk3RECMPlpq0aJ5xTZBaUIc9eY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652266832455-8cn50f5pf534odu3er4ll1uq89rdnpfn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "652266832455-8n8bvoggv859s81u7a1mjhil7h1f74hp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.name.AudioLibraria"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
