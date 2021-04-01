@@ -15,7 +15,7 @@ import { ThemeContext } from "./src/Context/ThemeContext";
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
 
-import MainNavigator from "./src/navigation/MainNavigator";
+import AuthenticationNavigator from "./src/navigation/AuthenticationNavigator";
 
 export default function App() {
 	const [isThemeDark, setIsThemeDark] = React.useState(false);
@@ -36,7 +36,7 @@ export default function App() {
 		<ThemeContext.Provider value={preferences}>
 			<PaperProvider theme={theme}>
 				<NavigationContainer theme={theme}>
-					<MainNavigator />
+					<AuthenticationNavigator />
 				</NavigationContainer>
 			</PaperProvider>
 		</ThemeContext.Provider>
