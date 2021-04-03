@@ -1,17 +1,49 @@
-import React, { useState } from "react";
-import { View } from "react-native";
-import { Button, Text } from "react-native-paper";
-import { LoginManager, AccessToken } from "react-native-fbsdk";
+import React, { useState, useEffect } from "react";
+import { View, ScrollView, TouchableOpacity } from "react-native";
+import { List, Divider, Avatar } from "react-native-paper";
+import LoadingState from "../components/LoadingState";
+
+// import { LoginManager, AccessToken } from "react-native-fbsdk";
 import firestore from "@react-native-firebase/firestore";
 
 export default function Home({ navigation }) {
-	const [data, setData] = React.useState("");
+	const [data, setData] = useState(null);
 
-	const user = firestore()
-		.collection("books")
-		.doc("6YwAOmBzEaXp3VlrFuDs")
-		.get()
-		.then((doc) => console.log(doc.data()));
+	const fetchBooksData = async () => {
+		const booksSnap = await firestore().collection("books").get();
+		const books = [];
+		booksSnap.forEach((book) =>
+			books.push({ id: book.id, ...book.data() })
+		);
+		setData(books);
+	};
+
+	useEffect(() => {
+		fetchBooksData();
+	}, [firestore]);
+
+	const renderBook = (book) => {
+		return (
+			<TouchableOpacity
+				key={book.id}
+				onPress={() => {
+					navigation.push("Player", { book });
+				}}
+			>
+				<List.Item
+					title={book.title}
+					description={book.subtitle}
+					left={(props) => (
+						<Avatar.Image
+							size={60}
+							source={{ url: book.image.src }}
+						/>
+					)}
+				/>
+				<Divider />
+			</TouchableOpacity>
+		);
+	};
 
 	async function onFacebookButtonPress() {
 		// Attempt login with permissions
@@ -41,19 +73,8 @@ export default function Home({ navigation }) {
 		// // Sign-in the user with the credential
 		// return auth().signInWithCredential(facebookCredential);
 	}
-	return (
-		<View style={{ flex: 1 }}>
-			<View style={{ flex: 1 }}>
-				<Text>Home Screen</Text>
-			</View>
-
-			<Button
-				mode="contained"
-				onPress={() => navigation.push("Settings")}
-			>
-				Settings
-			</Button>
-			<Button onPress={onFacebookButtonPress}>Facebook</Button>
-		</View>
-	);
+	if (!data) {
+		return <LoadingState />;
+	}
+	return <ScrollView>{data.map((book) => renderBook(book))}</ScrollView>;
 }

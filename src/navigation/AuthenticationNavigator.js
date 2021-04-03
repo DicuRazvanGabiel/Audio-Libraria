@@ -6,6 +6,7 @@ import auth from "@react-native-firebase/auth";
 import TabNavigator from "./TabNavigator";
 import SignInScreen from "../screens/auth/SignIn";
 import SignUpScreen from "../screens/auth/SignUp";
+import PlayerScreen from "../screens/Player";
 
 import MainNavigator from "./MainNavigator";
 
@@ -18,13 +19,15 @@ export default function AuthenticationNavigator() {
 	}
 
 	return (
-		<Stack.Navigator headerMode="none">
+		<Stack.Navigator>
 			{user ? (
 				<>
 					<Stack.Screen
-						name="TabNavigator"
+						name="Home"
 						component={TabNavigator}
+						options={{ headerShown: false }}
 					/>
+					<Stack.Screen name="Player" component={PlayerScreen} />
 				</>
 			) : (
 				<>
