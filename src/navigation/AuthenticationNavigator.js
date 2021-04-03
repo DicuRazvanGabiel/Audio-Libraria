@@ -3,6 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "@react-native-firebase/auth";
 
+import TabNavigator from "./TabNavigator";
 import SignInScreen from "../screens/auth/SignIn";
 import SignUpScreen from "../screens/auth/SignUp";
 
@@ -17,15 +18,12 @@ export default function AuthenticationNavigator() {
 	}
 
 	return (
-		<Stack.Navigator>
+		<Stack.Navigator headerMode="none">
 			{user ? (
 				<>
 					<Stack.Screen
-						name="MainNavigator"
-						component={MainNavigator}
-						options={{
-							headerShown: false,
-						}}
+						name="TabNavigator"
+						component={TabNavigator}
 					/>
 				</>
 			) : (

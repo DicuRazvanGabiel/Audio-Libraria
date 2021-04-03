@@ -42,8 +42,11 @@ export default function Home({ navigation }) {
 		// return auth().signInWithCredential(facebookCredential);
 	}
 	return (
-		<View>
-			<Text>Home Screen</Text>
+		<View style={{ flex: 1 }}>
+			<View style={{ flex: 1 }}>
+				<Text>Home Screen</Text>
+			</View>
+
 			<Button
 				mode="contained"
 				onPress={() => navigation.push("Settings")}

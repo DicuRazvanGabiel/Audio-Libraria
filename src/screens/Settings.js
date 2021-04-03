@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { View } from "react-native";
-import { Switch, Text } from "react-native-paper";
+import { Switch, Text, Button } from "react-native-paper";
 import { ThemeContext } from "../Context/ThemeContext";
+import auth from "@react-native-firebase/auth";
 
 export default function Settings() {
 	const [isSwitchOn, setIsSwitchOn] = useState(false);
@@ -18,6 +19,13 @@ export default function Settings() {
 		>
 			<Text>Settings screen</Text>
 			<Switch value={isThemeDark} onValueChange={toggleTheme} />
+			<Button
+				onPress={() => {
+					auth().signOut();
+				}}
+			>
+				Logout
+			</Button>
 		</View>
 	);
 }
