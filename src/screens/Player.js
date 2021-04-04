@@ -26,9 +26,15 @@ export default function Player({ route }) {
 				url: c.file.src,
 				title: c.name,
 				artist: "deadmau5",
+				duration: c.duration,
+				artwork: book.image.src,
 			});
 		});
 		await TrackPlayer.add(trackArray);
+		const position = await TrackPlayer.getPosition();
+		const duration = await TrackPlayer.getDuration();
+		console.log(position);
+		console.log(duration);
 		setLoading(false);
 	};
 
