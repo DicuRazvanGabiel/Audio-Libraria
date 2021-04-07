@@ -14,7 +14,11 @@ export default function Player({ route }) {
 
 	const setUp = async () => {
 		const state = await TrackPlayer.getState();
-		if (state === TrackPlayer.STATE_PLAYING) {
+		//trebuie check pentru pause state
+		if (
+			state === TrackPlayer.STATE_PLAYING ||
+			state === TrackPlayer.STATE_PAUSED
+		) {
 			TrackPlayer.stop();
 			TrackPlayer.destroy();
 			console.log("destroy");
@@ -35,8 +39,6 @@ export default function Player({ route }) {
 			});
 		});
 		await TrackPlayer.add(trackArray);
-		const position = await TrackPlayer.getPosition();
-		const duration = await TrackPlayer.getDuration();
 
 		TrackPlayer.play();
 		setPlayerState("play");
@@ -63,7 +65,21 @@ export default function Player({ route }) {
 		}
 	};
 
-	const handleSeek = async () => {};
+	const handleSeek = async (seek) => {
+		const position = await TrackPlayer.getPosition();
+		const duration = await TrackPlayer.getDuration();
+		let newPosition = position + seek;
+
+		if (newPosition > duration) {
+			newPosition = duration;
+		}
+
+		if (newPosition <= 0) {
+			newPosition = 0;
+		}
+
+		TrackPlayer.seekTo(newPosition);
+	};
 
 	return (
 		<View style={styles.container}>
@@ -81,7 +97,7 @@ export default function Player({ route }) {
 					icon="rewind-10"
 					color={Colors.red500}
 					size={playerIconSize}
-					onPress={() => console.log("Pressed")}
+					onPress={() => handleSeek(-10)}
 				/>
 
 				<IconButton
@@ -99,7 +115,7 @@ export default function Player({ route }) {
 					icon="fast-forward-10"
 					color={Colors.red500}
 					size={playerIconSize}
-					onPress={() => console.log("Pressed")}
+					onPress={() => handleSeek(10)}
 				/>
 
 				<IconButton
