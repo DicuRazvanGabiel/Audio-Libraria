@@ -29,29 +29,49 @@ export default function PlayerSlider() {
 			timeToDisplay += hours + ":";
 		}
 
-		timeToDisplay += minutes + ":" + seconds;
+		if (minutes < 10) {
+			timeToDisplay += "0" + minutes + ":";
+		} else {
+			timeToDisplay += minutes + ":";
+		}
+
+		if (seconds < 10) {
+			timeToDisplay += "0" + seconds;
+		} else {
+			timeToDisplay += seconds;
+		}
 
 		return timeToDisplay;
 	};
 
 	return (
-		<View style={{ width: "100%" }}>
+		<View
+			style={{
+				width: "100%",
+				flexDirection: "row",
+				justifyContent: "center",
+				alignItems: "center",
+			}}
+		>
 			<Text>{renderTime(Math.round(position))}</Text>
-			<Slider
-				minimumValue={0}
-				maximumValue={duration}
-				minimumTrackTintColor="#FFFFFF"
-				maximumTrackTintColor="#000000"
-				value={slidingStart ? valueChange : position}
-				onSlidingComplete={(newPosition) =>
-					handleSlidingStop(newPosition)
-				}
-				onValueChange={(value) => setValueChange(value)}
-				onSlidingStart={(initialPosition) => {
-					setValueChange(initialPosition);
-					setSlidingStart(true);
-				}}
-			/>
+			<View style={{ flex: 1 }}>
+				<Slider
+					minimumValue={0}
+					maximumValue={duration}
+					minimumTrackTintColor="#FFFFFF"
+					maximumTrackTintColor="#000000"
+					value={slidingStart ? valueChange : position}
+					onSlidingComplete={(newPosition) =>
+						handleSlidingStop(newPosition)
+					}
+					onValueChange={(value) => setValueChange(value)}
+					onSlidingStart={(initialPosition) => {
+						setValueChange(initialPosition);
+						setSlidingStart(true);
+					}}
+				/>
+			</View>
+
 			<Text>{renderTime(Math.round(duration))}</Text>
 		</View>
 	);
