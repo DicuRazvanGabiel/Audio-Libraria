@@ -18,9 +18,25 @@ export default function PlayerSlider() {
 		setSlidingStart(false);
 	};
 
+	const renderTime = (totalSeconds) => {
+		let timeToDisplay = "";
+		hours = Math.floor(totalSeconds / 3600);
+		totalSeconds %= 3600;
+		minutes = Math.floor(totalSeconds / 60);
+		seconds = totalSeconds % 60;
+
+		if (hours > 0) {
+			timeToDisplay += hours + ":";
+		}
+
+		timeToDisplay += minutes + ":" + seconds;
+
+		return timeToDisplay;
+	};
+
 	return (
 		<View style={{ width: "100%" }}>
-			<Text>{Math.round(position)}</Text>
+			<Text>{renderTime(Math.round(position))}</Text>
 			<Slider
 				minimumValue={0}
 				maximumValue={duration}
@@ -36,7 +52,7 @@ export default function PlayerSlider() {
 					setSlidingStart(true);
 				}}
 			/>
-			<Text>{Math.round(duration)}</Text>
+			<Text>{renderTime(Math.round(duration))}</Text>
 		</View>
 	);
 }
