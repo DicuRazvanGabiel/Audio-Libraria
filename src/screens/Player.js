@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
-import TrackPlayer, { useTrackPlayerEvents } from "react-native-track-player";
-import { Button, IconButton, Colors, Text } from "react-native-paper";
-
+import TrackPlayer from "react-native-track-player";
+import { IconButton, Colors, Text } from "react-native-paper";
+import PlayerSlider from "./../components/PlayerSlider";
 const db = firestore();
 
 export default function Player({ route }) {
@@ -52,6 +52,7 @@ export default function Player({ route }) {
 				setPlayerState(state["state"]);
 			}
 		);
+
 		const listenerTrackChange = TrackPlayer.addEventListener(
 			"playback-track-changed",
 			async (data) => {
@@ -60,6 +61,7 @@ export default function Player({ route }) {
 				setChapter(track.title);
 			}
 		);
+
 		return () => {
 			listenerTrackChange.remove();
 			listenerStateChange.remove();
@@ -100,6 +102,7 @@ export default function Player({ route }) {
 		<View style={styles.container}>
 			<Text>{book.title}</Text>
 			<Text>{chapter}</Text>
+			<PlayerSlider />
 
 			<View style={styles.mediaPleyerControls}>
 				<IconButton
