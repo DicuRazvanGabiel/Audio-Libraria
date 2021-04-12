@@ -1,10 +1,14 @@
 import React from "react";
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, ActivityIndicator, Text, Platform } from "react-native";
 import { Button, TextInput, Divider } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import auth from "@react-native-firebase/auth";
 import { LoginManager, AccessToken } from "react-native-fbsdk";
+import {
+	AppleButton,
+	appleAuth,
+} from "@invertase/react-native-apple-authentication";
 
 function SignIn({ navigation }) {
 	const { control, handleSubmit, errors } = useForm();
@@ -19,6 +23,29 @@ function SignIn({ navigation }) {
 	const onSubmit = (data) => {
 		signInWithEmailAndPassword(data.email, data.password);
 	};
+
+	async function onAppleButtonPress() {
+		// Start the sign-in request
+		const appleAuthRequestResponse = await appleAuth.performRequest({
+			requestedOperation: appleAuth.Operation.LOGIN,
+			requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+		});
+
+		// Ensure Apple returned a user identityToken
+		if (!appleAuthRequestResponse.identityToken) {
+			throw "Apple Sign-In failed - no identify token returned";
+		}
+
+		// Create a Firebase credential from the response
+		const { identityToken, nonce } = appleAuthRequestResponse;
+		const appleCredential = auth.AppleAuthProvider.credential(
+			identityToken,
+			nonce
+		);
+
+		// Sign the user in with the credential
+		return auth().signInWithCredential(appleCredential);
+	}
 
 	async function onFacebookButtonPress() {
 		// Attempt login with permissions
@@ -117,7 +144,10 @@ function SignIn({ navigation }) {
 						Register
 					</Button>
 				</View>
-				<Divider />
+				<View style={{ width: "100%" }}>
+					<Divider />
+				</View>
+
 				<Button
 					icon="facebook"
 					mode="contained"
@@ -125,6 +155,23 @@ function SignIn({ navigation }) {
 				>
 					Facebook log in
 				</Button>
+				{Platform.OS === "ios" && (
+					<View style={{ marginTop: 20 }}>
+						<AppleButton
+							buttonStyle={AppleButton.Style.WHITE}
+							buttonType={AppleButton.Type.SIGN_IN}
+							style={{
+								width: "100%",
+								height: 40,
+							}}
+							onPress={() =>
+								onAppleButtonPress().then(() =>
+									console.log("Apple sign-in complete!")
+								)
+							}
+						/>
+					</View>
+				)}
 			</View>
 		</View>
 	);
