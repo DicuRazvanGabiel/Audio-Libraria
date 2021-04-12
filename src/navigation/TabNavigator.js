@@ -7,14 +7,8 @@ import SettingsScreen from "../screens/Settings";
 export default function MainTabNavigator() {
 	const { Navigator, Screen } = createBottomTabNavigator();
 	return (
-		<Navigator headerMode="none">
-			<Screen
-				name="Home"
-				component={HomeNavigator}
-				options={{
-					headerMode: "none",
-				}}
-			/>
+		<Navigator>
+			<Screen name="Home" component={HomeNavigator} />
 			<Screen name="Explore" component={HomeNavigator} />
 			<Screen name="Settings" component={SettingsScreen} />
 		</Navigator>

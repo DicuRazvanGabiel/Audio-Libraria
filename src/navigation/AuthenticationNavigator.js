@@ -8,6 +8,7 @@ import SignInScreen from "../screens/auth/SignIn";
 import SignUpScreen from "../screens/auth/SignUp";
 import PlayerScreen from "../screens/Player";
 
+import CustomNavigationBar from "../components/CustomNavigationBar";
 import MainNavigator from "./MainNavigator";
 
 export default function AuthenticationNavigator() {
@@ -19,14 +20,14 @@ export default function AuthenticationNavigator() {
 	}
 
 	return (
-		<Stack.Navigator>
+		<Stack.Navigator
+			screenOptions={{
+				header: (props) => <CustomNavigationBar {...props} />,
+			}}
+		>
 			{user ? (
 				<>
-					<Stack.Screen
-						name="Home"
-						component={TabNavigator}
-						options={{ headerShown: false }}
-					/>
+					<Stack.Screen name="Home" component={TabNavigator} />
 					<Stack.Screen name="Player" component={PlayerScreen} />
 				</>
 			) : (
