@@ -1,9 +1,10 @@
 import React from "react";
 import { View, ActivityIndicator, Text } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import { Button, TextInput, Divider } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import auth from "@react-native-firebase/auth";
+import { LoginManager, AccessToken } from "react-native-fbsdk";
 
 function SignIn({ navigation }) {
 	const { control, handleSubmit, errors } = useForm();
@@ -18,6 +19,35 @@ function SignIn({ navigation }) {
 	const onSubmit = (data) => {
 		signInWithEmailAndPassword(data.email, data.password);
 	};
+
+	async function onFacebookButtonPress() {
+		// Attempt login with permissions
+		const result = await LoginManager.logInWithPermissions([
+			"public_profile",
+			"email",
+		]);
+
+		if (result.isCancelled) {
+			throw "User cancelled the login process";
+		}
+
+		// Once signed in, get the users AccesToken
+		const data = await AccessToken.getCurrentAccessToken();
+
+		if (!data) {
+			throw "Something went wrong obtaining access token";
+		}
+
+		// Create a Firebase credential with the AccessToken
+		const facebookCredential = auth.FacebookAuthProvider.credential(
+			data.accessToken
+		);
+
+		console.log(facebookCredential);
+
+		// Sign-in the user with the credential
+		return auth().signInWithCredential(facebookCredential);
+	}
 
 	if (loading) {
 		<View
@@ -76,12 +106,24 @@ function SignIn({ navigation }) {
 				<Button mode="contained" onPress={handleSubmit(onSubmit)}>
 					Sign In
 				</Button>
-			</View>
-			<View
-				style={{ marginTop: 15, width: "100%", alignItems: "flex-end" }}
-			>
-				<Button onPress={() => navigation.navigate("Sign Up")}>
-					Register
+				<View
+					style={{
+						marginTop: 15,
+						width: "100%",
+						alignItems: "flex-end",
+					}}
+				>
+					<Button onPress={() => navigation.navigate("Sign Up")}>
+						Register
+					</Button>
+				</View>
+				<Divider />
+				<Button
+					icon="facebook"
+					mode="contained"
+					onPress={() => onFacebookButtonPress()}
+				>
+					Facebook log in
 				</Button>
 			</View>
 		</View>
