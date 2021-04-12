@@ -53,7 +53,9 @@ export default function PlayerSlider() {
 				alignItems: "center",
 			}}
 		>
-			<Text>{renderTime(Math.round(position))}</Text>
+			<Text style={{ width: 50 }}>
+				{renderTime(Math.round(position))}
+			</Text>
 			<View style={{ flex: 1 }}>
 				<Slider
 					minimumValue={0}
@@ -72,7 +74,9 @@ export default function PlayerSlider() {
 				/>
 			</View>
 
-			<Text>{renderTime(Math.round(duration))}</Text>
+			<Text style={{ width: 50 }}>
+				{renderTime(Math.round(duration))}
+			</Text>
 		</View>
 	);
 }
