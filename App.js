@@ -18,7 +18,7 @@ const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
 import AuthenticationNavigator from "./src/navigation/AuthenticationNavigator";
 
 export default function App() {
-	const [isThemeDark, setIsThemeDark] = React.useState(false);
+	const [isThemeDark, setIsThemeDark] = React.useState(true);
 	let theme = isThemeDark ? CombinedDarkTheme : CombinedDefaultTheme;
 
 	const toggleTheme = React.useCallback(() => {
