@@ -36,7 +36,7 @@ export default function CustomNavigationBar({ navigation, previous }) {
 						{previous && (
 							<Appbar.BackAction onPress={navigation.goBack} />
 						)}
-						<Appbar.Content title={route.name} />
+						<Appbar.Content title={route.name} color="#fff" />
 						<TouchableOpacity
 							style={{ marginRight: 10, marginBottom: 10 }}
 							onPress={() => navigation.push("Settings")}
