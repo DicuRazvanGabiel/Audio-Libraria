@@ -1,6 +1,6 @@
 import React from "react";
-import { View, ActivityIndicator, Text, Platform } from "react-native";
-import { Button, TextInput, Divider } from "react-native-paper";
+import { View, ActivityIndicator, Platform, StyleSheet } from "react-native";
+import { Button, TextInput, Divider, Text } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import auth from "@react-native-firebase/auth";
@@ -70,8 +70,6 @@ function SignIn({ navigation }) {
 			data.accessToken
 		);
 
-		console.log(facebookCredential);
-
 		// Sign-in the user with the credential
 		return auth().signInWithCredential(facebookCredential);
 	}
@@ -89,92 +87,133 @@ function SignIn({ navigation }) {
 	}
 
 	return (
-		<View>
-			<Controller
-				control={control}
-				render={({ onChange, onBlur, value }) => (
-					<TextInput
-						label="Email"
-						onBlur={onBlur}
-						onChangeText={(value) => onChange(value)}
-						value={value}
-						keyboardType="email-address"
-					/>
-				)}
-				name="email"
-				rules={{
-					required: true,
+		<>
+			<View
+				style={{
+					width: "100%",
 				}}
-				defaultValue=""
-			/>
-			{errors.email && <Text>This is required.</Text>}
-
-			<Controller
-				control={control}
-				render={({ onChange, onBlur, value }) => (
-					<TextInput
-						label="Password"
-						onBlur={onBlur}
-						onChangeText={(value) => onChange(value)}
-						value={value}
-						secureTextEntry={true}
-					/>
-				)}
-				name="password"
-				rules={{
-					required: true,
-					minLength: 6,
-				}}
-				defaultValue=""
-			/>
-			{errors.password && <Text>This is required.</Text>}
-
-			<View style={{ margin: 15 }}>
-				<Button mode="contained" onPress={handleSubmit(onSubmit)}>
-					Sign In
-				</Button>
+			>
 				<View
 					style={{
-						marginTop: 15,
-						width: "100%",
-						alignItems: "flex-end",
+						alignItems: "center",
 					}}
 				>
-					<Button onPress={() => navigation.navigate("Sign Up")}>
-						Register
-					</Button>
-				</View>
-				<View style={{ width: "100%" }}>
-					<Divider />
-				</View>
+					<Text
+						style={{
+							fontSize: 40,
+							fontWeight: "bold",
+							margin: 50,
+							marginTop: 70,
+						}}
+					>
+						Login
+					</Text>
 
-				<Button
-					icon="facebook"
-					mode="contained"
-					onPress={() => onFacebookButtonPress()}
-				>
-					Facebook log in
-				</Button>
-				{Platform.OS === "ios" && (
-					<View style={{ marginTop: 20 }}>
-						<AppleButton
-							buttonStyle={AppleButton.Style.WHITE}
-							buttonType={AppleButton.Type.SIGN_IN}
-							style={{
-								width: "100%",
-								height: 40,
+					<View style={{ width: "90%" }}>
+						<Controller
+							control={control}
+							render={({ onChange, onBlur, value }) => (
+								<TextInput
+									label="Email"
+									mode="outlined"
+									onBlur={onBlur}
+									onChangeText={(value) => onChange(value)}
+									value={value}
+									keyboardType="email-address"
+									style={{ marginVertical: 10 }}
+								/>
+							)}
+							name="email"
+							rules={{
+								required: true,
 							}}
-							onPress={() =>
-								onAppleButtonPress().then(() =>
-									console.log("Apple sign-in complete!")
-								)
-							}
+							defaultValue=""
 						/>
+						{errors.email && <Text>This is required.</Text>}
+
+						<Controller
+							control={control}
+							render={({ onChange, onBlur, value }) => (
+								<TextInput
+									label="Password"
+									mode="outlined"
+									onBlur={onBlur}
+									onChangeText={(value) => onChange(value)}
+									value={value}
+									secureTextEntry={true}
+								/>
+							)}
+							name="password"
+							rules={{
+								required: true,
+								minLength: 6,
+							}}
+							defaultValue=""
+						/>
+						{errors.password && <Text>This is required.</Text>}
+
+						<Button
+							mode="contained"
+							onPress={handleSubmit(onSubmit)}
+							style={{ marginTop: 20 }}
+						>
+							Sign In
+						</Button>
+						<View
+							style={{
+								marginTop: 15,
+								width: "100%",
+								alignItems: "flex-end",
+							}}
+						>
+							<Button
+								onPress={() => navigation.navigate("Sign Up")}
+							>
+								Register
+							</Button>
+						</View>
+
+						<Button
+							icon="facebook"
+							mode="contained"
+							style={{ marginTop: 10 }}
+							onPress={() => onFacebookButtonPress()}
+						>
+							Facebook log in
+						</Button>
+
+						{Platform.OS === "ios" && (
+							<View style={{ marginTop: 20 }}>
+								<AppleButton
+									buttonStyle={AppleButton.Style.WHITE}
+									buttonType={AppleButton.Type.SIGN_IN}
+									style={{
+										width: "100%",
+										height: 40,
+									}}
+									onPress={() =>
+										onAppleButtonPress().then(() =>
+											console.log(
+												"Apple sign-in complete!"
+											)
+										)
+									}
+								/>
+							</View>
+						)}
 					</View>
-				)}
+				</View>
 			</View>
-		</View>
+		</>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+});
 
 export default SignIn;

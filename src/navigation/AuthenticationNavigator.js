@@ -34,8 +34,16 @@ export default function AuthenticationNavigator() {
 				</>
 			) : (
 				<>
-					<Stack.Screen name="Sign In" component={SignInScreen} />
-					<Stack.Screen name="Sign Up" component={SignUpScreen} />
+					<Stack.Screen
+						name="Sign In"
+						component={SignInScreen}
+						options={{ headerShown: false }}
+					/>
+					<Stack.Screen
+						name="Sign Up"
+						component={SignUpScreen}
+						options={{ headerShown: false }}
+					/>
 				</>
 			)}
 		</Stack.Navigator>
