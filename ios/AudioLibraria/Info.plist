@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>AudioLibraria</string>
+	<string>Audio Libraria</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -25,14 +25,14 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb352673472814860</string>
+				<string>fb608582637208714</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>FacebookAppID</key>
-	<string>352673472814860</string>
+	<string>608582637208714</string>
 	<key>FacebookDisplayName</key>
 	<string>Audio Libraria</string>
 	<key>LSApplicationQueriesSchemes</key>

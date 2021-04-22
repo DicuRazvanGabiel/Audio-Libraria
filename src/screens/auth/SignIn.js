@@ -43,6 +43,8 @@ function SignIn({ navigation }) {
 			nonce
 		);
 
+		console.log(appleCredential);
+
 		// Sign the user in with the credential
 		return auth().signInWithCredential(appleCredential);
 	}

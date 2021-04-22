@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
-import { List, Divider, Avatar } from "react-native-paper";
-import LoadingState from "../components/LoadingState";
+import { List, Divider, Avatar, Text } from "react-native-paper";
 import firestore from "@react-native-firebase/firestore";
+
+import LoadingState from "../components/LoadingState";
+import CatgoryItem from "../components/CategoryItem";
 
 export default function Home({ navigation }) {
 	const [data, setData] = useState(null);
@@ -46,5 +48,12 @@ export default function Home({ navigation }) {
 	if (!data) {
 		return <LoadingState />;
 	}
-	return <ScrollView>{data.map((book) => renderBook(book))}</ScrollView>;
+	return (
+		<View>
+			<Text>Categorii</Text>
+			<CatgoryItem />
+
+			<ScrollView>{data.map((book) => renderBook(book))}</ScrollView>
+		</View>
+	);
 }

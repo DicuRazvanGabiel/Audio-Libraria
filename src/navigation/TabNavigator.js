@@ -5,13 +5,15 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import HomeNavigator from "./HomeNavigator";
 import SettingsScreen from "../screens/Settings";
 
+import HomeScreen from "../screens/Home";
+
 export default function MainTabNavigator() {
 	const { Navigator, Screen } = createBottomTabNavigator();
 	return (
 		<Navigator>
 			<Screen
 				name="Home"
-				component={HomeNavigator}
+				component={HomeScreen}
 				options={({ route }) => ({
 					tabBarIcon: ({ focused, color, size }) => {
 						let iconName = "home-outline";
@@ -49,6 +51,25 @@ export default function MainTabNavigator() {
 			/>
 			<Screen
 				name="Wishlist"
+				component={SettingsScreen}
+				options={({ route }) => ({
+					tabBarIcon: ({ focused, color, size }) => {
+						let iconName = "star-outline";
+						if (focused) {
+							iconName = "star-sharp";
+						}
+						return (
+							<Ionicons
+								name={iconName}
+								size={size}
+								color={color}
+							/>
+						);
+					},
+				})}
+			/>
+			<Screen
+				name="Firma"
 				component={SettingsScreen}
 				options={({ route }) => ({
 					tabBarIcon: ({ focused, color, size }) => {

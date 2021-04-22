@@ -25,6 +25,7 @@ export default function AuthenticationNavigator() {
 			screenOptions={{
 				header: (props) => <CustomNavigationBar {...props} />,
 			}}
+			mode="modal"
 		>
 			{user ? (
 				<>
