@@ -1,4 +1,4 @@
-package com.audiolibraria.generated;
+package eu.audiolibraria.loopit.generated;
 
 import java.util.Arrays;
 import java.util.List;

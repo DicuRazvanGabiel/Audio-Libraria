@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:652266832455:android:14236849864eaab939e762",
+        "mobilesdk_app_id": "1:652266832455:android:fa0a8658dd677e2839e762",
         "android_client_info": {
-          "package_name": "com.audiolibraria"
+          "package_name": "eu.audiolibraria.loopit"
         }
       },
       "oauth_client": [

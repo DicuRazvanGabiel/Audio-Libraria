@@ -1,4 +1,4 @@
-package com.audiolibraria;
+package eu.audiolibraria.loopit;
 
 import android.os.Bundle;
 
