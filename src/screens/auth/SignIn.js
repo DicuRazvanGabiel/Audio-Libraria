@@ -1,10 +1,23 @@
 import React from "react";
-import { View, ActivityIndicator, Platform, StyleSheet } from "react-native";
-import { Button, TextInput, Divider, Text } from "react-native-paper";
+import {
+	View,
+	ActivityIndicator,
+	Platform,
+	StyleSheet,
+	TouchableOpacity,
+} from "react-native";
+import {
+	Button,
+	TextInput,
+	Divider,
+	Text,
+	IconButton,
+} from "react-native-paper";
+import { Entypo } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import auth from "@react-native-firebase/auth";
-import { LoginManager, AccessToken } from "react-native-fbsdk";
+import { LoginManager, AccessToken, LoginButton } from "react-native-fbsdk";
 import {
 	AppleButton,
 	appleAuth,
@@ -193,20 +206,30 @@ function SignIn({ navigation }) {
 							</Button>
 						</View>
 
-						<Button
-							icon="facebook"
-							mode="contained"
-							style={{ marginTop: 10 }}
-							onPress={() => onFacebookButtonPress()}
+						<View
+							style={{
+								flexDirection: "row",
+								justifyContent: "space-evenly",
+								alignItems: "center",
+							}}
 						>
-							Facebook log in
-						</Button>
-
-						<GoogleSigninButton
-							size={GoogleSigninButton.Size.Icon}
-							color={GoogleSigninButton.Color.Dark}
-							onPress={onGoogleButtonPress}
-						/>
+							<TouchableOpacity onPress={onFacebookButtonPress}>
+								<Entypo
+									name="facebook"
+									size={37}
+									color="#4267B2"
+									style={{
+										backgroundColor: "#fff",
+									}}
+								/>
+							</TouchableOpacity>
+							<GoogleSigninButton
+								size={GoogleSigninButton.Size.Icon}
+								color={GoogleSigninButton.Color.Dark}
+								onPress={onGoogleButtonPress}
+								style={{ borderRadius: 20 }}
+							/>
+						</View>
 
 						{Platform.OS === "ios" && (
 							<View style={{ marginTop: 20 }}>
