@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "652266832455-v8kdnbd7ljn7l0p2sk66u6b8jm8uirqn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eu.audiolibraria.loopit",
+            "certificate_hash": "c34926dd58a0bb53fc387813db288c8c9990d8d3"
+          }
+        },
+        {
           "client_id": "652266832455-8cn50f5pf534odu3er4ll1uq89rdnpfn.apps.googleusercontent.com",
           "client_type": 3
         }

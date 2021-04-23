@@ -9,6 +9,10 @@ import {
 	AppleButton,
 	appleAuth,
 } from "@invertase/react-native-apple-authentication";
+import {
+	GoogleSignin,
+	GoogleSigninButton,
+} from "@react-native-google-signin/google-signin";
 
 function SignIn({ navigation }) {
 	const { control, handleSubmit, errors } = useForm();
@@ -74,6 +78,20 @@ function SignIn({ navigation }) {
 
 		// Sign-in the user with the credential
 		return auth().signInWithCredential(facebookCredential);
+	}
+	async function onGoogleButtonPress() {
+		GoogleSignin.configure({
+			webClientId:
+				"652266832455-8cn50f5pf534odu3er4ll1uq89rdnpfn.apps.googleusercontent.com",
+		});
+		// Get the users ID token
+		const { idToken } = await GoogleSignin.signIn();
+
+		// Create a Google credential with the token
+		const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+		// Sign-in the user with the credential
+		return auth().signInWithCredential(googleCredential);
 	}
 
 	if (loading) {
@@ -183,6 +201,13 @@ function SignIn({ navigation }) {
 						>
 							Facebook log in
 						</Button>
+
+						<GoogleSigninButton
+							style={{ width: "100%", height: 48 }}
+							size={GoogleSigninButton.Size.Wide}
+							color={GoogleSigninButton.Color.Dark}
+							onPress={onGoogleButtonPress}
+						/>
 
 						{Platform.OS === "ios" && (
 							<View style={{ marginTop: 20 }}>

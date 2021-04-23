@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import androidx.multidex.MultiDexApplication; // <-- ADD THIS IMPORT
+import co.apptailor.googlesignin.RNGoogleSigninPackage;  // <--- import
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(

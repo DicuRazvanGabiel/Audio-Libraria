@@ -187,6 +187,7 @@ android {
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'  // <-- ADD THIS DEPENDENCY
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0' // <-- add this; newer versions should work too
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
@@ -219,3 +220,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply plugin: 'com.google.gms.google-services' // <--- this should be the last line
