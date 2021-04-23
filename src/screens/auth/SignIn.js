@@ -203,8 +203,7 @@ function SignIn({ navigation }) {
 						</Button>
 
 						<GoogleSigninButton
-							style={{ width: "100%", height: 48 }}
-							size={GoogleSigninButton.Size.Wide}
+							size={GoogleSigninButton.Size.Icon}
 							color={GoogleSigninButton.Color.Dark}
 							onPress={onGoogleButtonPress}
 						/>
