@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -9,6 +9,7 @@ import HomeScreen from "../screens/Home";
 
 export default function MainTabNavigator() {
 	const { Navigator, Screen } = createBottomTabNavigator();
+
 	return (
 		<Navigator>
 			<Screen

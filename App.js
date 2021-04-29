@@ -11,6 +11,8 @@ import {
 } from "@react-navigation/native";
 import merge from "deepmerge";
 import { ThemeContext } from "./src/Context/ThemeContext";
+import functions from "@react-native-firebase/functions";
+import Constants from "expo-constants";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
@@ -32,6 +34,14 @@ export default function App() {
 		}),
 		[toggleTheme, isThemeDark]
 	);
+
+	// Use a local emulator in development
+	if (!Constants.isDevice) {
+		// If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
+		functions().useFunctionsEmulator("http://localhost:5001");
+		console.log("Setup to emulators");
+	}
+
 	return (
 		<ThemeContext.Provider value={preferences}>
 			<PaperProvider theme={theme}>

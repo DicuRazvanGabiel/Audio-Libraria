@@ -10,17 +10,35 @@ import { Text, Divider, useTheme } from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import HTML from "react-native-render-html";
-import { Rating, AirbnbRating } from "react-native-ratings";
+import { Rating } from "react-native-ratings";
+import functions from "@react-native-firebase/functions";
 
 const htmlContent = `
 <h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat
 `;
-
 import ImageBook from "../components/ImageBook";
 
 export default function BookDetails() {
 	const theme = useTheme();
-	console.log(theme);
+
+	const borrowBook = async () => {
+		const checkUserEmployee = functions().httpsCallable(
+			"checkUserEmployee"
+		);
+		// functions()
+		// 	.httpsCallable("checkUserEmployee")({
+		// 		email: "dicu.razvan.gabriel@gmail.com",
+		// 	})
+		// 	.then((response) => {
+		// 		console.log(response);
+		// 	});
+		checkUserEmployee({ email: "dicu.razvan.gabriel@gmail.com" }).then(
+			(result) => {
+				console.log(result);
+			}
+		);
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.bookImageContainer}>
@@ -79,6 +97,7 @@ export default function BookDetails() {
 						padding: 8,
 						width: 200,
 					}}
+					onPress={borrowBook}
 				>
 					<Text style={{ fontSize: 23, textAlign: "center" }}>
 						Imprumuta
