@@ -10,9 +10,11 @@ import {
 	DefaultTheme as NavigationDefaultTheme,
 } from "@react-navigation/native";
 import merge from "deepmerge";
-import { ThemeContext } from "./src/Context/ThemeContext";
 import functions from "@react-native-firebase/functions";
 import Constants from "expo-constants";
+
+import { ThemeContext } from "./src/Context/ThemeContext";
+import { UserContext } from "./src/Context/UserContext";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
@@ -22,6 +24,7 @@ import AuthenticationNavigator from "./src/navigation/AuthenticationNavigator";
 export default function App() {
 	const [isThemeDark, setIsThemeDark] = React.useState(true);
 	let theme = isThemeDark ? CombinedDarkTheme : CombinedDefaultTheme;
+	const [businessID, setBusinessID] = React.useState(null);
 
 	const toggleTheme = React.useCallback(() => {
 		return setIsThemeDark(!isThemeDark);
@@ -43,12 +46,14 @@ export default function App() {
 	}
 
 	return (
-		<ThemeContext.Provider value={preferences}>
-			<PaperProvider theme={theme}>
-				<NavigationContainer theme={theme}>
-					<AuthenticationNavigator />
-				</NavigationContainer>
-			</PaperProvider>
-		</ThemeContext.Provider>
+		<UserContext.Provider value={{ businessID, setBusinessID }}>
+			<ThemeContext.Provider value={preferences}>
+				<PaperProvider theme={theme}>
+					<NavigationContainer theme={theme}>
+						<AuthenticationNavigator />
+					</NavigationContainer>
+				</PaperProvider>
+			</ThemeContext.Provider>
+		</UserContext.Provider>
 	);
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
 	View,
 	StyleSheet,
@@ -12,41 +12,79 @@ import { AntDesign } from "@expo/vector-icons";
 import HTML from "react-native-render-html";
 import { Rating } from "react-native-ratings";
 import functions from "@react-native-firebase/functions";
+import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
 
-const htmlContent = `
-<h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat.<strong> La fiecare drum spre grădiniță sau școală, în orice călătorie lungă, copilul dumneavoastră nu se va mai plictisi!</strong></h1><h1><strong><span class="ql-cursor">﻿</span></strong>Opere<strong>le lui Petre Ispirescu sunt de nelipsit oricărui copil. În aceste noi interpretări, „Aleodor împărat”, „Greuceanu” </strong>sau „<em><u>Prâslea cel voinic” sunt eroii de basm care vă poartă prin aventuri fantastice, legendare, de ne</u></em>uitat
-`;
+import { UserContext } from "../Context/UserContext";
+
 import ImageBook from "../components/ImageBook";
-
-export default function BookDetails() {
+import LoadingState from "../components/LoadingState";
+const db = firestore();
+export default function BookDetails({ route }) {
+	const { businessID } = useContext(UserContext);
 	const theme = useTheme();
+	const { bookID, businessBookID } = route.params;
+	const [loading, setLoading] = useState(true);
+	const [bookInfo, setBookInfo] = useState(null);
 
-	const borrowBook = async () => {
-		const checkUserEmployee = functions().httpsCallable(
-			"checkUserEmployee"
-		);
-		// functions()
-		// 	.httpsCallable("checkUserEmployee")({
-		// 		email: "dicu.razvan.gabriel@gmail.com",
-		// 	})
-		// 	.then((response) => {
-		// 		console.log(response);
-		// 	});
-		checkUserEmployee({ email: "dicu.razvan.gabriel@gmail.com" }).then(
-			(result) => {
-				console.log(result);
+	const fetchBookInfo = async () => {
+		let book = {};
+		const bookSnap = await db.collection("books").doc(bookID).get();
+
+		const authorSnap = await db
+			.collection("authors")
+			.doc(bookSnap.data().authors)
+			.get();
+
+		const narratorSnap = await db
+			.collection("narrator")
+			.doc(bookSnap.data().narrator)
+			.get();
+
+		const publisherSnap = await db
+			.collection("publishing")
+			.doc(bookSnap.data().publishing)
+			.get();
+
+		const categoriesSnap = await db.collection("categories").get();
+		book = {
+			...bookSnap.data(),
+			authors: authorSnap.data(),
+			narrator: narratorSnap.data(),
+			publishing: publisherSnap.data(),
+		};
+		let categories = [];
+		categoriesSnap.forEach((cat) => {
+			if (book.categories.includes(cat.id)) {
+				categories.push({ ...cat.data() });
 			}
-		);
+		});
+		book.categories = categories;
+		setBookInfo(book);
 	};
 
+	useEffect(() => {
+		fetchBookInfo();
+	}, [route.params]);
+
+	const borrowBook = async () => {
+		functions()
+			.httpsCallable("barrowBook")({
+				businessBookID: businessBookID,
+				businessID,
+				uid: auth().currentUser.uid,
+			})
+			.then((response) => {
+				console.log(response);
+			});
+	};
+
+	if (!bookInfo) return <LoadingState />;
+
 	return (
-		<View style={styles.container}>
+		<ScrollView style={styles.container}>
 			<View style={styles.bookImageContainer}>
-				<ImageBook
-					imageUrl={
-						"https://cdn1.dol.ro/dol.ro/cs-content/cs-photos/products/normal/tata-bogat-tata-sarac_2702_1_1596556923.jpg"
-					}
-				/>
+				<ImageBook imageUrl={bookInfo.image.src} />
 				<View
 					style={{
 						flex: 1,
@@ -56,10 +94,12 @@ export default function BookDetails() {
 				>
 					<View style={{ marginBottom: 10 }}>
 						<Text style={{ fontSize: 30, marginBottom: 5 }}>
-							Tata bogat, tata sarac
+							{bookInfo.title}
 						</Text>
 						<Divider />
-						<Text style={{ fontSize: 20 }}>robert kiyosaki</Text>
+						<Text style={{ fontSize: 20 }}>
+							{bookInfo.authors.name}
+						</Text>
 					</View>
 
 					<View
@@ -104,12 +144,14 @@ export default function BookDetails() {
 					</Text>
 				</TouchableOpacity>
 			</View>
-			<View style={{ flex: 1 }}>
-				<ScrollView style={styles.bookDescriptionContainer}>
-					<HTML source={{ html: htmlContent }} containerStyle={{}} />
-				</ScrollView>
+
+			<View style={styles.bookDescriptionContainer}>
+				<HTML
+					source={{ html: bookInfo.description }}
+					containerStyle={{}}
+				/>
 			</View>
-		</View>
+		</ScrollView>
 	);
 }
 
