@@ -10,6 +10,7 @@ import HomeNavigator from "./HomeNavigator";
 import SettingsScreen from "../screens/Settings";
 import HomeScreen from "../screens/Home";
 import BusinessAccount from "../screens/BusinessAccount";
+import MyBooks from "../screens/MyBooks";
 
 export default function MainTabNavigator() {
 	const { Navigator, Screen } = createBottomTabNavigator();
@@ -84,7 +85,7 @@ export default function MainTabNavigator() {
 			/>
 			<Screen
 				name="My Books"
-				component={HomeNavigator}
+				component={MyBooks}
 				options={({ route }) => ({
 					tabBarIcon: ({ focused, color, size }) => {
 						let iconName = "book-outline";
