@@ -21,7 +21,7 @@ import ImageBook from "../components/ImageBook";
 import LoadingState from "../components/LoadingState";
 const db = firestore();
 export default function BookDetails({ route }) {
-	const { businessID } = useContext(UserContext);
+	const { employee } = useContext(UserContext);
 	const theme = useTheme();
 	const { bookID, businessBookID } = route.params;
 	const [loading, setLoading] = useState(true);
@@ -71,8 +71,20 @@ export default function BookDetails({ route }) {
 		functions()
 			.httpsCallable("barrowBook")({
 				businessBookID: businessBookID,
-				businessID,
-				uid: auth().currentUser.uid,
+				businessID: employee.businessID,
+				employeeID: employee.employeeID,
+			})
+			.then((response) => {
+				console.log(response);
+			});
+	};
+
+	const unBarrow = async () => {
+		functions()
+			.httpsCallable("unBarrow")({
+				businessBookID: businessBookID,
+				businessID: employee.businessID,
+				employeeID: employee.employeeID,
 			})
 			.then((response) => {
 				console.log(response);
@@ -141,6 +153,19 @@ export default function BookDetails({ route }) {
 				>
 					<Text style={{ fontSize: 23, textAlign: "center" }}>
 						Imprumuta
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={{
+						backgroundColor: "#FE805C",
+						borderRadius: 30,
+						padding: 8,
+						width: 200,
+					}}
+					onPress={unBarrow}
+				>
+					<Text style={{ fontSize: 23, textAlign: "center" }}>
+						Preda
 					</Text>
 				</TouchableOpacity>
 			</View>

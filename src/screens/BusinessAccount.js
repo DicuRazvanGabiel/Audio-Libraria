@@ -8,11 +8,12 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import LoadingState from "../components/LoadingState";
 
 export default function BusinessAccount({ navigation }) {
-	const { businessID } = useContext(UserContext);
+	const { employee } = useContext(UserContext);
+
 	const [businessBooks, loading, error] = useCollection(
 		firestore()
 			.collection("businesses")
-			.doc(businessID)
+			.doc(employee.businessID)
 			.collection("businessBooks")
 	);
 

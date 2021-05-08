@@ -15,7 +15,7 @@ export default function MainTabNavigator() {
 	const { Navigator, Screen } = createBottomTabNavigator();
 	const [isEmployee, setIsEmployee] = useState(false);
 	const [loading, setLoading] = useState(true);
-	const { businessID, setBusinessID } = useContext(UserContext);
+	const { employee, setEmployee } = useContext(UserContext);
 
 	useEffect(() => {
 		functions()
@@ -24,9 +24,12 @@ export default function MainTabNavigator() {
 			})
 			.then((response) => {
 				if (response.data.found) {
+					setEmployee({
+						businessID: response.data.businessID,
+						employeeID: response.data.employeeID,
+					});
 					setIsEmployee(true);
 					setLoading(false);
-					setBusinessID(response.data.businessID);
 				} else {
 					setLoading(false);
 				}

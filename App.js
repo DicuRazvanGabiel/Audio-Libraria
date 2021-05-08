@@ -24,7 +24,7 @@ import AuthenticationNavigator from "./src/navigation/AuthenticationNavigator";
 export default function App() {
 	const [isThemeDark, setIsThemeDark] = React.useState(true);
 	let theme = isThemeDark ? CombinedDarkTheme : CombinedDefaultTheme;
-	const [businessID, setBusinessID] = React.useState(null);
+	const [employee, setEmployee] = React.useState(null);
 
 	const toggleTheme = React.useCallback(() => {
 		return setIsThemeDark(!isThemeDark);
@@ -46,7 +46,7 @@ export default function App() {
 	}
 
 	return (
-		<UserContext.Provider value={{ businessID, setBusinessID }}>
+		<UserContext.Provider value={{ employee, setEmployee }}>
 			<ThemeContext.Provider value={preferences}>
 				<PaperProvider theme={theme}>
 					<NavigationContainer theme={theme}>
