@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { Switch, Text, Button } from "react-native-paper";
 import { ThemeContext } from "../Context/ThemeContext";
 import auth from "@react-native-firebase/auth";
+import TrackPlayer from "react-native-track-player";
 
 export default function Settings() {
 	const [isSwitchOn, setIsSwitchOn] = useState(false);
@@ -21,6 +22,8 @@ export default function Settings() {
 			<Switch value={isThemeDark} onValueChange={toggleTheme} />
 			<Button
 				onPress={() => {
+					TrackPlayer.stop();
+					TrackPlayer.destroy();
 					auth().signOut();
 				}}
 			>

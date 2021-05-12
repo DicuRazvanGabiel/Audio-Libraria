@@ -4,12 +4,11 @@ import Slider from "@react-native-community/slider";
 import { useTrackPlayerProgress } from "react-native-track-player";
 import TrackPlayer from "react-native-track-player";
 import { Text } from "react-native-paper";
+import { ThemeContext } from "../Context/ThemeContext";
 
 export default function PlayerSlider() {
-	const { position, bufferedPosition, duration } = useTrackPlayerProgress(
-		10,
-		null
-	);
+	const { isThemeDark } = React.useContext(ThemeContext);
+	const { position, duration } = useTrackPlayerProgress(100);
 	const [slidingStart, setSlidingStart] = useState(false);
 	const [valueChange, setValueChange] = useState(0);
 
@@ -60,8 +59,8 @@ export default function PlayerSlider() {
 				<Slider
 					minimumValue={0}
 					maximumValue={duration}
-					minimumTrackTintColor="#FFFFFF"
-					maximumTrackTintColor="#000000"
+					minimumTrackTintColor="rgba(254,182,101,1)"
+					maximumTrackTintColor={isThemeDark ? "#fff" : "#000000"}
 					value={slidingStart ? valueChange : position}
 					onSlidingComplete={(newPosition) =>
 						handleSlidingStop(newPosition)

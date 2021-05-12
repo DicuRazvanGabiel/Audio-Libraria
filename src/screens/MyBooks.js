@@ -5,43 +5,22 @@ import { UserContext } from "../Context/UserContext";
 import firestore from "@react-native-firebase/firestore";
 import LoadingState from "../components/LoadingState";
 import BookListItem from "../components/BookListItem";
+import { checkBorrowBookForEmployee } from "../Utils";
 
 export default function MyBooks({ navigation }) {
 	const [loading, setLoading] = useState(true);
 	const [borrowedBookInfo, setBorrowedBookInfo] = useState(null);
 	const { employee } = useContext(UserContext);
-	console.log(employee);
 
 	const fetchUserAndBookData = async () => {
+		setBorrowedBookInfo(null);
 		setLoading(true);
-		let bookID = null;
-		let author = null;
-		let businessBookID = null;
 		if (employee) {
-			const employeeSnap = await firestore()
-				.doc(
-					`businesses/${employee.businessID}/employees/${employee.employeeID}`
-				)
-				.get();
-
-			if (employeeSnap.data().borrowedBook) {
-				const businessBookSnap = await firestore()
-					.doc(
-						`businesses/${employee.businessID}/businessBooks/${
-							employeeSnap.data().borrowedBook
-						}`
-					)
-					.get();
-				console.log(businessBookSnap.data());
-				bookID = businessBookSnap.data().books;
-				author = businessBookSnap.data().author;
-				businessBookID = businessBookSnap.id;
-				setBorrowedBookInfo({
-					bookID,
-					author,
-					businessBookID,
-				});
-			}
+			const borrowedBook = await checkBorrowBookForEmployee(
+				employee,
+				firestore()
+			);
+			setBorrowedBookInfo(borrowedBook);
 		}
 		setLoading(false);
 	};
@@ -54,7 +33,7 @@ export default function MyBooks({ navigation }) {
 	}, [navigation]);
 
 	if (loading) return <LoadingState />;
-	console.log(borrowedBookInfo);
+
 	return (
 		<ScrollView>
 			{borrowedBookInfo && (

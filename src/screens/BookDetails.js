@@ -5,27 +5,37 @@ import {
 	TouchableOpacity,
 	useWindowDimensions,
 	ScrollView,
+	Alert,
 } from "react-native";
-import { Text, Divider, useTheme } from "react-native-paper";
+import {
+	Text,
+	Divider,
+	useTheme,
+	IconButton,
+	Colors,
+} from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import HTML from "react-native-render-html";
 import { Rating } from "react-native-ratings";
 import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
 
 import { UserContext } from "../Context/UserContext";
+import { isCurrentBorrowBook } from "../Utils";
 
 import ImageBook from "../components/ImageBook";
 import LoadingState from "../components/LoadingState";
+
 const db = firestore();
-export default function BookDetails({ route }) {
+
+export default function BookDetails({ navigation, route }) {
 	const { employee } = useContext(UserContext);
 	const theme = useTheme();
 	const { bookID, businessBookID } = route.params;
 	const [loading, setLoading] = useState(true);
 	const [bookInfo, setBookInfo] = useState(null);
+	const [borrowedBook, setBorrowedBook] = useState(null);
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -61,6 +71,9 @@ export default function BookDetails({ route }) {
 		});
 		book.categories = categories;
 		setBookInfo(book);
+		setBorrowedBook(
+			await isCurrentBorrowBook(employee, businessBookID, db)
+		);
 	};
 
 	useEffect(() => {
@@ -76,6 +89,13 @@ export default function BookDetails({ route }) {
 			})
 			.then((response) => {
 				console.log(response);
+				if (response.data.ok) {
+					setBorrowedBook(true);
+					return;
+				}
+				Alert.alert("Imprumutarea cartii", response.data.error, [
+					{ text: "OK", onPress: () => console.log("OK Pressed") },
+				]);
 			});
 	};
 
@@ -88,6 +108,7 @@ export default function BookDetails({ route }) {
 			})
 			.then((response) => {
 				console.log(response);
+				setBorrowedBook(false);
 			});
 	};
 
@@ -104,30 +125,25 @@ export default function BookDetails({ route }) {
 						margin: 10,
 					}}
 				>
-					<View style={{ marginBottom: 10 }}>
-						<Text style={{ fontSize: 30, marginBottom: 5 }}>
-							{bookInfo.title}
-						</Text>
-						<Divider />
-						<Text style={{ fontSize: 20 }}>
-							{bookInfo.authors.name}
-						</Text>
-					</View>
-
-					<View
-						style={{
-							flexDirection: "row",
-							alignItems: "center",
-						}}
-					>
-						<Rating
-							type="custom"
-							imageSize={30}
-							tintColor={theme.colors.background}
-							showRating
-							onFinishRating={this.ratingCompleted}
+					<Text style={{ fontSize: 30, marginBottom: 5 }}>
+						{bookInfo.title}
+					</Text>
+					<Divider />
+					<Text style={{ fontSize: 20 }}>
+						{bookInfo.authors.name}
+					</Text>
+					{borrowedBook && (
+						<IconButton
+							icon={"play-circle-outline"}
+							color={Colors.red500}
+							size={40}
+							onPress={() => {
+								navigation.navigate("Player", {
+									book: bookInfo,
+								});
+							}}
 						/>
-					</View>
+					)}
 				</View>
 				<View>
 					<Ionicons name={"star-outline"} size={28} color={"#fff"} />
@@ -142,38 +158,51 @@ export default function BookDetails({ route }) {
 				</View>
 			</View>
 			<View style={{ marginTop: 20 }}>
-				<TouchableOpacity
-					style={{
-						backgroundColor: "#FE805C",
-						borderRadius: 30,
-						padding: 8,
-						width: 200,
-					}}
-					onPress={borrowBook}
-				>
-					<Text style={{ fontSize: 23, textAlign: "center" }}>
-						Imprumuta
-					</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={{
-						backgroundColor: "#FE805C",
-						borderRadius: 30,
-						padding: 8,
-						width: 200,
-					}}
-					onPress={unBarrow}
-				>
-					<Text style={{ fontSize: 23, textAlign: "center" }}>
-						Preda
-					</Text>
-				</TouchableOpacity>
+				{borrowedBook ? (
+					<TouchableOpacity
+						style={{
+							backgroundColor: "#FE805C",
+							borderRadius: 30,
+							padding: 8,
+							width: 200,
+						}}
+						onPress={unBarrow}
+					>
+						<Text style={{ fontSize: 23, textAlign: "center" }}>
+							Preda
+						</Text>
+					</TouchableOpacity>
+				) : (
+					<TouchableOpacity
+						style={{
+							backgroundColor: "#FE805C",
+							borderRadius: 30,
+							padding: 8,
+							width: 200,
+						}}
+						onPress={borrowBook}
+					>
+						<Text style={{ fontSize: 23, textAlign: "center" }}>
+							Imprumuta
+						</Text>
+					</TouchableOpacity>
+				)}
 			</View>
 
 			<View style={styles.bookDescriptionContainer}>
 				<HTML
 					source={{ html: bookInfo.description }}
 					containerStyle={{}}
+				/>
+			</View>
+
+			<View style={{ marginTop: 20 }}>
+				<Rating
+					type="custom"
+					imageSize={30}
+					tintColor={theme.colors.background}
+					showRating
+					onFinishRating={this.ratingCompleted}
 				/>
 			</View>
 		</ScrollView>

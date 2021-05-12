@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import TrackPlayer from "react-native-track-player";
 import { IconButton, Colors, Text } from "react-native-paper";
 import PlayerSlider from "./../components/PlayerSlider";
+import { Entypo } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native-gesture-handler";
 const db = firestore();
 
 export default function Player({ route }) {
@@ -24,7 +26,7 @@ export default function Player({ route }) {
 		}
 		await TrackPlayer.setupPlayer();
 
-		const author = await db.collection("authors").doc(book.authors).get();
+		// const author = await db.collection("authors").doc(book.authors).get();
 		let trackArray = [];
 		book.chapters.map((c) => {
 			trackArray.push({
@@ -32,7 +34,7 @@ export default function Player({ route }) {
 				url: c.file.src,
 				title: c.name,
 				album: book.title,
-				artist: author.data().name,
+				artist: book.authors.name,
 				duration: c.duration,
 				artwork: book.image.src,
 			});
@@ -100,8 +102,52 @@ export default function Player({ route }) {
 
 	return (
 		<View style={styles.container}>
-			<Text>{book.title}</Text>
-			<Text>{chapter}</Text>
+			<Image
+				source={{
+					uri: book.image.src,
+				}}
+				style={{
+					height: 350,
+					width: 350,
+					borderRadius: 15,
+					marginBottom: 5,
+					resizeMode: "cover",
+				}}
+			/>
+			<View
+				style={{
+					justifyContent: "center",
+					alignItems: "center",
+					flexDirection: "row",
+					width: 350,
+				}}
+			>
+				<View>
+					<Text
+						style={{
+							fontSize: 17,
+							fontWeight: "bold",
+							textAlign: "center",
+						}}
+					>
+						{book.title}
+					</Text>
+					<Text
+						style={{
+							fontSize: 14,
+							fontWeight: "bold",
+							textAlign: "center",
+						}}
+					>
+						{chapter}
+					</Text>
+				</View>
+
+				<TouchableOpacity style={{ marginLeft: 20 }}>
+					<Entypo name="list" size={30} color="red" />
+				</TouchableOpacity>
+			</View>
+
 			<PlayerSlider />
 
 			<View style={styles.mediaPleyerControls}>
