@@ -3,7 +3,6 @@ import {
 	View,
 	StyleSheet,
 	TouchableOpacity,
-	useWindowDimensions,
 	ScrollView,
 	Alert,
 } from "react-native";
@@ -20,8 +19,10 @@ import HTML from "react-native-render-html";
 import { Rating } from "react-native-ratings";
 import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
+import TrackPlayer from "react-native-track-player";
 
 import { UserContext } from "../Context/UserContext";
+import { PlayerContext } from "../Context/PlayerContext";
 import { isCurrentBorrowBook } from "../Utils";
 
 import ImageBook from "../components/ImageBook";
@@ -36,6 +37,7 @@ export default function BookDetails({ navigation, route }) {
 	const [loading, setLoading] = useState(true);
 	const [bookInfo, setBookInfo] = useState(null);
 	const [borrowedBook, setBorrowedBook] = useState(null);
+	const { player, setPlayer } = useContext(PlayerContext);
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -88,10 +90,15 @@ export default function BookDetails({ navigation, route }) {
 				businessID: employee.businessID,
 				employeeID: employee.employeeID,
 			})
-			.then((response) => {
-				console.log(response);
+			.then(async (response) => {
 				if (response.data.ok) {
 					setBorrowedBook(true);
+					const state = await TrackPlayer.getState();
+					if (state === TrackPlayer.STATE_PLAYING) {
+						TrackPlayer.stop();
+						TrackPlayer.destroy();
+						setPlayer(null);
+					}
 					return;
 				}
 				Alert.alert("Imprumutarea cartii", response.data.error, [
@@ -107,9 +114,15 @@ export default function BookDetails({ navigation, route }) {
 				businessID: employee.businessID,
 				employeeID: employee.employeeID,
 			})
-			.then((response) => {
+			.then(async (response) => {
 				console.log(response);
 				setBorrowedBook(false);
+				const state = await TrackPlayer.getState();
+				if (state === TrackPlayer.STATE_PLAYING) {
+					TrackPlayer.stop();
+					TrackPlayer.destroy();
+					setPlayer(null);
+				}
 			});
 	};
 
