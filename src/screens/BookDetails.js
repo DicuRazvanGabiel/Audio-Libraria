@@ -58,6 +58,7 @@ export default function BookDetails({ navigation, route }) {
 
 		const categoriesSnap = await db.collection("categories").get();
 		book = {
+			id: bookSnap.id,
 			...bookSnap.data(),
 			authors: authorSnap.data(),
 			narrator: narratorSnap.data(),

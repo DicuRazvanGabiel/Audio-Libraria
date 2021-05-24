@@ -15,6 +15,7 @@ import Constants from "expo-constants";
 
 import { ThemeContext } from "./src/Context/ThemeContext";
 import { UserContext } from "./src/Context/UserContext";
+import { PlayerContext } from "./src/Context/PlayerContext";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
@@ -25,6 +26,7 @@ export default function App() {
 	const [isThemeDark, setIsThemeDark] = React.useState(true);
 	let theme = isThemeDark ? CombinedDarkTheme : CombinedDefaultTheme;
 	const [employee, setEmployee] = React.useState(null);
+	const [player, setPlayer] = React.useState(null);
 
 	const toggleTheme = React.useCallback(() => {
 		return setIsThemeDark(!isThemeDark);
@@ -46,14 +48,16 @@ export default function App() {
 	}
 
 	return (
-		<UserContext.Provider value={{ employee, setEmployee }}>
-			<ThemeContext.Provider value={preferences}>
-				<PaperProvider theme={theme}>
-					<NavigationContainer theme={theme}>
-						<AuthenticationNavigator />
-					</NavigationContainer>
-				</PaperProvider>
-			</ThemeContext.Provider>
-		</UserContext.Provider>
+		<PlayerContext.Provider value={{ player, setPlayer }}>
+			<UserContext.Provider value={{ employee, setEmployee }}>
+				<ThemeContext.Provider value={preferences}>
+					<PaperProvider theme={theme}>
+						<NavigationContainer theme={theme}>
+							<AuthenticationNavigator />
+						</NavigationContainer>
+					</PaperProvider>
+				</ThemeContext.Provider>
+			</UserContext.Provider>
+		</PlayerContext.Provider>
 	);
 }

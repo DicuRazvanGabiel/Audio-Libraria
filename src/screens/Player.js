@@ -1,47 +1,56 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Image } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import TrackPlayer from "react-native-track-player";
 import { IconButton, Colors, Text } from "react-native-paper";
 import PlayerSlider from "./../components/PlayerSlider";
 import { Entypo } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
+
+import { PlayerContext } from "../Context/PlayerContext";
+
 const db = firestore();
 
 export default function Player({ route }) {
 	const [loading, setLoading] = useState(true);
 	const [playerState, setPlayerState] = useState("play");
 	const [chapter, setChapter] = useState("");
+	const { player, setPlayer } = useContext(PlayerContext);
 	const book = route.params.book;
 
 	const setUp = async () => {
 		const state = await TrackPlayer.getState();
-		if (
-			state === TrackPlayer.STATE_PLAYING ||
-			state === TrackPlayer.STATE_PAUSED
-		) {
-			TrackPlayer.stop();
-			TrackPlayer.destroy();
-		}
-		await TrackPlayer.setupPlayer();
+		setPlayerState(state);
 
-		// const author = await db.collection("authors").doc(book.authors).get();
-		let trackArray = [];
-		book.chapters.map((c) => {
-			trackArray.push({
-				id: c.name,
-				url: c.file.src,
-				title: c.name,
-				album: book.title,
-				artist: book.authors.name,
-				duration: c.duration,
-				artwork: book.image.src,
+		if (player && player.bookID === book.id) {
+			setLoading(false);
+		} else {
+			if (
+				state === TrackPlayer.STATE_PLAYING ||
+				state === TrackPlayer.STATE_PAUSED
+			) {
+				TrackPlayer.stop();
+				TrackPlayer.destroy();
+			}
+			await TrackPlayer.setupPlayer();
+
+			let trackArray = [];
+			book.chapters.map((c) => {
+				trackArray.push({
+					id: c.name,
+					url: c.file.src,
+					title: c.name,
+					album: book.title,
+					artist: book.authors.name,
+					duration: c.duration,
+					artwork: book.image.src,
+				});
 			});
-		});
 
-		await TrackPlayer.add(trackArray);
-		TrackPlayer.play();
+			await TrackPlayer.add(trackArray);
+			TrackPlayer.play();
+			setPlayer({ bookID: book.id });
+		}
 		setLoading(false);
 	};
 
@@ -52,6 +61,7 @@ export default function Player({ route }) {
 			"playback-state",
 			async (state) => {
 				setPlayerState(state["state"]);
+				console.log("aici se face: " + state["state"]);
 			}
 		);
 
@@ -68,9 +78,10 @@ export default function Player({ route }) {
 			listenerTrackChange.remove();
 			listenerStateChange.remove();
 		};
-	}, [route, book]);
+	}, [book]);
 
 	const handlePlayPauseButton = () => {
+		console.log(playerState);
 		if (playerState === TrackPlayer.STATE_PLAYING) {
 			TrackPlayer.pause();
 		}
