@@ -42,7 +42,7 @@ export default function CustomNavigationBar({ navigation, previous }) {
 						{user && (
 							<TouchableOpacity
 								style={{ marginRight: 10, marginBottom: 10 }}
-								onPress={() => navigation.push("Settings")}
+								onPress={() => navigation.navigate("Settings")}
 							>
 								<Avatar.Image
 									size={45}
