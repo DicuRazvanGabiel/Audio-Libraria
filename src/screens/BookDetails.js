@@ -115,7 +115,6 @@ export default function BookDetails({ navigation, route }) {
 				employeeID: employee.employeeID,
 			})
 			.then(async (response) => {
-				console.log(response);
 				setBorrowedBook(false);
 				const state = await TrackPlayer.getState();
 				if (state === TrackPlayer.STATE_PLAYING) {

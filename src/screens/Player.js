@@ -23,6 +23,9 @@ export default function Player({ route }) {
 		setPlayerState(state);
 
 		if (player && player.bookID === book.id) {
+			const trackID = await TrackPlayer.getCurrentTrack();
+			const currentTrack = await TrackPlayer.getTrack(trackID);
+			setChapter(currentTrack.title);
 			setLoading(false);
 		} else {
 			if (
@@ -50,6 +53,7 @@ export default function Player({ route }) {
 			await TrackPlayer.add(trackArray);
 			TrackPlayer.play();
 			setPlayer({ bookID: book.id });
+			setChapter(trackArray[0].title);
 		}
 		setLoading(false);
 	};
@@ -61,7 +65,6 @@ export default function Player({ route }) {
 			"playback-state",
 			async (state) => {
 				setPlayerState(state["state"]);
-				console.log("aici se face: " + state["state"]);
 			}
 		);
 
@@ -69,7 +72,6 @@ export default function Player({ route }) {
 			"playback-track-changed",
 			async (data) => {
 				const track = await TrackPlayer.getTrack(data.nextTrack);
-
 				setChapter(track.title);
 			}
 		);
@@ -113,6 +115,12 @@ export default function Player({ route }) {
 
 	return (
 		<View style={styles.container}>
+			<View style={{ width: "100%", alignItems: "flex-end" }}>
+				<TouchableOpacity style={{ marginLeft: 20 }}>
+					<Entypo name="list" size={30} color="red" />
+				</TouchableOpacity>
+			</View>
+
 			<Image
 				source={{
 					uri: book.image.src,
@@ -153,10 +161,6 @@ export default function Player({ route }) {
 						{chapter}
 					</Text>
 				</View>
-
-				<TouchableOpacity style={{ marginLeft: 20 }}>
-					<Entypo name="list" size={30} color="red" />
-				</TouchableOpacity>
 			</View>
 
 			<PlayerSlider />
