@@ -649,7 +649,7 @@ PODS:
     - Firebase/Firestore (= 7.10.0)
     - React-Core
     - RNFBApp
-  - RNFBFunctions (11.3.3):
+  - RNFBFunctions (11.5.0):
     - Firebase/Functions (= 7.10.0)
     - React-Core
     - RNFBApp
@@ -1016,7 +1016,7 @@ SPEC CHECKSUMS:
   RNFBApp: 8b1b4308daa657b8ea87dbed517e31215f5f1456
   RNFBAuth: b86ae9875cf59cc895fb0ca7f554390dfed1a44a
   RNFBFirestore: ba030add4e316ff3e7c80c0f2bddcf7570d3ebea
-  RNFBFunctions: aad5e55e94defdbfa27a53de6c5260cc56cef120
+  RNFBFunctions: ec54de06b64da25385d0384f24fd57af155c9a3f
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNGoogleSignin: 111fd4792913208f338fe3178005f7a22e490ff9
   RNReanimated: 70f662b5232dd5d19ccff581e919a54ea73df51c
