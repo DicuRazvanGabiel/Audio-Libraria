@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
+import functions from "@react-native-firebase/functions";
 import TrackPlayer from "react-native-track-player";
 import { IconButton, Colors, Text } from "react-native-paper";
 import PlayerSlider from "./../components/PlayerSlider";
@@ -53,6 +55,17 @@ export default function Player({ route }) {
 				});
 			});
 
+			const savedBook = await db
+				.collection("users")
+				.doc(auth().currentUser.uid)
+				.collection("savedBooksPosition")
+				.doc(book.id)
+				.get();
+
+			if (savedBook.exists) {
+				console.log(savedBook.data());
+			}
+
 			await TrackPlayer.add(trackArray);
 			TrackPlayer.play();
 			setPlayer({ bookID: book.id, chapter: trackArray[0].title });
@@ -68,6 +81,18 @@ export default function Player({ route }) {
 			"playback-state",
 			async (state) => {
 				setPlayerState(state["state"]);
+				if (state["state"] === TrackPlayer.STATE_PAUSED) {
+					const positionSeconds = await TrackPlayer.getPosition();
+					const track = await TrackPlayer.getCurrentTrack();
+					db.collection("users")
+						.doc(auth().currentUser.uid)
+						.collection("savedBooksPosition")
+						.doc(book.id)
+						.set({
+							chapter: track,
+							positionSeconds,
+						});
+				}
 			}
 		);
 
@@ -82,12 +107,11 @@ export default function Player({ route }) {
 
 		return () => {
 			listenerTrackChange.remove();
-			listenerStateChange.remove();
+			// listenerStateChange.remove();
 		};
 	}, [book]);
 
 	const handlePlayPauseButton = () => {
-		console.log(playerState);
 		if (playerState === TrackPlayer.STATE_PLAYING) {
 			TrackPlayer.pause();
 		}
