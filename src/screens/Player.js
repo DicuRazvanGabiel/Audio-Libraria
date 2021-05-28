@@ -54,6 +54,7 @@ export default function Player({ route }) {
 					artwork: book.image.src,
 				});
 			});
+			await TrackPlayer.add(trackArray);
 
 			const savedBook = await db
 				.collection("users")
@@ -64,12 +65,20 @@ export default function Player({ route }) {
 
 			if (savedBook.exists) {
 				console.log(savedBook.data());
+				const lastSavedChapter = savedBook.data().chapter;
+				const lastPosition = Math.round(
+					savedBook.data().positionSeconds
+				);
+				await TrackPlayer.skip(lastSavedChapter);
+				TrackPlayer.seekTo(lastPosition);
+				setChapter(lastSavedChapter);
+				// setPlayer({ bookID: book.id, chapter: lastSavedChapter });
+			} else {
+				setPlayer({ bookID: book.id, chapter: trackArray[0].title });
+				setChapter(trackArray[0].title);
 			}
 
-			await TrackPlayer.add(trackArray);
 			TrackPlayer.play();
-			setPlayer({ bookID: book.id, chapter: trackArray[0].title });
-			setChapter(trackArray[0].title);
 		}
 		setLoading(false);
 	};
@@ -107,7 +116,7 @@ export default function Player({ route }) {
 
 		return () => {
 			listenerTrackChange.remove();
-			// listenerStateChange.remove();
+			listenerStateChange.remove();
 		};
 	}, [book]);
 
