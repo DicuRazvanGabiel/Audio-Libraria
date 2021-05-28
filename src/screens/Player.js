@@ -6,6 +6,8 @@ import TrackPlayer from "react-native-track-player";
 import { IconButton, Colors, Text } from "react-native-paper";
 import PlayerSlider from "./../components/PlayerSlider";
 import { Entypo } from "@expo/vector-icons";
+import ModalChaptersContent from "../components/ModalChaptersContent";
+import Modal from "react-native-modal";
 
 import { PlayerContext } from "../Context/PlayerContext";
 
@@ -15,6 +17,7 @@ export default function Player({ route }) {
 	const [loading, setLoading] = useState(true);
 	const [playerState, setPlayerState] = useState("play");
 	const [chapter, setChapter] = useState("");
+	const [showChaptersModal, setShowChaptersModal] = useState(false);
 	const { player, setPlayer } = useContext(PlayerContext);
 	const book = route.params.book;
 
@@ -52,7 +55,7 @@ export default function Player({ route }) {
 
 			await TrackPlayer.add(trackArray);
 			TrackPlayer.play();
-			setPlayer({ bookID: book.id });
+			setPlayer({ bookID: book.id, chapter: trackArray[0].title });
 			setChapter(trackArray[0].title);
 		}
 		setLoading(false);
@@ -73,6 +76,7 @@ export default function Player({ route }) {
 			async (data) => {
 				const track = await TrackPlayer.getTrack(data.nextTrack);
 				setChapter(track.title);
+				setPlayer({ ...player, chapter: track.title });
 			}
 		);
 
@@ -116,7 +120,12 @@ export default function Player({ route }) {
 	return (
 		<View style={styles.container}>
 			<View style={{ width: "100%", alignItems: "flex-end" }}>
-				<TouchableOpacity style={{ marginLeft: 20 }}>
+				<TouchableOpacity
+					style={{ marginLeft: 20 }}
+					onPress={() => {
+						setShowChaptersModal(true);
+					}}
+				>
 					<Entypo name="list" size={30} color="red" />
 				</TouchableOpacity>
 			</View>
@@ -205,6 +214,28 @@ export default function Player({ route }) {
 					onPress={() => TrackPlayer.skipToNext()}
 				/>
 			</View>
+
+			<Modal
+				isVisible={showChaptersModal}
+				onRequestClose={() => {
+					setShowChaptersModal(false);
+				}}
+				swipeDirection="down"
+				onSwipeComplete={() => {
+					setShowChaptersModal(false);
+				}}
+			>
+				<ModalChaptersContent
+					chapters={book.chapters}
+					currentChapter={chapter}
+					onChangeChapter={async (id) => {
+						await TrackPlayer.skip(id);
+						if (playerState != TrackPlayer.STATE_PLAYING) {
+							TrackPlayer.play();
+						}
+					}}
+				/>
+			</Modal>
 		</View>
 	);
 }
