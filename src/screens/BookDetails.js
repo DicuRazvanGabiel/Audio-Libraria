@@ -20,6 +20,7 @@ import { Rating } from "react-native-ratings";
 import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
 import TrackPlayer from "react-native-track-player";
+import { Entypo } from "@expo/vector-icons";
 
 import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
@@ -27,6 +28,8 @@ import { isCurrentBorrowBook } from "../Utils";
 
 import ImageBook from "../components/ImageBook";
 import LoadingState from "../components/LoadingState";
+import ModalChaptersContent from "../components/ModalChaptersContent";
+import Modal from "react-native-modal";
 
 const db = firestore();
 
@@ -38,6 +41,7 @@ export default function BookDetails({ navigation, route }) {
 	const [bookInfo, setBookInfo] = useState(null);
 	const [borrowedBook, setBorrowedBook] = useState(null);
 	const { player, setPlayer } = useContext(PlayerContext);
+	const [showModalChapters, setShowModalChapters] = useState(false);
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -162,14 +166,31 @@ export default function BookDetails({ navigation, route }) {
 					<Ionicons name={"star-outline"} size={28} color={"#fff"} />
 				</View>
 			</View>
-			<View style={styles.demoPlayerContainer}>
-				<Text style={{ color: "#000", marginLeft: 15 }}>
-					Asculta demo...
-				</Text>
-				<View style={{ right: -5 }}>
-					<AntDesign name="play" size={26} color="#8743FF" />
+			<View
+				style={{
+					width: "100%",
+					flexDirection: "row",
+					justifyContent: "space-between",
+				}}
+			>
+				<View style={styles.demoPlayerContainer}>
+					<Text style={{ color: "#000", marginLeft: 15 }}>
+						Asculta demo...
+					</Text>
+					<View style={{ right: -5 }}>
+						<AntDesign name="play" size={26} color="#8743FF" />
+					</View>
 				</View>
+				<TouchableOpacity
+					style={{ marginLeft: 20 }}
+					onPress={() => {
+						setShowModalChapters(true);
+					}}
+				>
+					<Entypo name="list" size={30} color="red" />
+				</TouchableOpacity>
 			</View>
+
 			<View style={{ marginTop: 20 }}>
 				{borrowedBook ? (
 					<TouchableOpacity
@@ -218,6 +239,21 @@ export default function BookDetails({ navigation, route }) {
 					onFinishRating={this.ratingCompleted}
 				/>
 			</View>
+			<Modal
+				isVisible={showModalChapters}
+				onRequestClose={() => {
+					setShowModalChapters(false);
+				}}
+				swipeDirection="down"
+				onSwipeComplete={() => {
+					setShowModalChapters(false);
+				}}
+			>
+				<ModalChaptersContent
+					chapters={bookInfo.chapters}
+					currentChapter={null}
+				/>
+			</Modal>
 		</ScrollView>
 	);
 }

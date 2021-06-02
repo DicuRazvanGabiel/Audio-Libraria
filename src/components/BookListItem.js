@@ -6,6 +6,8 @@ import { useDocument } from "react-firebase-hooks/firestore";
 import firestore from "@react-native-firebase/firestore";
 import LoadingState from "../components/LoadingState";
 
+import { convertMinutesHours } from "../Utils";
+
 export default function BookListItem({
 	navigation,
 	bookID,
@@ -17,6 +19,16 @@ export default function BookListItem({
 		firestore().collection("books").doc(bookID)
 	);
 	if (loading) return <LoadingState />;
+
+	const calculateTotalDuration = () => {
+		let totalDurarion = 0;
+		book.data().chapters.map((c) => {
+			totalDurarion += c.duration;
+		});
+
+		return convertMinutesHours(totalDurarion);
+	};
+
 	return (
 		<TouchableOpacity
 			onPress={() =>
@@ -52,6 +64,8 @@ export default function BookListItem({
 						</Text>
 						<Text style={{ fontSize: 18 }}>{author}</Text>
 					</View>
+
+					<Text>{calculateTotalDuration()}</Text>
 
 					<Rating
 						type="custom"

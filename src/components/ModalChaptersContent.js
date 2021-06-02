@@ -11,6 +11,8 @@ export default function ModalChaptersContent({
 }) {
 	const theme = useTheme();
 
+	const ViewTouchable = onChangeChapter ? TouchableOpacity : View;
+
 	return (
 		<View
 			style={{
@@ -32,7 +34,7 @@ export default function ModalChaptersContent({
 			>
 				<ScrollView>
 					{chapters.map((c) => (
-						<TouchableOpacity
+						<ViewTouchable
 							style={{ marginBottom: 20 }}
 							onPress={() => {
 								onChangeChapter(c.name);
@@ -76,7 +78,7 @@ export default function ModalChaptersContent({
 							</View>
 
 							<Divider />
-						</TouchableOpacity>
+						</ViewTouchable>
 					))}
 				</ScrollView>
 			</View>
