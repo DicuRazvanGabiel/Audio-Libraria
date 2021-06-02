@@ -24,4 +24,6 @@ target 'AudioLibraria' do
   #    flipper_post_install(installer)
   #  end
 
+  pod 'react-native-background-timer', :path => '../node_modules/react-native-background-timer'
+
 end

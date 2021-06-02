@@ -10,6 +10,7 @@ import PlayerSlider from "./../components/PlayerSlider";
 import { Entypo } from "@expo/vector-icons";
 import ModalChaptersContent from "../components/ModalChaptersContent";
 import Modal from "react-native-modal";
+import BackgroundTimer from "react-native-background-timer";
 
 import { saveUserLastPlay } from "../Utils";
 import { PlayerContext } from "../Context/PlayerContext";
@@ -25,6 +26,7 @@ export default function Player({ route }) {
 	const book = route.params.book;
 
 	const setUp = async () => {
+		BackgroundTimer.stopBackgroundTimer();
 		const state = await TrackPlayer.getState();
 		setPlayerState(state);
 
@@ -81,6 +83,21 @@ export default function Player({ route }) {
 
 			TrackPlayer.play();
 		}
+
+		BackgroundTimer.runBackgroundTimer(async () => {
+			const state = await TrackPlayer.getState();
+			if (state === TrackPlayer.STATE_PLAYING) {
+				const positionSeconds = await TrackPlayer.getPosition();
+				const track = await TrackPlayer.getCurrentTrack();
+				saveUserLastPlay(
+					auth().currentUser.uid,
+					book.id,
+					track,
+					positionSeconds,
+					db
+				);
+			}
+		}, 60000);
 		setLoading(false);
 	};
 
