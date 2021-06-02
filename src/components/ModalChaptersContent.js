@@ -2,7 +2,7 @@ import React from "react";
 import { View, TouchableOpacity, ScrollView } from "react-native";
 import { Text, Divider, useTheme } from "react-native-paper";
 
-import { AntDesign } from "@expo/vector-icons";
+import { convertMinutesHours } from "../Utils";
 
 export default function ModalChaptersContent({
 	chapters,
@@ -24,7 +24,7 @@ export default function ModalChaptersContent({
 					backgroundColor: theme.colors.surface,
 					height: "70%",
 					margin: 10,
-					width: "90%",
+					width: "100%",
 					marginBottom: 20,
 					borderRadius: 20,
 					padding: 20,
@@ -45,16 +45,34 @@ export default function ModalChaptersContent({
 									alignItems: "center",
 								}}
 							>
-								{currentChapter === c.name && (
-									<AntDesign
-										name="playcircleo"
-										size={24}
-										color="red"
-										style={{ margin: 5 }}
-									/>
-								)}
+								<View
+									style={{
+										justifyContent: "space-between",
+										flexDirection: "row",
+									}}
+								>
+									<Text
+										style={[
+											{ fontSize: 20, flex: 2 },
+											currentChapter === c.name && {
+												color: "blue",
+											},
+										]}
+									>
+										{c.name}
+									</Text>
 
-								<Text style={{ fontSize: 20 }}>{c.name}</Text>
+									<Text
+										style={[
+											{ textAlign: "right", flex: 1 },
+											currentChapter === c.name && {
+												color: "blue",
+											},
+										]}
+									>
+										{convertMinutesHours(c.duration)}
+									</Text>
+								</View>
 							</View>
 
 							<Divider />

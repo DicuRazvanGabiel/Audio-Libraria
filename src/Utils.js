@@ -74,3 +74,29 @@ export const saveUserLastPlay = async (
 			positionSeconds,
 		});
 };
+
+export const convertMinutesHours = (totalSeconds) => {
+	let timeToDisplay = "";
+	hours = Math.floor(totalSeconds / 3600);
+	totalSeconds %= 3600;
+	minutes = Math.floor(totalSeconds / 60);
+	seconds = totalSeconds % 60;
+
+	if (hours > 0) {
+		timeToDisplay += hours + ":";
+	}
+
+	if (minutes < 10) {
+		timeToDisplay += "0" + minutes + ":";
+	} else {
+		timeToDisplay += minutes + ":";
+	}
+
+	if (seconds < 10) {
+		timeToDisplay += "0" + seconds;
+	} else {
+		timeToDisplay += seconds;
+	}
+
+	return timeToDisplay;
+};

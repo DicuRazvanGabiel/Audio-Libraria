@@ -6,6 +6,8 @@ import TrackPlayer from "react-native-track-player";
 import { Text } from "react-native-paper";
 import { ThemeContext } from "../Context/ThemeContext";
 
+import { convertMinutesHours } from "../Utils";
+
 export default function PlayerSlider() {
 	const { isThemeDark } = React.useContext(ThemeContext);
 	const { position, duration } = useTrackPlayerProgress(100);
@@ -15,32 +17,6 @@ export default function PlayerSlider() {
 	const handleSlidingStop = (newPosition) => {
 		TrackPlayer.seekTo(newPosition);
 		setSlidingStart(false);
-	};
-
-	const renderTime = (totalSeconds) => {
-		let timeToDisplay = "";
-		hours = Math.floor(totalSeconds / 3600);
-		totalSeconds %= 3600;
-		minutes = Math.floor(totalSeconds / 60);
-		seconds = totalSeconds % 60;
-
-		if (hours > 0) {
-			timeToDisplay += hours + ":";
-		}
-
-		if (minutes < 10) {
-			timeToDisplay += "0" + minutes + ":";
-		} else {
-			timeToDisplay += minutes + ":";
-		}
-
-		if (seconds < 10) {
-			timeToDisplay += "0" + seconds;
-		} else {
-			timeToDisplay += seconds;
-		}
-
-		return timeToDisplay;
 	};
 
 	return (
@@ -53,7 +29,7 @@ export default function PlayerSlider() {
 			}}
 		>
 			<Text style={{ width: 50 }}>
-				{renderTime(Math.round(position))}
+				{convertMinutesHours(Math.round(position))}
 			</Text>
 			<View style={{ flex: 1 }}>
 				<Slider
@@ -74,7 +50,7 @@ export default function PlayerSlider() {
 			</View>
 
 			<Text style={{ width: 50 }}>
-				{renderTime(Math.round(duration))}
+				{convertMinutesHours(Math.round(duration))}
 			</Text>
 		</View>
 	);
