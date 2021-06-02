@@ -56,3 +56,21 @@ export const isCurrentBorrowBook = async (employee, businessBookID, db) => {
 		return false;
 	}
 };
+
+export const saveUserLastPlay = async (
+	uid,
+	bookID,
+	chapter,
+	positionSeconds,
+	db
+) => {
+	await db
+		.collection("users")
+		.doc(uid)
+		.collection("savedBooksPosition")
+		.doc(bookID)
+		.set({
+			chapter,
+			positionSeconds,
+		});
+};

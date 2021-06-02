@@ -11,6 +11,7 @@ import { Entypo } from "@expo/vector-icons";
 import ModalChaptersContent from "../components/ModalChaptersContent";
 import Modal from "react-native-modal";
 
+import { saveUserLastPlay } from "../Utils";
 import { PlayerContext } from "../Context/PlayerContext";
 
 const db = firestore();
@@ -66,13 +67,13 @@ export default function Player({ route }) {
 			if (savedBook.exists) {
 				console.log(savedBook.data());
 				const lastSavedChapter = savedBook.data().chapter;
-				const lastPosition = Math.round(
-					savedBook.data().positionSeconds
-				);
+				const lastPosition = savedBook.data().positionSeconds;
+
 				await TrackPlayer.skip(lastSavedChapter);
-				TrackPlayer.seekTo(lastPosition);
+				console.log("aici" + lastPosition);
+				await TrackPlayer.play();
+				await TrackPlayer.seekTo(lastPosition);
 				setChapter(lastSavedChapter);
-				// setPlayer({ bookID: book.id, chapter: lastSavedChapter });
 			} else {
 				setPlayer({ bookID: book.id, chapter: trackArray[0].title });
 				setChapter(trackArray[0].title);
@@ -93,14 +94,13 @@ export default function Player({ route }) {
 				if (state["state"] === TrackPlayer.STATE_PAUSED) {
 					const positionSeconds = await TrackPlayer.getPosition();
 					const track = await TrackPlayer.getCurrentTrack();
-					db.collection("users")
-						.doc(auth().currentUser.uid)
-						.collection("savedBooksPosition")
-						.doc(book.id)
-						.set({
-							chapter: track,
-							positionSeconds,
-						});
+					await saveUserLastPlay(
+						auth().currentUser.uid,
+						book.id,
+						track,
+						positionSeconds,
+						db
+					);
 				}
 			}
 		);
