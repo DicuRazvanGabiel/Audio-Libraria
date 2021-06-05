@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+	createBottomTabNavigator,
+	BottomTabBar,
+} from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import functions from "@react-native-firebase/functions";
 import auth from "@react-native-firebase/auth";
@@ -11,6 +14,7 @@ import SettingsScreen from "../screens/Settings";
 import HomeScreen from "../screens/Home";
 import BusinessAccount from "../screens/BusinessAccount";
 import MyBooks from "../screens/MyBooks";
+import TabBarPlayer from "../components/customeTabBar/TabBarPlayer";
 
 export default function MainTabNavigator() {
 	const { Navigator, Screen } = createBottomTabNavigator();
@@ -42,7 +46,7 @@ export default function MainTabNavigator() {
 	}
 
 	return (
-		<Navigator>
+		<Navigator tabBar={(props) => <TabBarPlayer {...props} />}>
 			{isEmployee && (
 				<Screen
 					name="Corporate"

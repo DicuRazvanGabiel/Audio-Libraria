@@ -76,9 +76,19 @@ export default function Player({ route }) {
 				await TrackPlayer.play();
 				await TrackPlayer.seekTo(lastPosition);
 				setChapter(lastSavedChapter);
-				setPlayer({ bookID: book.id, lastSavedChapter });
+				setPlayer({
+					bookID: book.id,
+					chapter: lastSavedChapter,
+					bookTitle: book.title,
+					bookImage: book.image.src,
+				});
 			} else {
-				setPlayer({ bookID: book.id, chapter: trackArray[0].title });
+				setPlayer({
+					bookID: book.id,
+					chapter: trackArray[0].title,
+					bookTitle: book.title,
+					bookImage: book.image.src,
+				});
 				setChapter(trackArray[0].title);
 			}
 
