@@ -155,9 +155,16 @@ export default function BookDetails({ navigation, route }) {
 							color={Colors.red500}
 							size={40}
 							onPress={() => {
-								navigation.navigate("Player", {
-									book: bookInfo,
-								});
+								if (player && player.book.id === bookInfo.id) {
+									navigation.navigate("Player", {
+										firstInit: false,
+									});
+								} else {
+									navigation.navigate("Player", {
+										firstInit: true,
+									});
+									setPlayer({ ...player, book: bookInfo });
+								}
 							}}
 						/>
 					)}
