@@ -57,7 +57,7 @@ export default function ModalChaptersContent({
 										style={[
 											{ fontSize: 20, flex: 2 },
 											currentChapter === c.name && {
-												color: "blue",
+												color: "red",
 											},
 										]}
 									>
@@ -68,7 +68,7 @@ export default function ModalChaptersContent({
 										style={[
 											{ textAlign: "right", flex: 1 },
 											currentChapter === c.name && {
-												color: "blue",
+												color: "red",
 											},
 										]}
 									>

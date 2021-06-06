@@ -23,14 +23,15 @@ export default function Player({ route }) {
 	const [chapter, setChapter] = useState("");
 	const [showChaptersModal, setShowChaptersModal] = useState(false);
 	const { player, setPlayer } = useContext(PlayerContext);
-	const book = route.params.book;
+	const firstInit = route.params ? route.params.firstInit : false;
+	const book = player.book;
 
 	const setUp = async () => {
 		BackgroundTimer.stopBackgroundTimer();
 		const state = await TrackPlayer.getState();
 		setPlayerState(state);
 
-		if (player && player.bookID === book.id) {
+		if (!firstInit) {
 			const trackID = await TrackPlayer.getCurrentTrack();
 			const currentTrack = await TrackPlayer.getTrack(trackID);
 			setChapter(currentTrack.title);
@@ -66,25 +67,30 @@ export default function Player({ route }) {
 				.doc(book.id)
 				.get();
 
+			let playingChapter = "";
+			//check last position for the current book on current user
 			if (savedBook.exists) {
-				console.log(savedBook.data());
 				const lastSavedChapter = savedBook.data().chapter;
 				const lastPosition = savedBook.data().positionSeconds;
-
 				await TrackPlayer.skip(lastSavedChapter);
 				console.log("aici" + lastPosition);
-				await TrackPlayer.play();
 				await TrackPlayer.seekTo(lastPosition);
 				setChapter(lastSavedChapter);
-				setPlayer({ bookID: book.id, lastSavedChapter });
+				playingChapter = lastSavedChapter;
 			} else {
-				setPlayer({ bookID: book.id, chapter: trackArray[0].title });
 				setChapter(trackArray[0].title);
+				playingChapter = trackArray[0].title;
 			}
 
+			//set the curent playing chapter
+			setPlayer({
+				...player,
+				chapter: playingChapter,
+			});
 			TrackPlayer.play();
 		}
 
+		//start backgrount timer for logging to db the last position
 		BackgroundTimer.runBackgroundTimer(async () => {
 			const state = await TrackPlayer.getState();
 			if (state === TrackPlayer.STATE_PLAYING) {
@@ -136,7 +142,7 @@ export default function Player({ route }) {
 			listenerTrackChange.remove();
 			listenerStateChange.remove();
 		};
-	}, [book]);
+	}, [player.book.id]);
 
 	const handlePlayPauseButton = () => {
 		if (playerState === TrackPlayer.STATE_PLAYING) {
