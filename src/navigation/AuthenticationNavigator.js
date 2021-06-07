@@ -9,6 +9,7 @@ import SignUpScreen from "../screens/auth/SignUp";
 import PlayerScreen from "../screens/Player";
 import SettingsScreen from "../screens/Settings";
 import BookDetailsScreen from "../screens/BookDetails";
+import SearchScreen from "../screens/Search";
 
 import CustomNavigationBar from "../components/CustomNavigationBar";
 
@@ -35,6 +36,7 @@ export default function AuthenticationNavigator() {
 						name="BookDetails"
 						component={BookDetailsScreen}
 					/>
+					<Stack.Screen name="Search" component={SearchScreen} />
 				</>
 			) : (
 				<>

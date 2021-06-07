@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import { View, ScrollView, FlatList } from "react-native";
+import { ScrollView } from "react-native";
 import { UserContext } from "../Context/UserContext";
-import { Text, Divider, useTheme } from "react-native-paper";
 import BookListItem from "../components/BookListItem";
 import firestore from "@react-native-firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
 import LoadingState from "../components/LoadingState";
+import SearchBox from "../components/SearchBox";
 
 export default function BusinessAccount({ navigation }) {
 	const { employee } = useContext(UserContext);
@@ -21,6 +21,7 @@ export default function BusinessAccount({ navigation }) {
 
 	return (
 		<ScrollView>
+			<SearchBox navigation={navigation} />
 			{businessBooks.docs.map((book) => (
 				<BookListItem
 					navigation={navigation}

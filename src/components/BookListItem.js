@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
 		marginHorizontal: 10,
 		borderRadius: 10,
 		flexDirection: "row",
-		marginVertical: 5,
+		marginBottom: 10,
 	},
 	image: {
 		height: 130,

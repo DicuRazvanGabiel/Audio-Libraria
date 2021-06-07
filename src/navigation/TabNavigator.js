@@ -9,7 +9,6 @@ import auth from "@react-native-firebase/auth";
 import LoadingState from "../components/LoadingState";
 import { UserContext } from "../Context/UserContext";
 
-import HomeNavigator from "./HomeNavigator";
 import SettingsScreen from "../screens/Settings";
 import HomeScreen from "../screens/Home";
 import BusinessAccount from "../screens/BusinessAccount";
