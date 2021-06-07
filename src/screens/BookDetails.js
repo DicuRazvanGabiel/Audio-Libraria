@@ -4,6 +4,7 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	ScrollView,
+	ActivityIndicator,
 	Alert,
 } from "react-native";
 import {
@@ -37,11 +38,11 @@ export default function BookDetails({ navigation, route }) {
 	const { employee } = useContext(UserContext);
 	const theme = useTheme();
 	const { bookID, businessBookID } = route.params;
-	const [loading, setLoading] = useState(true);
 	const [bookInfo, setBookInfo] = useState(null);
 	const [borrowedBook, setBorrowedBook] = useState(null);
 	const { player, setPlayer } = useContext(PlayerContext);
 	const [showModalChapters, setShowModalChapters] = useState(false);
+	const [loadingBarrowButton, setLoadingBarrowButton] = useState(false);
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -88,6 +89,7 @@ export default function BookDetails({ navigation, route }) {
 	}, [route.params]);
 
 	const borrowBook = async () => {
+		setLoadingBarrowButton(true);
 		functions()
 			.httpsCallable("barrowBook")({
 				businessBookID: businessBookID,
@@ -95,23 +97,27 @@ export default function BookDetails({ navigation, route }) {
 				employeeID: employee.employeeID,
 			})
 			.then(async (response) => {
-				if (response.data.ok) {
-					setBorrowedBook(true);
-					const state = await TrackPlayer.getState();
-					if (state === TrackPlayer.STATE_PLAYING) {
-						TrackPlayer.stop();
-						TrackPlayer.destroy();
-						setPlayer(null);
-					}
-					return;
+				if (!response.data.ok) {
+					Alert.alert("Imprumutarea cartii", response.data.error, [
+						{
+							text: "OK",
+							onPress: () => console.log("OK Pressed"),
+						},
+					]);
 				}
-				Alert.alert("Imprumutarea cartii", response.data.error, [
-					{ text: "OK", onPress: () => console.log("OK Pressed") },
-				]);
+				setBorrowedBook(true);
+				const state = await TrackPlayer.getState();
+				if (state === TrackPlayer.STATE_PLAYING) {
+					TrackPlayer.stop();
+					TrackPlayer.destroy();
+					setPlayer(null);
+				}
+				setLoadingBarrowButton(false);
 			});
 	};
 
 	const unBarrow = async () => {
+		setLoadingBarrowButton(true);
 		functions()
 			.httpsCallable("unBarrow")({
 				businessBookID: businessBookID,
@@ -126,7 +132,23 @@ export default function BookDetails({ navigation, route }) {
 					TrackPlayer.destroy();
 					setPlayer(null);
 				}
+				setLoadingBarrowButton(false);
 			});
+	};
+
+	const playBook = () => {
+		if (borrowedBook) {
+			if (player && player.book.id === bookInfo.id) {
+				navigation.navigate("Player", {
+					firstInit: false,
+				});
+			} else {
+				navigation.navigate("Player", {
+					firstInit: true,
+				});
+				setPlayer({ ...player, book: bookInfo });
+			}
+		}
 	};
 
 	if (!bookInfo) return <LoadingState />;
@@ -149,25 +171,6 @@ export default function BookDetails({ navigation, route }) {
 					<Text style={{ fontSize: 20 }}>
 						{bookInfo.authors.name}
 					</Text>
-					{borrowedBook && (
-						<IconButton
-							icon={"play-circle-outline"}
-							color={Colors.red500}
-							size={40}
-							onPress={() => {
-								if (player && player.book.id === bookInfo.id) {
-									navigation.navigate("Player", {
-										firstInit: false,
-									});
-								} else {
-									navigation.navigate("Player", {
-										firstInit: true,
-									});
-									setPlayer({ ...player, book: bookInfo });
-								}
-							}}
-						/>
-					)}
 				</View>
 				<View>
 					<Ionicons name={"heart-outline"} size={28} color={"#fff"} />
@@ -180,14 +183,17 @@ export default function BookDetails({ navigation, route }) {
 					justifyContent: "space-between",
 				}}
 			>
-				<View style={styles.demoPlayerContainer}>
+				<TouchableOpacity
+					style={styles.demoPlayerContainer}
+					onPress={playBook}
+				>
 					<Text style={{ color: "#000", marginLeft: 15 }}>
-						Asculta demo...
+						{borrowedBook ? "Asculta cartea" : "Asculta demo"}
 					</Text>
 					<View style={{ right: -5 }}>
 						<AntDesign name="play" size={26} color="#8743FF" />
 					</View>
-				</View>
+				</TouchableOpacity>
 				<TouchableOpacity
 					style={{ marginLeft: 20 }}
 					onPress={() => {
@@ -198,37 +204,43 @@ export default function BookDetails({ navigation, route }) {
 				</TouchableOpacity>
 			</View>
 
-			<View style={{ marginTop: 20 }}>
-				{borrowedBook ? (
-					<TouchableOpacity
-						style={{
-							backgroundColor: "#FE805C",
-							borderRadius: 30,
-							padding: 8,
-							width: 200,
-						}}
-						onPress={unBarrow}
-					>
-						<Text style={{ fontSize: 23, textAlign: "center" }}>
-							Preda
-						</Text>
-					</TouchableOpacity>
-				) : (
-					<TouchableOpacity
-						style={{
-							backgroundColor: "#FE805C",
-							borderRadius: 30,
-							padding: 8,
-							width: 200,
-						}}
-						onPress={borrowBook}
-					>
-						<Text style={{ fontSize: 23, textAlign: "center" }}>
-							Imprumuta
-						</Text>
-					</TouchableOpacity>
-				)}
-			</View>
+			{loadingBarrowButton ? (
+				<View style={{ marginTop: 20 }}>
+					<ActivityIndicator size="small" />
+				</View>
+			) : (
+				<View style={{ marginTop: 20 }}>
+					{borrowedBook ? (
+						<TouchableOpacity
+							style={{
+								backgroundColor: "#FE805C",
+								borderRadius: 30,
+								padding: 8,
+								width: 200,
+							}}
+							onPress={unBarrow}
+						>
+							<Text style={{ fontSize: 23, textAlign: "center" }}>
+								Preda
+							</Text>
+						</TouchableOpacity>
+					) : (
+						<TouchableOpacity
+							style={{
+								backgroundColor: "#FE805C",
+								borderRadius: 30,
+								padding: 8,
+								width: 200,
+							}}
+							onPress={borrowBook}
+						>
+							<Text style={{ fontSize: 23, textAlign: "center" }}>
+								Imprumuta
+							</Text>
+						</TouchableOpacity>
+					)}
+				</View>
+			)}
 
 			<View style={styles.bookDescriptionContainer}>
 				<HTML
