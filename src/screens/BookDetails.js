@@ -170,7 +170,7 @@ export default function BookDetails({ navigation, route }) {
 					)}
 				</View>
 				<View>
-					<Ionicons name={"star-outline"} size={28} color={"#fff"} />
+					<Ionicons name={"heart-outline"} size={28} color={"#fff"} />
 				</View>
 			</View>
 			<View

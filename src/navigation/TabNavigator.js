@@ -111,9 +111,9 @@ export default function MainTabNavigator() {
 				component={SettingsScreen}
 				options={({ route }) => ({
 					tabBarIcon: ({ focused, color, size }) => {
-						let iconName = "star-outline";
+						let iconName = "heart-outline";
 						if (focused) {
-							iconName = "star-sharp";
+							iconName = "heart-sharp";
 						}
 						return (
 							<Ionicons
