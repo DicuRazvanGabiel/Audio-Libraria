@@ -1,40 +1,35 @@
-import React, { useState } from "react";
-import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
-import { Text, Surface } from "react-native-paper";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { ThemeContext } from "../Context/ThemeContext";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet } from "react-native";
+import { Text, Surface, Searchbar } from "react-native-paper";
+import LoadingState from "../components/LoadingState";
 
-export default function Search({ navigation }) {
-	const { isThemeDark } = React.useContext(ThemeContext);
-	const [textValue, setTextValue] = useState("");
+export default function Search({ navigation, route }) {
+	const [isLoading, setIsLoading] = useState(false);
+	const searchQuery = route.params.searchQuery
+		? route.params.searchQuery
+		: "";
+	const [searchText, setSearchText] = useState(searchQuery);
+
+	useEffect(() => {
+		searchBook();
+	}, [route.params.searchQuery]);
+
 	const searchBook = async () => {
-		console.log("search");
+		setIsLoading(true);
+		console.log(searchText);
+		setIsLoading(false);
 	};
-	return (
-		<View style={{ width: "100%", alignItems: "center", margin: 10 }}>
-			<Surface style={styles.container}>
-				<TouchableOpacity onPress={searchBook}>
-					<Ionicons
-						name={"search"}
-						size={30}
-						color={isThemeDark ? "#fff" : "#000"}
-					/>
-				</TouchableOpacity>
 
-				<TextInput
-					style={{
-						fontWeight: "bold",
-						fontSize: 22,
-						marginLeft: 10,
-						flex: 1,
-						color: isThemeDark ? "#fff" : "#000",
-					}}
-					returnKeyType="search"
-					onChangeText={setTextValue}
-					value={textValue}
-					onSubmitEditing={searchBook}
-				/>
-			</Surface>
+	if (isLoading) return <LoadingState />;
+
+	return (
+		<View>
+			<Searchbar
+				style={{ margin: 10 }}
+				onChangeText={(text) => setSearchText(text)}
+				value={searchText}
+				placeholder="Search"
+			/>
 		</View>
 	);
 }

@@ -20,17 +20,19 @@ export default function BusinessAccount({ navigation }) {
 	if (loading) return <LoadingState />;
 
 	return (
-		<ScrollView>
+		<>
 			<SearchBox navigation={navigation} />
-			{businessBooks.docs.map((book) => (
-				<BookListItem
-					navigation={navigation}
-					bookID={book.data().books}
-					businessBookID={book.id}
-					author={book.data().author}
-					key={book.id}
-				/>
-			))}
-		</ScrollView>
+			<ScrollView>
+				{businessBooks.docs.map((book) => (
+					<BookListItem
+						navigation={navigation}
+						bookID={book.data().books}
+						businessBookID={book.id}
+						author={book.data().author}
+						key={book.id}
+					/>
+				))}
+			</ScrollView>
+		</>
 	);
 }

@@ -130,8 +130,8 @@ export default function BookDetails({ navigation, route }) {
 				if (state === TrackPlayer.STATE_PLAYING) {
 					TrackPlayer.stop();
 					TrackPlayer.destroy();
-					setPlayer(null);
 				}
+				setPlayer(null);
 				setLoadingBarrowButton(false);
 			});
 	};
@@ -215,7 +215,7 @@ export default function BookDetails({ navigation, route }) {
 							style={{
 								backgroundColor: "#FE805C",
 								borderRadius: 30,
-								padding: 8,
+								padding: 4,
 								width: 200,
 							}}
 							onPress={unBarrow}
@@ -288,8 +288,8 @@ const styles = StyleSheet.create({
 	},
 	demoPlayerContainer: {
 		backgroundColor: "#fff",
-		width: 200,
-		height: 25,
+		flex: 1,
+		height: 30,
 		borderRadius: 20,
 		justifyContent: "space-between",
 		flexDirection: "row",

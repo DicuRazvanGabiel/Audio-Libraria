@@ -1,32 +1,24 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { Text, Surface } from "react-native-paper";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { ThemeContext } from "../Context/ThemeContext";
+import { StyleSheet, View } from "react-native";
+import { Searchbar } from "react-native-paper";
 
 export default function SearchBox({ navigation }) {
-	const { isThemeDark } = React.useContext(ThemeContext);
+	const [searchQuery, setSearchQuery] = React.useState("");
+	const onChangeSearch = (query) => setSearchQuery(query);
 
 	return (
-		<TouchableOpacity
-			style={{ width: "100%", alignItems: "center", margin: 10 }}
-			onPress={() => {
-				navigation.navigate("Search");
-			}}
-		>
-			<Surface style={styles.container}>
-				<Ionicons
-					name={"search"}
-					size={30}
-					color={isThemeDark ? "#fff" : "#000"}
-				/>
-				<Text
-					style={{ fontWeight: "bold", fontSize: 22, marginLeft: 10 }}
-				>
-					Search
-				</Text>
-			</Surface>
-		</TouchableOpacity>
+		<View style={{ margin: 10 }}>
+			<Searchbar
+				placeholder="Search"
+				onChangeText={onChangeSearch}
+				value={searchQuery}
+				onSubmitEditing={() =>
+					navigation.navigate("Search", {
+						searchQuery,
+					})
+				}
+			/>
+		</View>
 	);
 }
 
