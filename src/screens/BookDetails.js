@@ -45,6 +45,7 @@ export default function BookDetails({ navigation, route }) {
 	const [showModalChapters, setShowModalChapters] = useState(false);
 	const [loadingBarrowButton, setLoadingBarrowButton] = useState(false);
 	const [isFavorite, setIsFavorite] = useState(false);
+	const userID = auth().currentUser.uid;
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -80,6 +81,20 @@ export default function BookDetails({ navigation, route }) {
 			}
 		});
 		book.categories = categories;
+
+		const favoriteBookSnap = await db
+			.collection("users")
+			.doc(userID)
+			.collection("favorite")
+			.doc(bookID)
+			.get();
+
+		if (favoriteBookSnap.exists) {
+			setIsFavorite(true);
+		} else {
+			setIsFavorite(false);
+		}
+
 		setBookInfo(book);
 		setBorrowedBook(
 			await isCurrentBorrowBook(employee, businessBookID, db)
@@ -159,7 +174,7 @@ export default function BookDetails({ navigation, route }) {
 		functions()
 			.httpsCallable("onFavorite")({
 				bookID: bookID,
-				userID: auth().currentUser.uid,
+				userID: userID,
 			})
 			.then(async (response) => {
 				console.log(response);
