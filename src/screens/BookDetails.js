@@ -22,6 +22,7 @@ import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
 import TrackPlayer from "react-native-track-player";
 import { Entypo } from "@expo/vector-icons";
+import auth from "@react-native-firebase/auth";
 
 import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
@@ -43,6 +44,7 @@ export default function BookDetails({ navigation, route }) {
 	const { player, setPlayer } = useContext(PlayerContext);
 	const [showModalChapters, setShowModalChapters] = useState(false);
 	const [loadingBarrowButton, setLoadingBarrowButton] = useState(false);
+	const [isFavorite, setIsFavorite] = useState(false);
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -104,14 +106,16 @@ export default function BookDetails({ navigation, route }) {
 							onPress: () => console.log("OK Pressed"),
 						},
 					]);
+				} else {
+					setBorrowedBook(true);
+					const state = await TrackPlayer.getState();
+					if (state === TrackPlayer.STATE_PLAYING) {
+						TrackPlayer.stop();
+						TrackPlayer.destroy();
+						setPlayer(null);
+					}
 				}
-				setBorrowedBook(true);
-				const state = await TrackPlayer.getState();
-				if (state === TrackPlayer.STATE_PLAYING) {
-					TrackPlayer.stop();
-					TrackPlayer.destroy();
-					setPlayer(null);
-				}
+
 				setLoadingBarrowButton(false);
 			});
 	};
@@ -151,6 +155,18 @@ export default function BookDetails({ navigation, route }) {
 		}
 	};
 
+	const onFavorite = async () => {
+		functions()
+			.httpsCallable("onFavorite")({
+				bookID: bookID,
+				userID: auth().currentUser.uid,
+			})
+			.then(async (response) => {
+				console.log(response);
+				setIsFavorite(response.data.favorite);
+			});
+	};
+
 	if (!bookInfo) return <LoadingState />;
 
 	return (
@@ -172,9 +188,13 @@ export default function BookDetails({ navigation, route }) {
 						{bookInfo.authors.name}
 					</Text>
 				</View>
-				<View>
-					<Ionicons name={"heart-outline"} size={28} color={"#fff"} />
-				</View>
+				<TouchableOpacity onPress={onFavorite}>
+					<Ionicons
+						name={isFavorite ? "heart" : "heart-outline"}
+						size={28}
+						color={"#fff"}
+					/>
+				</TouchableOpacity>
 			</View>
 			<View
 				style={{

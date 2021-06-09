@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { Text, Surface, Searchbar } from "react-native-paper";
 import LoadingState from "../components/LoadingState";
+import functions from "@react-native-firebase/functions";
+import BookListItem from "../components/BookListItem";
 
 export default function Search({ navigation, route }) {
 	const [isLoading, setIsLoading] = useState(false);
@@ -9,6 +11,7 @@ export default function Search({ navigation, route }) {
 		? route.params.searchQuery
 		: "";
 	const [searchText, setSearchText] = useState(searchQuery);
+	const [books, setBooks] = useState([]);
 
 	useEffect(() => {
 		searchBook();
@@ -16,8 +19,22 @@ export default function Search({ navigation, route }) {
 
 	const searchBook = async () => {
 		setIsLoading(true);
-		console.log(searchText);
-		setIsLoading(false);
+		if (searchText !== "" || searchText !== " ") {
+			// functions()
+			// 	.httpsCallable("searchBook")({
+			// 		searchType: "book",
+			// 		text: searchText,
+			// 	})
+			// 	.then(async (response) => {
+			// 		console.log(response.data);
+			// 		setBooks(response.data);
+			// 		setIsLoading(false);
+			// 	});
+			console.log(searchText);
+			setIsLoading(false);
+		} else {
+			setIsLoading(false);
+		}
 	};
 
 	if (isLoading) return <LoadingState />;
@@ -30,6 +47,21 @@ export default function Search({ navigation, route }) {
 				value={searchText}
 				placeholder="Search"
 			/>
+			<ScrollView>
+				{books.lenght > 0 ? (
+					books.map((book) => (
+						<BookListItem
+							navigation={navigation}
+							bookID={book.books}
+							businessBookID={book.id}
+							author={book.author}
+							key={book.id}
+						/>
+					))
+				) : (
+					<View />
+				)}
+			</ScrollView>
 		</View>
 	);
 }

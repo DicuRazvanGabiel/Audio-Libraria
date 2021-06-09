@@ -20,6 +20,8 @@ export default function BookListItem({
 	);
 	if (loading) return <LoadingState />;
 
+	console.log({ bookID, author, businessBookID });
+
 	const calculateTotalDuration = () => {
 		let totalDurarion = 0;
 		book.data().chapters.map((c) => {
