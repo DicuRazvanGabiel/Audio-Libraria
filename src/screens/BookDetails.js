@@ -47,6 +47,8 @@ export default function BookDetails({ navigation, route }) {
 	const [isFavorite, setIsFavorite] = useState(false);
 	const userID = auth().currentUser.uid;
 
+	console.log(businessBookID);
+
 	const fetchBookInfo = async () => {
 		let book = {};
 		const bookSnap = await db.collection("books").doc(bookID).get();
@@ -174,12 +176,57 @@ export default function BookDetails({ navigation, route }) {
 		functions()
 			.httpsCallable("onFavorite")({
 				bookID: bookID,
+				bookInfo: bookInfo,
 				userID: userID,
 			})
 			.then(async (response) => {
 				console.log(response);
 				setIsFavorite(response.data.favorite);
 			});
+	};
+
+	const renderactionButton = () => {
+		if (!businessBookID) return;
+		if (loadingBarrowButton)
+			return (
+				<View style={{ marginTop: 20 }}>
+					<ActivityIndicator size="small" />
+				</View>
+			);
+
+		return (
+			<View style={{ marginTop: 20 }}>
+				{borrowedBook ? (
+					<TouchableOpacity
+						style={{
+							backgroundColor: "#FE805C",
+							borderRadius: 30,
+							padding: 4,
+							width: 200,
+						}}
+						onPress={unBarrow}
+					>
+						<Text style={{ fontSize: 23, textAlign: "center" }}>
+							Preda
+						</Text>
+					</TouchableOpacity>
+				) : (
+					<TouchableOpacity
+						style={{
+							backgroundColor: "#FE805C",
+							borderRadius: 30,
+							padding: 8,
+							width: 200,
+						}}
+						onPress={borrowBook}
+					>
+						<Text style={{ fontSize: 23, textAlign: "center" }}>
+							Imprumuta
+						</Text>
+					</TouchableOpacity>
+				)}
+			</View>
+		);
 	};
 
 	if (!bookInfo) return <LoadingState />;
@@ -239,43 +286,7 @@ export default function BookDetails({ navigation, route }) {
 				</TouchableOpacity>
 			</View>
 
-			{loadingBarrowButton ? (
-				<View style={{ marginTop: 20 }}>
-					<ActivityIndicator size="small" />
-				</View>
-			) : (
-				<View style={{ marginTop: 20 }}>
-					{borrowedBook ? (
-						<TouchableOpacity
-							style={{
-								backgroundColor: "#FE805C",
-								borderRadius: 30,
-								padding: 4,
-								width: 200,
-							}}
-							onPress={unBarrow}
-						>
-							<Text style={{ fontSize: 23, textAlign: "center" }}>
-								Preda
-							</Text>
-						</TouchableOpacity>
-					) : (
-						<TouchableOpacity
-							style={{
-								backgroundColor: "#FE805C",
-								borderRadius: 30,
-								padding: 8,
-								width: 200,
-							}}
-							onPress={borrowBook}
-						>
-							<Text style={{ fontSize: 23, textAlign: "center" }}>
-								Imprumuta
-							</Text>
-						</TouchableOpacity>
-					)}
-				</View>
-			)}
+			{renderactionButton()}
 
 			<View style={styles.bookDescriptionContainer}>
 				<HTML

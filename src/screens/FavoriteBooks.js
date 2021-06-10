@@ -1,41 +1,38 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Text, Divider, useTheme } from "react-native-paper";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
+import FavoriteBookItem from "../components/FavoriteBookItem";
 
-const db = firestore();
-
-export default function FavoriteBooks({ onUpdate }) {
-	const [isLoading, setIsLoading] = useState(true);
-	const [favoriteBooks, setFavoriteBooks] = useState([]);
+export default function FavoriteBooks({ navigation }) {
 	const userID = auth().currentUser.uid;
+	const [snapshotFavorteBooks, loading, error] = useCollection(
+		firestore().collection("users").doc(userID).collection("favorite")
+	);
 
-	useFocusEffect(() => {
-		setUp();
-	});
-
-	const setUp = async () => {
-		const favBooksSnap = await db
-			.collection("users")
-			.doc(userID)
-			.collection("favorite")
-			.get();
-		// let books to fetch
-		favBooksSnap.forEach((book) => {});
-
-		if (favBooksSnap.size > 0) {
-			setIsLoading(false);
-		}
-	};
-
-	if (isLoading) return <LoadingState />;
+	if (loading) return <LoadingState />;
 
 	return (
-		<View>
-			<Text>Favorite</Text>
+		<View style={{ flex: 1, marginTop: 10 }}>
+			{snapshotFavorteBooks.size > 0 ? (
+				<ScrollView>
+					{snapshotFavorteBooks.docs.map((book) => (
+						<FavoriteBookItem
+							key={book.id}
+							book={book}
+							navigation={navigation}
+						/>
+					))}
+				</ScrollView>
+			) : (
+				<View>
+					<Text>Nu ai nici o carte favorita</Text>
+				</View>
+			)}
 		</View>
 	);
 }
