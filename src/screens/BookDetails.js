@@ -4,6 +4,7 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	ScrollView,
+	ActivityIndicator,
 	Alert,
 } from "react-native";
 import {
@@ -21,6 +22,7 @@ import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
 import TrackPlayer from "react-native-track-player";
 import { Entypo } from "@expo/vector-icons";
+import auth from "@react-native-firebase/auth";
 
 import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
@@ -37,11 +39,15 @@ export default function BookDetails({ navigation, route }) {
 	const { employee } = useContext(UserContext);
 	const theme = useTheme();
 	const { bookID, businessBookID } = route.params;
-	const [loading, setLoading] = useState(true);
 	const [bookInfo, setBookInfo] = useState(null);
 	const [borrowedBook, setBorrowedBook] = useState(null);
 	const { player, setPlayer } = useContext(PlayerContext);
 	const [showModalChapters, setShowModalChapters] = useState(false);
+	const [loadingBarrowButton, setLoadingBarrowButton] = useState(false);
+	const [isFavorite, setIsFavorite] = useState(false);
+	const userID = auth().currentUser.uid;
+
+	console.log(businessBookID);
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -77,6 +83,20 @@ export default function BookDetails({ navigation, route }) {
 			}
 		});
 		book.categories = categories;
+
+		const favoriteBookSnap = await db
+			.collection("users")
+			.doc(userID)
+			.collection("favorite")
+			.doc(bookID)
+			.get();
+
+		if (favoriteBookSnap.exists) {
+			setIsFavorite(true);
+		} else {
+			setIsFavorite(false);
+		}
+
 		setBookInfo(book);
 		setBorrowedBook(
 			await isCurrentBorrowBook(employee, businessBookID, db)
@@ -88,6 +108,7 @@ export default function BookDetails({ navigation, route }) {
 	}, [route.params]);
 
 	const borrowBook = async () => {
+		setLoadingBarrowButton(true);
 		functions()
 			.httpsCallable("barrowBook")({
 				businessBookID: businessBookID,
@@ -95,7 +116,14 @@ export default function BookDetails({ navigation, route }) {
 				employeeID: employee.employeeID,
 			})
 			.then(async (response) => {
-				if (response.data.ok) {
+				if (!response.data.ok) {
+					Alert.alert("Imprumutarea cartii", response.data.error, [
+						{
+							text: "OK",
+							onPress: () => console.log("OK Pressed"),
+						},
+					]);
+				} else {
 					setBorrowedBook(true);
 					const state = await TrackPlayer.getState();
 					if (state === TrackPlayer.STATE_PLAYING) {
@@ -103,15 +131,14 @@ export default function BookDetails({ navigation, route }) {
 						TrackPlayer.destroy();
 						setPlayer(null);
 					}
-					return;
 				}
-				Alert.alert("Imprumutarea cartii", response.data.error, [
-					{ text: "OK", onPress: () => console.log("OK Pressed") },
-				]);
+
+				setLoadingBarrowButton(false);
 			});
 	};
 
 	const unBarrow = async () => {
+		setLoadingBarrowButton(true);
 		functions()
 			.httpsCallable("unBarrow")({
 				businessBookID: businessBookID,
@@ -124,87 +151,57 @@ export default function BookDetails({ navigation, route }) {
 				if (state === TrackPlayer.STATE_PLAYING) {
 					TrackPlayer.stop();
 					TrackPlayer.destroy();
-					setPlayer(null);
 				}
+				setPlayer(null);
+				setLoadingBarrowButton(false);
 			});
 	};
 
-	if (!bookInfo) return <LoadingState />;
+	const playBook = () => {
+		if (borrowedBook) {
+			if (player && player.book.id === bookInfo.id) {
+				navigation.navigate("Player", {
+					firstInit: false,
+				});
+			} else {
+				navigation.navigate("Player", {
+					firstInit: true,
+				});
+				setPlayer({ ...player, book: bookInfo });
+			}
+		}
+	};
 
-	return (
-		<ScrollView style={styles.container}>
-			<View style={styles.bookImageContainer}>
-				<ImageBook imageUrl={bookInfo.image.src} />
-				<View
-					style={{
-						flex: 1,
-						justifyContent: "flex-end",
-						margin: 10,
-					}}
-				>
-					<Text style={{ fontSize: 30, marginBottom: 5 }}>
-						{bookInfo.title}
-					</Text>
-					<Divider />
-					<Text style={{ fontSize: 20 }}>
-						{bookInfo.authors.name}
-					</Text>
-					{borrowedBook && (
-						<IconButton
-							icon={"play-circle-outline"}
-							color={Colors.red500}
-							size={40}
-							onPress={() => {
-								if (player && player.book.id === bookInfo.id) {
-									navigation.navigate("Player", {
-										firstInit: false,
-									});
-								} else {
-									navigation.navigate("Player", {
-										firstInit: true,
-									});
-									setPlayer({ ...player, book: bookInfo });
-								}
-							}}
-						/>
-					)}
-				</View>
-				<View>
-					<Ionicons name={"star-outline"} size={28} color={"#fff"} />
-				</View>
-			</View>
-			<View
-				style={{
-					width: "100%",
-					flexDirection: "row",
-					justifyContent: "space-between",
-				}}
-			>
-				<View style={styles.demoPlayerContainer}>
-					<Text style={{ color: "#000", marginLeft: 15 }}>
-						Asculta demo...
-					</Text>
-					<View style={{ right: -5 }}>
-						<AntDesign name="play" size={26} color="#8743FF" />
-					</View>
-				</View>
-				<TouchableOpacity
-					style={{ marginLeft: 20 }}
-					onPress={() => {
-						setShowModalChapters(true);
-					}}
-				>
-					<Entypo name="list" size={30} color="red" />
-				</TouchableOpacity>
-			</View>
+	const onFavorite = async () => {
+		functions()
+			.httpsCallable("onFavorite")({
+				bookID: bookID,
+				bookInfo: bookInfo,
+				userID: userID,
+			})
+			.then(async (response) => {
+				console.log(response);
+				setIsFavorite(response.data.favorite);
+			});
+	};
 
+	const renderactionButton = () => {
+		if (!businessBookID) return;
+		if (loadingBarrowButton)
+			return (
+				<View style={{ marginTop: 20 }}>
+					<ActivityIndicator size="small" />
+				</View>
+			);
+
+		return (
 			<View style={{ marginTop: 20 }}>
 				{borrowedBook ? (
 					<TouchableOpacity
 						style={{
 							backgroundColor: "#FE805C",
 							borderRadius: 30,
-							padding: 8,
+							padding: 4,
 							width: 200,
 						}}
 						onPress={unBarrow}
@@ -229,6 +226,67 @@ export default function BookDetails({ navigation, route }) {
 					</TouchableOpacity>
 				)}
 			</View>
+		);
+	};
+
+	if (!bookInfo) return <LoadingState />;
+
+	return (
+		<ScrollView style={styles.container}>
+			<View style={styles.bookImageContainer}>
+				<ImageBook imageUrl={bookInfo.image.src} />
+				<View
+					style={{
+						flex: 1,
+						justifyContent: "flex-end",
+						margin: 10,
+					}}
+				>
+					<Text style={{ fontSize: 30, marginBottom: 5 }}>
+						{bookInfo.title}
+					</Text>
+					<Divider />
+					<Text style={{ fontSize: 20 }}>
+						{bookInfo.authors.name}
+					</Text>
+				</View>
+				<TouchableOpacity onPress={onFavorite}>
+					<Ionicons
+						name={isFavorite ? "heart" : "heart-outline"}
+						size={28}
+						color={"#fff"}
+					/>
+				</TouchableOpacity>
+			</View>
+			<View
+				style={{
+					width: "100%",
+					flexDirection: "row",
+					justifyContent: "space-between",
+				}}
+			>
+				<TouchableOpacity
+					style={styles.demoPlayerContainer}
+					onPress={playBook}
+				>
+					<Text style={{ color: "#000", marginLeft: 15 }}>
+						{borrowedBook ? "Asculta cartea" : "Asculta demo"}
+					</Text>
+					<View style={{ right: -5 }}>
+						<AntDesign name="play" size={26} color="#8743FF" />
+					</View>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={{ marginLeft: 20 }}
+					onPress={() => {
+						setShowModalChapters(true);
+					}}
+				>
+					<Entypo name="list" size={30} color="red" />
+				</TouchableOpacity>
+			</View>
+
+			{renderactionButton()}
 
 			<View style={styles.bookDescriptionContainer}>
 				<HTML
@@ -276,8 +334,8 @@ const styles = StyleSheet.create({
 	},
 	demoPlayerContainer: {
 		backgroundColor: "#fff",
-		width: 200,
-		height: 25,
+		flex: 1,
+		height: 30,
 		borderRadius: 20,
 		justifyContent: "space-between",
 		flexDirection: "row",

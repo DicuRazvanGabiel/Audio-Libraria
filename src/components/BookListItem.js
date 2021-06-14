@@ -20,6 +20,8 @@ export default function BookListItem({
 	);
 	if (loading) return <LoadingState />;
 
+	console.log({ bookID, author, businessBookID });
+
 	const calculateTotalDuration = () => {
 		let totalDurarion = 0;
 		book.data().chapters.map((c) => {
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
 		marginHorizontal: 10,
 		borderRadius: 10,
 		flexDirection: "row",
-		marginVertical: 5,
+		marginBottom: 10,
 	},
 	image: {
 		height: 130,

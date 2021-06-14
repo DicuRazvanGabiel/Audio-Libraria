@@ -7,14 +7,13 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import functions from "@react-native-firebase/functions";
 import auth from "@react-native-firebase/auth";
 import LoadingState from "../components/LoadingState";
+import TabBarPlayer from "../components/customeTabBar/TabBarPlayer";
 import { UserContext } from "../Context/UserContext";
 
-import HomeNavigator from "./HomeNavigator";
-import SettingsScreen from "../screens/Settings";
 import HomeScreen from "../screens/Home";
 import BusinessAccount from "../screens/BusinessAccount";
 import MyBooks from "../screens/MyBooks";
-import TabBarPlayer from "../components/customeTabBar/TabBarPlayer";
+import FavoriteBooks from "../screens/FavoriteBooks";
 
 export default function MainTabNavigator() {
 	const { Navigator, Screen } = createBottomTabNavigator();
@@ -108,12 +107,12 @@ export default function MainTabNavigator() {
 			/>
 			<Screen
 				name="Wishlist"
-				component={SettingsScreen}
+				component={FavoriteBooks}
 				options={({ route }) => ({
 					tabBarIcon: ({ focused, color, size }) => {
-						let iconName = "star-outline";
+						let iconName = "heart-outline";
 						if (focused) {
-							iconName = "star-sharp";
+							iconName = "heart-sharp";
 						}
 						return (
 							<Ionicons
