@@ -5,7 +5,8 @@ import { Entypo } from "@expo/vector-icons";
 
 import CategoryItem from "./CategoryItem";
 
-export default function CategoryGrid() {
+export default function CategoryGrid({ categories }) {
+	console.log(categories);
 	return (
 		<View>
 			<Text style={{ margin: 10, marginLeft: 40 }}>Categorii</Text>
@@ -15,11 +16,13 @@ export default function CategoryGrid() {
 				</TouchableOpacity>
 
 				<View style={styles.categoryContainer}>
-					<CategoryItem />
-					<CategoryItem />
-					<CategoryItem />
-					<CategoryItem />
-					<CategoryItem />
+					{categories.map((cat) => (
+						<CategoryItem
+							key={cat.id}
+							imageUrl={cat.image.src}
+							name={cat.name}
+						/>
+					))}
 				</View>
 
 				<TouchableOpacity>

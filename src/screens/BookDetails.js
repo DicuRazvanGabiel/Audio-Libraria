@@ -7,21 +7,13 @@ import {
 	ActivityIndicator,
 	Alert,
 } from "react-native";
-import {
-	Text,
-	Divider,
-	useTheme,
-	IconButton,
-	Colors,
-} from "react-native-paper";
+import { Text, Divider, useTheme } from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { AntDesign } from "@expo/vector-icons";
 import HTML from "react-native-render-html";
 import { Rating } from "react-native-ratings";
 import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
 import TrackPlayer from "react-native-track-player";
-import { Entypo } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 
 import { UserContext } from "../Context/UserContext";
@@ -30,59 +22,43 @@ import { isCurrentBorrowBook } from "../Utils";
 
 import ImageBook from "../components/ImageBook";
 import LoadingState from "../components/LoadingState";
-import ModalChaptersContent from "../components/ModalChaptersContent";
-import Modal from "react-native-modal";
+import PlayBookPlayDemoButton from "../components/PlayBookPlayDemoButton";
 
 const db = firestore();
 
 export default function BookDetails({ navigation, route }) {
 	const { employee } = useContext(UserContext);
 	const theme = useTheme();
-	const { bookID, businessBookID } = route.params;
+	const { bookID } = route.params;
+	const [businessBookID, setBusinessBookID] = useState(
+		route.params.businessBookID
+	);
 	const [bookInfo, setBookInfo] = useState(null);
 	const [borrowedBook, setBorrowedBook] = useState(null);
 	const { player, setPlayer } = useContext(PlayerContext);
-	const [showModalChapters, setShowModalChapters] = useState(false);
 	const [loadingBarrowButton, setLoadingBarrowButton] = useState(false);
 	const [isFavorite, setIsFavorite] = useState(false);
 	const userID = auth().currentUser.uid;
 
-	console.log(businessBookID);
-
 	const fetchBookInfo = async () => {
 		let book = {};
-		const bookSnap = await db.collection("books").doc(bookID).get();
-
-		const authorSnap = await db
-			.collection("authors")
-			.doc(bookSnap.data().authors)
-			.get();
-
-		const narratorSnap = await db
-			.collection("narrator")
-			.doc(bookSnap.data().narrator)
-			.get();
-
-		const publisherSnap = await db
-			.collection("publishing")
-			.doc(bookSnap.data().publishing)
-			.get();
-
-		const categoriesSnap = await db.collection("categories").get();
+		const bookSnap = await db.collection("books_info").doc(bookID).get();
 		book = {
 			id: bookSnap.id,
 			...bookSnap.data(),
-			authors: authorSnap.data(),
-			narrator: narratorSnap.data(),
-			publishing: publisherSnap.data(),
 		};
-		let categories = [];
-		categoriesSnap.forEach((cat) => {
-			if (book.categories.includes(cat.id)) {
-				categories.push({ ...cat.data() });
+
+		if (!businessBookID) {
+			const bussinessBookSnap = await db
+				.collection("businesses")
+				.doc(employee.businessID)
+				.collection("businessBooks")
+				.where("books", "==", bookID)
+				.get();
+			if (bussinessBookSnap.size === 1) {
+				setBusinessBookID(bussinessBookSnap.docs[0].id);
 			}
-		});
-		book.categories = categories;
+		}
 
 		const favoriteBookSnap = await db
 			.collection("users")
@@ -159,7 +135,7 @@ export default function BookDetails({ navigation, route }) {
 
 	const playBook = () => {
 		if (borrowedBook) {
-			if (player && player.book.id === bookInfo.id) {
+			if (player && player.bookInfo.id === bookInfo.id) {
 				navigation.navigate("Player", {
 					firstInit: false,
 				});
@@ -167,8 +143,40 @@ export default function BookDetails({ navigation, route }) {
 				navigation.navigate("Player", {
 					firstInit: true,
 				});
-				setPlayer({ ...player, book: bookInfo });
+				setPlayer({ ...player, bookInfo: bookInfo });
 			}
+		} else {
+			playDemoFunction();
+		}
+	};
+
+	const playDemoFunction = async () => {
+		const bookSnap = await db.collection("books").doc(bookID).get();
+		const demoURL = bookSnap.data().chapters[1]
+			? bookSnap.data().chapters[1].file.src
+			: bookSnap.data().chapters[0].file.src;
+		const state = await TrackPlayer.getState();
+
+		if (state === TrackPlayer.STATE_PLAYING) {
+			TrackPlayer.stop();
+			TrackPlayer.destroy();
+		} else {
+			TrackPlayer.stop();
+			TrackPlayer.destroy();
+			await TrackPlayer.setupPlayer();
+			await TrackPlayer.add([
+				{
+					id: "Demo",
+					url: demoURL,
+					title: bookSnap.data().title,
+					album: bookSnap.data().title,
+					artist: bookInfo.author,
+					duration: 60,
+					artwork: bookInfo.imageSrc,
+				},
+			]);
+
+			TrackPlayer.play();
 		}
 	};
 
@@ -234,7 +242,7 @@ export default function BookDetails({ navigation, route }) {
 	return (
 		<ScrollView style={styles.container}>
 			<View style={styles.bookImageContainer}>
-				<ImageBook imageUrl={bookInfo.image.src} />
+				<ImageBook imageUrl={bookInfo.imageSrc} />
 				<View
 					style={{
 						flex: 1,
@@ -246,14 +254,12 @@ export default function BookDetails({ navigation, route }) {
 						{bookInfo.title}
 					</Text>
 					<Divider />
-					<Text style={{ fontSize: 20 }}>
-						{bookInfo.authors.name}
-					</Text>
+					<Text style={{ fontSize: 20 }}>{bookInfo.author}</Text>
 				</View>
 				<TouchableOpacity onPress={onFavorite}>
 					<Ionicons
 						name={isFavorite ? "heart" : "heart-outline"}
-						size={28}
+						size={29}
 						color={"#fff"}
 					/>
 				</TouchableOpacity>
@@ -265,25 +271,10 @@ export default function BookDetails({ navigation, route }) {
 					justifyContent: "space-between",
 				}}
 			>
-				<TouchableOpacity
-					style={styles.demoPlayerContainer}
-					onPress={playBook}
-				>
-					<Text style={{ color: "#000", marginLeft: 15 }}>
-						{borrowedBook ? "Asculta cartea" : "Asculta demo"}
-					</Text>
-					<View style={{ right: -5 }}>
-						<AntDesign name="play" size={26} color="#8743FF" />
-					</View>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={{ marginLeft: 20 }}
-					onPress={() => {
-						setShowModalChapters(true);
-					}}
-				>
-					<Entypo name="list" size={30} color="red" />
-				</TouchableOpacity>
+				<PlayBookPlayDemoButton
+					borrowedBook={borrowedBook}
+					playBook={playBook}
+				/>
 			</View>
 
 			{renderactionButton()}
@@ -304,21 +295,6 @@ export default function BookDetails({ navigation, route }) {
 					onFinishRating={this.ratingCompleted}
 				/>
 			</View>
-			<Modal
-				isVisible={showModalChapters}
-				onRequestClose={() => {
-					setShowModalChapters(false);
-				}}
-				swipeDirection="down"
-				onSwipeComplete={() => {
-					setShowModalChapters(false);
-				}}
-			>
-				<ModalChaptersContent
-					chapters={bookInfo.chapters}
-					currentChapter={null}
-				/>
-			</Modal>
 		</ScrollView>
 	);
 }
@@ -341,6 +317,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		marginTop: 5,
+		marginRight: 30,
 	},
 	bookDescriptionContainer: {
 		backgroundColor: "#fff",

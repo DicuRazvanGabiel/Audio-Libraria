@@ -10,7 +10,7 @@ export default function ModalChaptersContent({
 	onChangeChapter,
 }) {
 	const theme = useTheme();
-
+	console.log({ chapters });
 	const ViewTouchable = onChangeChapter ? TouchableOpacity : View;
 
 	return (

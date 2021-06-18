@@ -8,28 +8,12 @@ import LoadingState from "../components/LoadingState";
 
 import { convertMinutesHours } from "../Utils";
 
-export default function BookListItem({
-	navigation,
-	bookID,
-	author,
-	businessBookID,
-}) {
+export default function BookListItem({ navigation, bookID, businessBookID }) {
 	const theme = useTheme();
 	const [book, loading, error] = useDocument(
-		firestore().collection("books").doc(bookID)
+		firestore().collection("books_info").doc(bookID)
 	);
 	if (loading) return <LoadingState />;
-
-	console.log({ bookID, author, businessBookID });
-
-	const calculateTotalDuration = () => {
-		let totalDurarion = 0;
-		book.data().chapters.map((c) => {
-			totalDurarion += c.duration;
-		});
-
-		return convertMinutesHours(totalDurarion);
-	};
 
 	return (
 		<TouchableOpacity
@@ -43,7 +27,7 @@ export default function BookListItem({
 			<Surface style={styles.surface}>
 				<Image
 					source={{
-						uri: book.data().image.src,
+						uri: book.data().imageSrc,
 					}}
 					style={styles.image}
 				/>
@@ -64,10 +48,14 @@ export default function BookListItem({
 						>
 							{book.data().title}
 						</Text>
-						<Text style={{ fontSize: 18 }}>{author}</Text>
+						<Text style={{ fontSize: 18 }}>
+							{book.data().author}
+						</Text>
 					</View>
 
-					<Text>{calculateTotalDuration()}</Text>
+					<Text>
+						{convertMinutesHours(book.data().totalDurarion)}
+					</Text>
 
 					<Rating
 						type="custom"

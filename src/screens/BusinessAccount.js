@@ -28,7 +28,6 @@ export default function BusinessAccount({ navigation }) {
 						navigation={navigation}
 						bookID={book.data().books}
 						businessBookID={book.id}
-						author={book.data().author}
 						key={book.id}
 					/>
 				))}

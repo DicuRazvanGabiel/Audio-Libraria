@@ -43,8 +43,8 @@ export default function App() {
 	// Use a local emulator in development
 	if (!Constants.isDevice) {
 		// If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
-		functions().useFunctionsEmulator("http://localhost:5001");
-		console.log("Setup to emulators");
+		// functions().useFunctionsEmulator("http://localhost:5001");
+		// console.log("Setup to emulators");
 	}
 
 	return (

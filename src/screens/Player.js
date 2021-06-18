@@ -3,12 +3,12 @@ import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import functions from "@react-native-firebase/functions";
 import TrackPlayer from "react-native-track-player";
 import { IconButton, Colors, Text } from "react-native-paper";
 import PlayerSlider from "./../components/PlayerSlider";
 import { Entypo } from "@expo/vector-icons";
 import ModalChaptersContent from "../components/ModalChaptersContent";
+import ModalBookmarksContent from "../components/ModalBookmarksContent";
 import Modal from "react-native-modal";
 import BackgroundTimer from "react-native-background-timer";
 
@@ -22,9 +22,10 @@ export default function Player({ route }) {
 	const [playerState, setPlayerState] = useState("play");
 	const [chapter, setChapter] = useState("");
 	const [showChaptersModal, setShowChaptersModal] = useState(false);
+	const [showBookmarksModal, setShowBookmarksModal] = useState(false);
 	const { player, setPlayer } = useContext(PlayerContext);
 	const firstInit = route.params ? route.params.firstInit : false;
-	const book = player.book;
+	const bookInfo = player.bookInfo;
 
 	const setUp = async () => {
 		BackgroundTimer.stopBackgroundTimer();
@@ -44,6 +45,11 @@ export default function Player({ route }) {
 				TrackPlayer.stop();
 				TrackPlayer.destroy();
 			}
+			const bookSnap = await db
+				.collection("books")
+				.doc(bookInfo.id)
+				.get();
+			const book = bookSnap.data();
 			await TrackPlayer.setupPlayer();
 
 			let trackArray = [];
@@ -52,10 +58,10 @@ export default function Player({ route }) {
 					id: c.name,
 					url: c.file.src,
 					title: c.name,
-					album: book.title,
-					artist: book.authors.name,
+					album: bookInfo.title,
+					artist: bookInfo.author,
 					duration: c.duration,
-					artwork: book.image.src,
+					artwork: bookInfo.imageSrc,
 				});
 			});
 			await TrackPlayer.add(trackArray);
@@ -64,7 +70,7 @@ export default function Player({ route }) {
 				.collection("users")
 				.doc(auth().currentUser.uid)
 				.collection("savedBooksPosition")
-				.doc(book.id)
+				.doc(bookInfo.id)
 				.get();
 
 			let playingChapter = "";
@@ -98,7 +104,7 @@ export default function Player({ route }) {
 				const track = await TrackPlayer.getCurrentTrack();
 				saveUserLastPlay(
 					auth().currentUser.uid,
-					book.id,
+					bookInfo.id,
 					track,
 					positionSeconds,
 					db
@@ -120,7 +126,7 @@ export default function Player({ route }) {
 					const track = await TrackPlayer.getCurrentTrack();
 					await saveUserLastPlay(
 						auth().currentUser.uid,
-						book.id,
+						bookInfo.id,
 						track,
 						positionSeconds,
 						db
@@ -142,7 +148,7 @@ export default function Player({ route }) {
 			listenerTrackChange.remove();
 			listenerStateChange.remove();
 		};
-	}, [player.book.id]);
+	}, [player.bookInfo.id]);
 
 	const handlePlayPauseButton = () => {
 		if (playerState === TrackPlayer.STATE_PLAYING) {
@@ -176,7 +182,21 @@ export default function Player({ route }) {
 
 	return (
 		<View style={styles.container}>
-			<View style={{ width: "100%", alignItems: "flex-end" }}>
+			<View
+				style={{
+					width: "100%",
+					flexDirection: "row",
+					justifyContent: "space-between",
+				}}
+			>
+				<TouchableOpacity
+					style={{ marginLeft: 20 }}
+					onPress={() => {
+						setShowBookmarksModal(true);
+					}}
+				>
+					<Entypo name="bookmark" size={24} color="red" />
+				</TouchableOpacity>
 				<TouchableOpacity
 					style={{ marginLeft: 20 }}
 					onPress={() => {
@@ -189,7 +209,7 @@ export default function Player({ route }) {
 
 			<Image
 				source={{
-					uri: book.image.src,
+					uri: bookInfo.imageSrc,
 				}}
 				style={{
 					height: 350,
@@ -215,7 +235,7 @@ export default function Player({ route }) {
 							textAlign: "center",
 						}}
 					>
-						{book.title}
+						{bookInfo.title}
 					</Text>
 					<Text
 						style={{
@@ -283,7 +303,7 @@ export default function Player({ route }) {
 				}}
 			>
 				<ModalChaptersContent
-					chapters={book.chapters}
+					chapters={bookInfo.chapters}
 					currentChapter={chapter}
 					onChangeChapter={async (id) => {
 						await TrackPlayer.skip(id);
@@ -291,6 +311,23 @@ export default function Player({ route }) {
 							TrackPlayer.play();
 						}
 					}}
+				/>
+			</Modal>
+
+			<Modal
+				isVisible={showBookmarksModal}
+				onRequestClose={() => {
+					setShowBookmarksModal(false);
+				}}
+				swipeDirection="down"
+				onSwipeComplete={() => {
+					setShowBookmarksModal(false);
+				}}
+			>
+				<ModalBookmarksContent
+					bookTitle={bookInfo.title}
+					bookID={bookInfo.id}
+					chapter={chapter}
 				/>
 			</Modal>
 		</View>
