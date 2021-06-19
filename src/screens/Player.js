@@ -4,12 +4,19 @@ import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import TrackPlayer from "react-native-track-player";
-import { IconButton, Colors, Text } from "react-native-paper";
+import {
+	IconButton,
+	Colors,
+	Text,
+	Modal,
+	Portal,
+	useTheme,
+} from "react-native-paper";
 import PlayerSlider from "./../components/PlayerSlider";
 import { Entypo } from "@expo/vector-icons";
 import ModalChaptersContent from "../components/ModalChaptersContent";
 import ModalBookmarksContent from "../components/ModalBookmarksContent";
-import Modal from "react-native-modal";
+// import Modal from "react-native-modal";
 import BackgroundTimer from "react-native-background-timer";
 
 import { saveUserLastPlay } from "../Utils";
@@ -26,6 +33,7 @@ export default function Player({ route }) {
 	const { player, setPlayer } = useContext(PlayerContext);
 	const firstInit = route.params ? route.params.firstInit : false;
 	const bookInfo = player.bookInfo;
+	const theme = useTheme();
 
 	const setUp = async () => {
 		BackgroundTimer.stopBackgroundTimer();
@@ -292,44 +300,56 @@ export default function Player({ route }) {
 				/>
 			</View>
 
-			<Modal
-				isVisible={showChaptersModal}
-				onRequestClose={() => {
-					setShowChaptersModal(false);
-				}}
-				swipeDirection="down"
-				onSwipeComplete={() => {
-					setShowChaptersModal(false);
-				}}
-			>
-				<ModalChaptersContent
-					chapters={bookInfo.chapters}
-					currentChapter={chapter}
-					onChangeChapter={async (id) => {
-						await TrackPlayer.skip(id);
-						if (playerState != TrackPlayer.STATE_PLAYING) {
-							TrackPlayer.play();
-						}
+			<Portal>
+				<Modal
+					visible={showChaptersModal}
+					onDismiss={() => {
+						setShowChaptersModal(false);
 					}}
-				/>
-			</Modal>
+					contentContainerStyle={{
+						backgroundColor: theme.colors.surface,
+						height: "70%",
+						margin: 10,
+						width: "100%",
+						marginBottom: 20,
+						borderRadius: 20,
+						padding: 20,
+					}}
+				>
+					<ModalChaptersContent
+						chapters={bookInfo.chapters}
+						currentChapter={chapter}
+						onChangeChapter={async (id) => {
+							await TrackPlayer.skip(id);
+							if (playerState != TrackPlayer.STATE_PLAYING) {
+								TrackPlayer.play();
+							}
+						}}
+					/>
+				</Modal>
 
-			<Modal
-				isVisible={showBookmarksModal}
-				onRequestClose={() => {
-					setShowBookmarksModal(false);
-				}}
-				swipeDirection="down"
-				onSwipeComplete={() => {
-					setShowBookmarksModal(false);
-				}}
-			>
-				<ModalBookmarksContent
-					bookTitle={bookInfo.title}
-					bookID={bookInfo.id}
-					chapter={chapter}
-				/>
-			</Modal>
+				<Modal
+					visible={showBookmarksModal}
+					onDismiss={() => {
+						setShowBookmarksModal(false);
+					}}
+					contentContainerStyle={{
+						backgroundColor: theme.colors.surface,
+						height: "70%",
+						margin: 10,
+						width: "100%",
+						marginBottom: 20,
+						borderRadius: 20,
+						padding: 20,
+					}}
+				>
+					<ModalBookmarksContent
+						bookTitle={bookInfo.title}
+						bookID={bookInfo.id}
+						chapter={chapter}
+					/>
+				</Modal>
+			</Portal>
 		</View>
 	);
 }
