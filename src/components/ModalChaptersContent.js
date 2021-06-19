@@ -1,6 +1,6 @@
 import React from "react";
 import { View, TouchableOpacity, ScrollView } from "react-native";
-import { Text, Divider, useTheme } from "react-native-paper";
+import { Text, Divider, useTheme, Title, Subheading } from "react-native-paper";
 
 import { convertMinutesHours } from "../Utils";
 
@@ -10,14 +10,13 @@ export default function ModalChaptersContent({
 	onChangeChapter,
 }) {
 	const theme = useTheme();
-
+	console.log({ chapters });
 	const ViewTouchable = onChangeChapter ? TouchableOpacity : View;
 
 	return (
 		<View
 			style={{
 				flex: 1,
-				justifyContent: "center",
 				alignItems: "center",
 			}}
 		>
@@ -53,7 +52,7 @@ export default function ModalChaptersContent({
 										flexDirection: "row",
 									}}
 								>
-									<Text
+									<Title
 										style={[
 											{ fontSize: 20, flex: 2 },
 											currentChapter === c.name && {
@@ -62,9 +61,9 @@ export default function ModalChaptersContent({
 										]}
 									>
 										{c.name}
-									</Text>
+									</Title>
 
-									<Text
+									<Subheading
 										style={[
 											{ textAlign: "right", flex: 1 },
 											currentChapter === c.name && {
@@ -73,7 +72,7 @@ export default function ModalChaptersContent({
 										]}
 									>
 										{convertMinutesHours(c.duration)}
-									</Text>
+									</Subheading>
 								</View>
 							</View>
 

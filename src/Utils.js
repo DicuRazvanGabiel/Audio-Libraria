@@ -1,3 +1,7 @@
+import firestore from "@react-native-firebase/firestore";
+
+//TODO: to remove all db passes
+const db = firestore();
 //check of employee has a borrowed book and return it, else return null
 export const checkBorrowBookForEmployee = async (employee, db) => {
 	let bookID = null;

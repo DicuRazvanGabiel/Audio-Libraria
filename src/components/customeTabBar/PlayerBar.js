@@ -44,7 +44,7 @@ export default function PlayerBar({ navigation }) {
 			>
 				<Image
 					source={{
-						uri: player.book.image.src,
+						uri: player.bookInfo.imageSrc,
 					}}
 					style={{
 						height: 70,
@@ -53,7 +53,7 @@ export default function PlayerBar({ navigation }) {
 					}}
 				/>
 				<View style={{ margin: 5 }}>
-					<Text>{player.book.title}</Text>
+					<Text>{player.bookInfo.title}</Text>
 					<Text>{player.chapter}</Text>
 				</View>
 			</TouchableOpacity>

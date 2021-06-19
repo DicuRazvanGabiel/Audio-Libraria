@@ -11,17 +11,17 @@ import BookSection from "../components/homeScreenComponents/BooksSection";
 export default function Home({ navigation }) {
 	const [data, setData] = useState(null);
 
-	const fetchBooksData = async () => {
-		const booksSnap = await firestore().collection("books").get();
-		const books = [];
-		booksSnap.forEach((book) =>
-			books.push({ id: book.id, ...book.data() })
+	const fetchData = async () => {
+		const categoriesSnap = await firestore().collection("categories").get();
+		const categories = [];
+		categoriesSnap.forEach((cat) =>
+			categories.push({ id: cat.id, ...cat.data() })
 		);
-		setData(books);
+		setData({ categories });
 	};
 
 	useEffect(() => {
-		fetchBooksData();
+		fetchData();
 	}, [firestore]);
 
 	const renderBook = (book) => {
@@ -52,7 +52,7 @@ export default function Home({ navigation }) {
 	}
 	return (
 		<ScrollView>
-			<CategoryGrid />
+			<CategoryGrid categories={data.categories} />
 			<BookSection
 				title="Cele mai populare carti:"
 				navigation={navigation}
