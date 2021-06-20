@@ -30,12 +30,8 @@ import {
 function SignIn({ navigation }) {
 	const { control, handleSubmit, errors } = useForm();
 
-	const [
-		signInWithEmailAndPassword,
-		user,
-		loading,
-		error,
-	] = useSignInWithEmailAndPassword(auth());
+	const [signInWithEmailAndPassword, user, loading, error] =
+		useSignInWithEmailAndPassword(auth());
 
 	const onSubmit = (data) => {
 		signInWithEmailAndPassword(data.email, data.password);
@@ -129,17 +125,6 @@ function SignIn({ navigation }) {
 						alignItems: "center",
 					}}
 				>
-					<Text
-						style={{
-							fontSize: 40,
-							fontWeight: "bold",
-							margin: 50,
-							marginTop: 70,
-						}}
-					>
-						Login
-					</Text>
-
 					<View style={{ width: "90%" }}>
 						<Controller
 							control={control}
@@ -188,20 +173,34 @@ function SignIn({ navigation }) {
 							onPress={handleSubmit(onSubmit)}
 							style={{ marginTop: 20 }}
 						>
-							Sign In
+							Conectare
 						</Button>
 						<View
 							style={{
-								marginTop: 15,
+								marginVertical: 15,
 								width: "100%",
-								alignItems: "flex-end",
+								alignItems: "space-between",
+								flexDirection: "row",
 							}}
 						>
-							<Button
-								onPress={() => navigation.navigate("Sign Up")}
-							>
-								Register
-							</Button>
+							<View style={{ width: "50%" }}>
+								<Button
+									onPress={() =>
+										navigation.navigate("Resetare parola")
+									}
+								>
+									Ai uitat parola?
+								</Button>
+							</View>
+							<View style={{ width: "50%" }}>
+								<Button
+									onPress={() =>
+										navigation.navigate("Creare cont")
+									}
+								>
+									Creare cont
+								</Button>
+							</View>
 						</View>
 
 						<View
