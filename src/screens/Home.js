@@ -52,7 +52,10 @@ export default function Home({ navigation }) {
 	}
 	return (
 		<ScrollView>
-			<CategoryGrid categories={data.categories} />
+			<CategoryGrid
+				categories={data.categories}
+				navigation={navigation}
+			/>
 			<BookSection
 				title="Cele mai populare carti:"
 				navigation={navigation}

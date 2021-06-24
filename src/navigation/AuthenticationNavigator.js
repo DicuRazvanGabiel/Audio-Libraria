@@ -11,6 +11,7 @@ import SettingsScreen from "../screens/Settings";
 import BookDetailsScreen from "../screens/BookDetails";
 import SearchScreen from "../screens/Search";
 import ResetPassword from "../screens/auth/ResetPassword";
+import CategoeyScreen from "../screens/CategoryScreen";
 
 import CustomNavigationBar from "../components/CustomNavigationBar";
 
@@ -38,6 +39,7 @@ export default function AuthenticationNavigator() {
 						component={BookDetailsScreen}
 					/>
 					<Stack.Screen name="Search" component={SearchScreen} />
+					<Stack.Screen name="Categorii" component={CategoeyScreen} />
 				</>
 			) : (
 				<>
