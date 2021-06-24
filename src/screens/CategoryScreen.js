@@ -63,6 +63,7 @@ export default function CategoryScreen({ navigation, route }) {
 			/>
 			<Divider />
 			<FlatList
+				showsVerticalScrollIndicator={false}
 				data={booksResult}
 				renderItem={renderItem}
 				keyExtractor={(item) => item.id}
