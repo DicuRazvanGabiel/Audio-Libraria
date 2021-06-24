@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ScrollView, View, TouchableOpacity, StyleSheet } from "react-native";
+import React from "react";
+import { ScrollView, View, TouchableOpacity } from "react-native";
 import { Title } from "react-native-paper";
 
 const CategorieItemShow = ({ category, setCategoryID, categoryID }) => {
@@ -47,7 +47,3 @@ export default function CategoryStrip({
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	isSelected: {},
-});
