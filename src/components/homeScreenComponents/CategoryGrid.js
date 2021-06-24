@@ -5,8 +5,7 @@ import { Entypo } from "@expo/vector-icons";
 
 import CategoryItem from "./CategoryItem";
 
-export default function CategoryGrid({ categories }) {
-	console.log(categories);
+export default function CategoryGrid({ categories, navigation }) {
 	return (
 		<View>
 			<Text style={{ margin: 10, marginLeft: 40 }}>Categorii</Text>
@@ -21,6 +20,8 @@ export default function CategoryGrid({ categories }) {
 							key={cat.id}
 							imageUrl={cat.image.src}
 							name={cat.name}
+							categoryID={cat.id}
+							navigation={navigation}
 						/>
 					))}
 				</View>

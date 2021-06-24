@@ -10,6 +10,8 @@ import PlayerScreen from "../screens/Player";
 import SettingsScreen from "../screens/Settings";
 import BookDetailsScreen from "../screens/BookDetails";
 import SearchScreen from "../screens/Search";
+import ResetPassword from "../screens/auth/ResetPassword";
+import CategoeyScreen from "../screens/CategoryScreen";
 
 import CustomNavigationBar from "../components/CustomNavigationBar";
 
@@ -37,18 +39,15 @@ export default function AuthenticationNavigator() {
 						component={BookDetailsScreen}
 					/>
 					<Stack.Screen name="Search" component={SearchScreen} />
+					<Stack.Screen name="Categorii" component={CategoeyScreen} />
 				</>
 			) : (
 				<>
+					<Stack.Screen name="Conectare" component={SignInScreen} />
+					<Stack.Screen name="Creare cont" component={SignUpScreen} />
 					<Stack.Screen
-						name="Sign In"
-						component={SignInScreen}
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="Sign Up"
-						component={SignUpScreen}
-						options={{ headerShown: false }}
+						name="Resetare parola"
+						component={ResetPassword}
 					/>
 				</>
 			)}
