@@ -19,7 +19,7 @@ export default function PlayBookPlayDemoButton({ borrowedBook, playBook }) {
 		const listenerStateChange = TrackPlayer.addEventListener(
 			"playback-state",
 			async (state) => {
-				setPlayerState(state["state"]);
+				if (!player) setPlayerState(state["state"]);
 			}
 		);
 		return () => {
@@ -29,7 +29,7 @@ export default function PlayBookPlayDemoButton({ borrowedBook, playBook }) {
 				listenerStateChange.remove();
 			}
 		};
-	}, []);
+	}, [player]);
 
 	return (
 		<TouchableOpacity style={styles.demoPlayerContainer} onPress={playBook}>
