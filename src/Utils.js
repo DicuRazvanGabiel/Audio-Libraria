@@ -1,4 +1,6 @@
 import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
+import TrackPlayer from "react-native-track-player";
 
 //TODO: to remove all db passes
 const db = firestore();
@@ -103,4 +105,30 @@ export const convertMinutesHours = (totalSeconds) => {
 	}
 
 	return timeToDisplay;
+};
+
+//save the chapter that is playing to track progress on book lisenning
+export const saveBookProgress = async (bookID) => {
+	console.log(bookID);
+	const userID = auth().currentUser.uid;
+	const currentTrackIndex = await TrackPlayer.getCurrentTrack();
+	const currentTrack = await TrackPlayer.getTrack(currentTrackIndex);
+	const totalLenght = await TrackPlayer.getDuration();
+	const currentPosition = await TrackPlayer.getPosition();
+	let percent = Math.round((currentPosition / totalLenght) * 100);
+
+	await db
+		.collection("users")
+		.doc(userID)
+		.collection("booksProgress")
+		.doc(bookID)
+		.collection("chapters")
+		.doc(currentTrack.id)
+		.set({
+			chapterName: currentTrack.id,
+			totalLenght: totalLenght,
+			secondsProgress: currentPosition,
+			progress: percent,
+			isComplete: percent > 75 ? true : false,
+		});
 };

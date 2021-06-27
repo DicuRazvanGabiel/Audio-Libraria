@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { UserContext } from "../Context/UserContext";
 import BookListItem from "../components/BookListItem";
 import firestore from "@react-native-firebase/firestore";
@@ -20,7 +20,7 @@ export default function BusinessAccount({ navigation }) {
 	if (loading) return <LoadingState />;
 
 	return (
-		<>
+		<View style={{ flex: 1 }}>
 			<SearchBox navigation={navigation} />
 			<ScrollView>
 				{businessBooks.docs.map((book) => (
@@ -32,6 +32,6 @@ export default function BusinessAccount({ navigation }) {
 					/>
 				))}
 			</ScrollView>
-		</>
+		</View>
 	);
 }
