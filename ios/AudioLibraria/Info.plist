@@ -85,7 +85,7 @@
 		<string>audio</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>SplashScreen</string>
+	<string>BootSplash</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

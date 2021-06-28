@@ -638,6 +638,8 @@ PODS:
     - React-jsi (= 0.63.4)
   - RNAppleAuthentication (2.1.2):
     - React-Core
+  - RNBootSplash (3.2.4):
+    - React-Core
   - RNCMaskedView (0.1.10):
     - React
   - RNFBApp (11.5.0):
@@ -764,6 +766,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
+  - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
@@ -902,6 +905,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNAppleAuthentication:
     :path: "../node_modules/@invertase/react-native-apple-authentication"
+  RNBootSplash:
+    :path: "../node_modules/react-native-bootsplash"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
   RNFBApp:
@@ -1018,6 +1023,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   RNAppleAuthentication: e95bcfbd044013667f35c5ca20ae17d39500c009
+  RNBootSplash: 4844706cbb56a3270556c9b94e59dedadccd47e4
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNFBApp: 9c90f9d576861947ba75fe0830567c570bcbcf6d
   RNFBAuth: 99fdbce04ff3d39e57a7a3956d632ee69145685b
