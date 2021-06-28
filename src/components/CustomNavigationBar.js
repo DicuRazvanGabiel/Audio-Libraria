@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Dimensions, Platform, TouchableOpacity } from "react-native";
+import {
+	View,
+	Dimensions,
+	Platform,
+	TouchableOpacity,
+	Image,
+} from "react-native";
 import { Appbar, useTheme, Avatar } from "react-native-paper";
 import { useRoute } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
@@ -35,8 +41,15 @@ export default function CustomNavigationBar({ navigation, previous }) {
 							elevation: 0,
 						}}
 					>
-						{previous && (
+						{previous ? (
 							<Appbar.BackAction onPress={navigation.goBack} />
+						) : (
+							<View style={{ marginLeft: 20 }}>
+								<Image
+									style={{ height: 45, width: 45 }}
+									source={require("../../assets/logo/black.png")}
+								/>
+							</View>
 						)}
 						<Appbar.Content title={route.name} color="#fff" />
 						{user && (
