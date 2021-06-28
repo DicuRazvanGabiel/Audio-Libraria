@@ -47,7 +47,7 @@ export default function CustomNavigationBar({ navigation, previous }) {
 							<View style={{ marginLeft: 20 }}>
 								<Image
 									style={{ height: 45, width: 45 }}
-									source={require("../../assets/logo/black.png")}
+									source={require("../../assets/logo/white.png")}
 								/>
 							</View>
 						)}
