@@ -4,7 +4,8 @@ import { Text } from "react-native-paper";
 
 import BookItem from "./BookItem";
 
-export default function BooksSection({ navigation, title }) {
+export default function BooksSection({ navigation, title, books }) {
+	debugger;
 	return (
 		<View style={styles.container}>
 			<Text
@@ -17,11 +18,13 @@ export default function BooksSection({ navigation, title }) {
 				{title}
 			</Text>
 			<ScrollView horizontal={true}>
-				<BookItem navigation={navigation} />
-				<BookItem navigation={navigation} />
-				<BookItem navigation={navigation} />
-				<BookItem navigation={navigation} />
-				<BookItem navigation={navigation} />
+				{books.map((book) => (
+					<BookItem
+						key={book.id}
+						navigation={navigation}
+						book={book}
+					/>
+				))}
 			</ScrollView>
 		</View>
 	);

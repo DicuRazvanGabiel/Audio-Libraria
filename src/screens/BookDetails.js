@@ -90,6 +90,8 @@ export default function BookDetails({ navigation, route }) {
 				businessBookID: businessBookID,
 				businessID: employee.businessID,
 				employeeID: employee.employeeID,
+				bookID: bookID,
+				uid: userID,
 			})
 			.then(async (response) => {
 				if (!response.data.ok) {
