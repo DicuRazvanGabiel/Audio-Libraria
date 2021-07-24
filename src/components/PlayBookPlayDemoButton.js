@@ -24,8 +24,8 @@ export default function PlayBookPlayDemoButton({ borrowedBook, playBook }) {
 		);
 		return () => {
 			if (!player) {
-				TrackPlayer.stop();
-				TrackPlayer.destroy();
+				// TrackPlayer.stop();
+				// TrackPlayer.destroy();
 				listenerStateChange.remove();
 			}
 		};

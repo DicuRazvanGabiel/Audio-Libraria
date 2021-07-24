@@ -50,8 +50,8 @@ export default function Player({ route }) {
 				state === TrackPlayer.STATE_PLAYING ||
 				state === TrackPlayer.STATE_PAUSED
 			) {
-				TrackPlayer.stop();
-				TrackPlayer.destroy();
+				await TrackPlayer.stop();
+				await TrackPlayer.destroy();
 			}
 			const bookSnap = await db
 				.collection("books")

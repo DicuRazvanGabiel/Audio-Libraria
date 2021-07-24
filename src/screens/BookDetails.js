@@ -105,8 +105,8 @@ export default function BookDetails({ navigation, route }) {
 					setBorrowedBook(true);
 					const state = await TrackPlayer.getState();
 					if (state === TrackPlayer.STATE_PLAYING) {
-						TrackPlayer.stop();
-						TrackPlayer.destroy();
+						await TrackPlayer.stop();
+						await TrackPlayer.destroy();
 						setPlayer(null);
 					}
 				}
@@ -127,8 +127,8 @@ export default function BookDetails({ navigation, route }) {
 				setBorrowedBook(false);
 				const state = await TrackPlayer.getState();
 				if (state === TrackPlayer.STATE_PLAYING) {
-					TrackPlayer.stop();
-					TrackPlayer.destroy();
+					await TrackPlayer.stop();
+					await TrackPlayer.destroy();
 				}
 				setPlayer(null);
 				setLoadingBarrowButton(false);
@@ -160,11 +160,11 @@ export default function BookDetails({ navigation, route }) {
 		const state = await TrackPlayer.getState();
 
 		if (state === TrackPlayer.STATE_PLAYING) {
-			TrackPlayer.stop();
-			TrackPlayer.destroy();
+			await TrackPlayer.stop();
+			await TrackPlayer.destroy();
 		} else {
-			TrackPlayer.stop();
-			TrackPlayer.destroy();
+			await TrackPlayer.stop();
+			await TrackPlayer.destroy();
 			await TrackPlayer.setupPlayer();
 			await TrackPlayer.add([
 				{
