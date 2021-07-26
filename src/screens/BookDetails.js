@@ -195,6 +195,46 @@ export default function BookDetails({ navigation, route }) {
 			});
 	};
 
+	//method for showing alert message befor borrow
+	const showBorrowAlert = () => {
+		Alert.alert(
+			"Sunteti sigur...? ",
+			"Cartea pe care o aveti deja imprumutata, va fi returnata",
+			[
+				{
+					text: "DA",
+					onPress: () => {
+						borrowBook();
+					},
+				},
+				{
+					text: "NU",
+					onPress: () => {},
+				},
+			]
+		);
+	};
+
+	//method for showing alert message befor UNborrow
+	const showUNBorrowAlert = () => {
+		Alert.alert(
+			"Sunteti sigur...? ",
+			"Cartea pe care o aveti deja imprumutata, va fi returnata",
+			[
+				{
+					text: "DA",
+					onPress: () => {
+						unBarrow();
+					},
+				},
+				{
+					text: "NU",
+					onPress: () => {},
+				},
+			]
+		);
+	};
+
 	const renderactionButton = () => {
 		if (!businessBookID) return;
 		if (loadingBarrowButton)
@@ -214,7 +254,7 @@ export default function BookDetails({ navigation, route }) {
 							padding: 4,
 							width: 200,
 						}}
-						onPress={unBarrow}
+						onPress={showUNBorrowAlert}
 					>
 						<Text style={{ fontSize: 23, textAlign: "center" }}>
 							Preda
@@ -228,7 +268,7 @@ export default function BookDetails({ navigation, route }) {
 							padding: 8,
 							width: 200,
 						}}
-						onPress={borrowBook}
+						onPress={showBorrowAlert}
 					>
 						<Text style={{ fontSize: 23, textAlign: "center" }}>
 							Imprumuta

@@ -37,13 +37,14 @@ export default function CategoryGrid({ categories, navigation }) {
 styles = StyleSheet.create({
 	constainer: {
 		flexDirection: "row",
-		justifyContent: "space-between",
+		justifyContent: "space-around",
 		alignItems: "center",
 	},
 
 	categoryContainer: {
 		flexWrap: "wrap",
 		flexDirection: "row",
+		justifyContent: "space-between",
 		flex: 1,
 	},
 });

@@ -28,15 +28,15 @@ export default function PlayBookPlayDemoButton({
 		);
 
 		const unsubscribe = navigation.addListener("beforeRemove", async () => {
-			await TrackPlayer.stop();
-			await TrackPlayer.destroy();
+			if (!player) {
+				listenerStateChange.remove();
+				await TrackPlayer.stop();
+				await TrackPlayer.destroy();
+			}
 		});
 
 		return () => {
-			if (!player) {
-				listenerStateChange.remove();
-				unsubscribe();
-			}
+			unsubscribe();
 		};
 	}, [player]);
 
