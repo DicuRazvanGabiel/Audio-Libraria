@@ -288,6 +288,7 @@ export default function BookDetails({ navigation, route }) {
 				<PlayBookPlayDemoButton
 					borrowedBook={borrowedBook}
 					playBook={playBook}
+					navigation={navigation}
 				/>
 			</View>
 
