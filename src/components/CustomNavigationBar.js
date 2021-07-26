@@ -57,12 +57,16 @@ export default function CustomNavigationBar({ navigation, previous }) {
 								style={{ marginRight: 10, marginBottom: 10 }}
 								onPress={() => navigation.navigate("Settings")}
 							>
-								<Avatar.Image
-									size={45}
-									source={{
-										uri: user.photoURL,
-									}}
-								/>
+								{user.photoURL ? (
+									<Avatar.Image
+										size={45}
+										source={{
+											uri: user.photoURL,
+										}}
+									/>
+								) : (
+									<Avatar.Icon size={45} icon="account" />
+								)}
 							</TouchableOpacity>
 						)}
 					</Appbar.Header>
