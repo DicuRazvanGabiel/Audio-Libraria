@@ -6,7 +6,11 @@ import { useTrackPlayerProgress } from "react-native-track-player";
 import { PlayerContext } from "../Context/PlayerContext";
 import TrackPlayer from "react-native-track-player";
 
-export default function PlayBookPlayDemoButton({ borrowedBook, playBook }) {
+export default function PlayBookPlayDemoButton({
+	navigation,
+	borrowedBook,
+	playBook,
+}) {
 	const { position, buffered, duration } = useTrackPlayerProgress(500);
 	const { player } = useContext(PlayerContext);
 	const [playerState, setPlayerState] = useState(null);
@@ -19,17 +23,22 @@ export default function PlayBookPlayDemoButton({ borrowedBook, playBook }) {
 		const listenerStateChange = TrackPlayer.addEventListener(
 			"playback-state",
 			async (state) => {
-				setPlayerState(state["state"]);
+				if (!player) setPlayerState(state["state"]);
 			}
 		);
+
+		const unsubscribe = navigation.addListener("beforeRemove", async () => {
+			await TrackPlayer.stop();
+			await TrackPlayer.destroy();
+		});
+
 		return () => {
 			if (!player) {
-				TrackPlayer.stop();
-				TrackPlayer.destroy();
 				listenerStateChange.remove();
+				unsubscribe();
 			}
 		};
-	}, []);
+	}, [player]);
 
 	return (
 		<TouchableOpacity style={styles.demoPlayerContainer} onPress={playBook}>

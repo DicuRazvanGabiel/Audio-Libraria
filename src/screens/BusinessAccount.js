@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View, FlatList } from "react-native";
 import { UserContext } from "../Context/UserContext";
 import BookListItem from "../components/BookListItem";
 import firestore from "@react-native-firebase/firestore";
@@ -20,18 +20,19 @@ export default function BusinessAccount({ navigation }) {
 	if (loading) return <LoadingState />;
 
 	return (
-		<>
+		<View style={{ flex: 1 }}>
 			<SearchBox navigation={navigation} />
-			<ScrollView>
-				{businessBooks.docs.map((book) => (
+			<FlatList
+				data={businessBooks.docs}
+				renderItem={({ item }) => (
 					<BookListItem
 						navigation={navigation}
-						bookID={book.data().books}
-						businessBookID={book.id}
-						key={book.id}
+						bookID={item.data().books}
+						businessBookID={item.id}
 					/>
-				))}
-			</ScrollView>
-		</>
+				)}
+				keyExtractor={(item) => item.id}
+			/>
+		</View>
 	);
 }

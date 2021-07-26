@@ -19,7 +19,7 @@ import ModalBookmarksContent from "../components/ModalBookmarksContent";
 // import Modal from "react-native-modal";
 import BackgroundTimer from "react-native-background-timer";
 
-import { saveUserLastPlay } from "../Utils";
+import { saveUserLastPlay, saveBookProgress } from "../Utils";
 import { PlayerContext } from "../Context/PlayerContext";
 
 const db = firestore();
@@ -39,7 +39,7 @@ export default function Player({ route }) {
 		BackgroundTimer.stopBackgroundTimer();
 		const state = await TrackPlayer.getState();
 		setPlayerState(state);
-
+		debugger;
 		if (!firstInit) {
 			const trackID = await TrackPlayer.getCurrentTrack();
 			const currentTrack = await TrackPlayer.getTrack(trackID);
@@ -50,8 +50,8 @@ export default function Player({ route }) {
 				state === TrackPlayer.STATE_PLAYING ||
 				state === TrackPlayer.STATE_PAUSED
 			) {
-				TrackPlayer.stop();
-				TrackPlayer.destroy();
+				await TrackPlayer.stop();
+				await TrackPlayer.destroy();
 			}
 			const bookSnap = await db
 				.collection("books")
@@ -110,13 +110,14 @@ export default function Player({ route }) {
 			if (state === TrackPlayer.STATE_PLAYING) {
 				const positionSeconds = await TrackPlayer.getPosition();
 				const track = await TrackPlayer.getCurrentTrack();
-				saveUserLastPlay(
+				await saveUserLastPlay(
 					auth().currentUser.uid,
 					bookInfo.id,
 					track,
 					positionSeconds,
 					db
 				);
+				await saveBookProgress(bookInfo.id);
 			}
 		}, 60000);
 		setLoading(false);

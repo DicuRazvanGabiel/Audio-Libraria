@@ -1,10 +1,10 @@
 import React from "react";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Text, Divider, Surface, useTheme } from "react-native-paper";
-import { Rating } from "react-native-ratings";
 import { useDocument } from "react-firebase-hooks/firestore";
 import firestore from "@react-native-firebase/firestore";
 import LoadingState from "../components/LoadingState";
+import RatingStars from "../components/RatingStars";
 
 import { convertMinutesHours } from "../Utils";
 
@@ -52,17 +52,10 @@ export default function BookListItem({ navigation, bookID, businessBookID }) {
 							{book.data().author}
 						</Text>
 					</View>
-
 					<Text>
 						{convertMinutesHours(book.data().totalDurarion)}
 					</Text>
-
-					<Rating
-						type="custom"
-						imageSize={20}
-						tintColor={theme.colors.background}
-						isDisabled={true}
-					/>
+					<RatingStars count={book.data().rating} />
 				</View>
 			</Surface>
 		</TouchableOpacity>

@@ -10,7 +10,6 @@ import {
 import { Text, Divider, useTheme } from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HTML from "react-native-render-html";
-import { Rating } from "react-native-ratings";
 import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
 import TrackPlayer from "react-native-track-player";
@@ -23,6 +22,7 @@ import { isCurrentBorrowBook } from "../Utils";
 import ImageBook from "../components/ImageBook";
 import LoadingState from "../components/LoadingState";
 import PlayBookPlayDemoButton from "../components/PlayBookPlayDemoButton";
+import RatingStars from "../components/RatingStars";
 
 const db = firestore();
 
@@ -90,6 +90,8 @@ export default function BookDetails({ navigation, route }) {
 				businessBookID: businessBookID,
 				businessID: employee.businessID,
 				employeeID: employee.employeeID,
+				bookID: bookID,
+				uid: userID,
 			})
 			.then(async (response) => {
 				if (!response.data.ok) {
@@ -103,8 +105,8 @@ export default function BookDetails({ navigation, route }) {
 					setBorrowedBook(true);
 					const state = await TrackPlayer.getState();
 					if (state === TrackPlayer.STATE_PLAYING) {
-						TrackPlayer.stop();
-						TrackPlayer.destroy();
+						await TrackPlayer.stop();
+						await TrackPlayer.destroy();
 						setPlayer(null);
 					}
 				}
@@ -125,8 +127,8 @@ export default function BookDetails({ navigation, route }) {
 				setBorrowedBook(false);
 				const state = await TrackPlayer.getState();
 				if (state === TrackPlayer.STATE_PLAYING) {
-					TrackPlayer.stop();
-					TrackPlayer.destroy();
+					await TrackPlayer.stop();
+					await TrackPlayer.destroy();
 				}
 				setPlayer(null);
 				setLoadingBarrowButton(false);
@@ -158,11 +160,11 @@ export default function BookDetails({ navigation, route }) {
 		const state = await TrackPlayer.getState();
 
 		if (state === TrackPlayer.STATE_PLAYING) {
-			TrackPlayer.stop();
-			TrackPlayer.destroy();
+			await TrackPlayer.stop();
+			await TrackPlayer.destroy();
 		} else {
-			TrackPlayer.stop();
-			TrackPlayer.destroy();
+			await TrackPlayer.stop();
+			await TrackPlayer.destroy();
 			await TrackPlayer.setupPlayer();
 			await TrackPlayer.add([
 				{
@@ -237,6 +239,18 @@ export default function BookDetails({ navigation, route }) {
 		);
 	};
 
+	const onStarPress = async (starNo) => {
+		functions()
+			.httpsCallable("rateBook")({
+				bookID: bookID,
+				stars: starNo,
+				uid: auth().currentUser.uid,
+			})
+			.then(async (response) => {
+				console.log(response);
+			});
+	};
+
 	if (!bookInfo) return <LoadingState />;
 
 	return (
@@ -274,25 +288,29 @@ export default function BookDetails({ navigation, route }) {
 				<PlayBookPlayDemoButton
 					borrowedBook={borrowedBook}
 					playBook={playBook}
+					navigation={navigation}
 				/>
 			</View>
 
 			{renderactionButton()}
-
+			<View
+				style={{
+					marginVertical: 10,
+					width: "100%",
+					alignItems: "flex-end",
+				}}
+			>
+				<RatingStars
+					size={30}
+					readOnly={false}
+					onStarPress={onStarPress}
+					count={bookInfo.rating}
+				/>
+			</View>
 			<View style={styles.bookDescriptionContainer}>
 				<HTML
 					source={{ html: bookInfo.description }}
 					containerStyle={{}}
-				/>
-			</View>
-
-			<View style={{ marginTop: 20 }}>
-				<Rating
-					type="custom"
-					imageSize={30}
-					tintColor={theme.colors.background}
-					showRating
-					onFinishRating={this.ratingCompleted}
 				/>
 			</View>
 		</ScrollView>

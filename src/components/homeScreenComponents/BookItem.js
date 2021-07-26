@@ -3,19 +3,17 @@ import { View, Image, TouchableOpacity } from "react-native";
 import { Text } from "react-native-paper";
 import ImageBook from "../ImageBook";
 
-export default function BookItem({ navigation }) {
+export default function BookItem({ navigation, book }) {
 	return (
 		<TouchableOpacity
 			style={{ width: 150, margin: 10 }}
-			onPress={() => navigation.push("BookDetails")}
+			onPress={() => navigation.push("BookDetails", { bookID: book.id })}
 		>
-			<ImageBook
-				imageUrl={
-					"https://cdn1.dol.ro/dol.ro/cs-content/cs-photos/products/normal/tata-bogat-tata-sarac_2702_1_1596556923.jpg"
-				}
-			/>
-			<Text style={{ textAlign: "center" }}>Tata bogat tata sarac</Text>
-			<Text style={{ textAlign: "center" }}>Robert Kiyosaki</Text>
+			<ImageBook imageUrl={book.imageSrc} />
+			<Text style={{ textAlign: "center", fontWeight: "bold" }}>
+				{book.title}
+			</Text>
+			<Text style={{ textAlign: "center" }}>{book.author}</Text>
 		</TouchableOpacity>
 	);
 }
