@@ -39,7 +39,6 @@ export default function Player({ route }) {
 		BackgroundTimer.stopBackgroundTimer();
 		const state = await TrackPlayer.getState();
 		setPlayerState(state);
-		debugger;
 		if (!firstInit) {
 			const trackID = await TrackPlayer.getCurrentTrack();
 			const currentTrack = await TrackPlayer.getTrack(trackID);

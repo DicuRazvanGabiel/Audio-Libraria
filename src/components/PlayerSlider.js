@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import Slider from "@react-native-community/slider";
-import { useTrackPlayerProgress } from "react-native-track-player";
+import { useProgress } from "react-native-track-player";
 import TrackPlayer from "react-native-track-player";
 import { Text } from "react-native-paper";
 import { ThemeContext } from "../Context/ThemeContext";
@@ -10,7 +10,7 @@ import { convertMinutesHours } from "../Utils";
 
 export default function PlayerSlider() {
 	const { isThemeDark } = React.useContext(ThemeContext);
-	const { position, duration } = useTrackPlayerProgress(100);
+	const { position, duration } = useProgress(100);
 	const [slidingStart, setSlidingStart] = useState(false);
 	const [valueChange, setValueChange] = useState(0);
 

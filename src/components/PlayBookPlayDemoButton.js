@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
-import { useTrackPlayerProgress } from "react-native-track-player";
+import { useProgress } from "react-native-track-player";
 import { PlayerContext } from "../Context/PlayerContext";
 import TrackPlayer from "react-native-track-player";
 
@@ -11,7 +11,7 @@ export default function PlayBookPlayDemoButton({
 	borrowedBook,
 	playBook,
 }) {
-	const { position, buffered, duration } = useTrackPlayerProgress(500);
+	const { position, buffered, duration } = useProgress(500);
 	const { player } = useContext(PlayerContext);
 	const [playerState, setPlayerState] = useState(null);
 	if (position > 60 && !player) {
