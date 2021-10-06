@@ -12,7 +12,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import HTML from "react-native-render-html";
 import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, { State }  from "react-native-track-player";
 import auth from "@react-native-firebase/auth";
 
 import { UserContext } from "../Context/UserContext";
@@ -104,7 +104,7 @@ export default function BookDetails({ navigation, route }) {
 				} else {
 					setBorrowedBook(true);
 					const state = await TrackPlayer.getState();
-					if (state === TrackPlayer.STATE_PLAYING) {
+					if (state === State.Playing) {
 						await TrackPlayer.stop();
 						await TrackPlayer.destroy();
 						setPlayer(null);
@@ -159,16 +159,18 @@ export default function BookDetails({ navigation, route }) {
 			: bookSnap.data().chapters[0].file.src;
 		const state = await TrackPlayer.getState();
 
-		if (state === TrackPlayer.STATE_PLAYING) {
+		if (state === State.Playing) {
+			// await TrackPlayer.reset();
 			await TrackPlayer.stop();
 			await TrackPlayer.destroy();
+			console.log("sTOP DEMO")
 		} else {
-			await TrackPlayer.stop();
-			await TrackPlayer.destroy();
-			await TrackPlayer.setupPlayer();
+			// await TrackPlayer.stop();
+			// await TrackPlayer.destroy();
+			await TrackPlayer.setupPlayer({});
 			await TrackPlayer.add([
 				{
-					id: "Demo",
+					id: 0,
 					url: demoURL,
 					title: bookSnap.data().title,
 					album: bookSnap.data().title,

@@ -4,7 +4,7 @@ import { Text } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import { useProgress } from "react-native-track-player";
 import { PlayerContext } from "../Context/PlayerContext";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, { useTrackPlayerEvents, Event, State } from "react-native-track-player";
 
 export default function PlayBookPlayDemoButton({
 	navigation,
@@ -19,19 +19,16 @@ export default function PlayBookPlayDemoButton({
 		TrackPlayer.destroy();
 	}
 
-	useEffect(() => {
-		const listenerStateChange = TrackPlayer.addEventListener(
-			"playback-state",
-			async (state) => {
-				if (!player) setPlayerState(state["state"]);
-			}
-		);
+	useTrackPlayerEvents([Event.PlaybackState], async (event) => {
+		const state = await TrackPlayer.getState();
+		setPlayerState(event.state)
+	});
 
+	useEffect(() => {
 		const unsubscribe = navigation.addListener("beforeRemove", async () => {
 			if (!player) {
-				listenerStateChange.remove();
-				await TrackPlayer.stop();
-				await TrackPlayer.destroy();
+				await TrackPlayer.reset();
+				
 			}
 		});
 
@@ -40,6 +37,11 @@ export default function PlayBookPlayDemoButton({
 		};
 	}, [player]);
 
+	const getIconName = () => {
+		if((playerState === State.Playing || playerState === State.Ready) && !player) return "pausecircle"
+		return "play"
+	}
+
 	return (
 		<TouchableOpacity style={styles.demoPlayerContainer} onPress={playBook}>
 			<Text style={{ color: "#000", marginLeft: 15 }}>
@@ -47,11 +49,7 @@ export default function PlayBookPlayDemoButton({
 			</Text>
 			<View style={{ right: -3, top: -1 }}>
 				<AntDesign
-					name={
-						playerState === TrackPlayer.STATE_PLAYING
-							? "pausecircle"
-							: "play"
-					}
+					name={getIconName()}
 					size={32}
 					color="#8743FF"
 				/>

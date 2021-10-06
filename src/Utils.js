@@ -109,7 +109,6 @@ export const convertMinutesHours = (totalSeconds) => {
 
 //save the chapter that is playing to track progress on book lisenning
 export const saveBookProgress = async (bookID) => {
-	console.log(bookID);
 	const userID = auth().currentUser.uid;
 	const currentTrackIndex = await TrackPlayer.getCurrentTrack();
 	const currentTrack = await TrackPlayer.getTrack(currentTrackIndex);

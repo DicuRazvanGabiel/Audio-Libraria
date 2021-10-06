@@ -106,7 +106,7 @@ export default function MainTabNavigator() {
 				})}
 			/>
 			<Screen
-				name="Wishlist"
+				name="Favorite"
 				component={FavoriteBooks}
 				options={({ route }) => ({
 					tabBarIcon: ({ focused, color, size }) => {

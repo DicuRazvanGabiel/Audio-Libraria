@@ -3,7 +3,11 @@ import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, {
+	useTrackPlayerEvents,
+	Event,
+	State,
+} from "react-native-track-player";
 import {
 	IconButton,
 	Colors,
@@ -16,7 +20,6 @@ import PlayerSlider from "./../components/PlayerSlider";
 import { Entypo } from "@expo/vector-icons";
 import ModalChaptersContent from "../components/ModalChaptersContent";
 import ModalBookmarksContent from "../components/ModalBookmarksContent";
-// import Modal from "react-native-modal";
 import BackgroundTimer from "react-native-background-timer";
 
 import { saveUserLastPlay, saveBookProgress } from "../Utils";
@@ -27,7 +30,7 @@ const db = firestore();
 export default function Player({ route }) {
 	const [loading, setLoading] = useState(true);
 	const [playerState, setPlayerState] = useState("play");
-	const [chapter, setChapter] = useState("");
+	const [chapter, setChapter] = useState();
 	const [showChaptersModal, setShowChaptersModal] = useState(false);
 	const [showBookmarksModal, setShowBookmarksModal] = useState(false);
 	const { player, setPlayer } = useContext(PlayerContext);
@@ -36,6 +39,7 @@ export default function Player({ route }) {
 	const theme = useTheme();
 
 	const setUp = async () => {
+		await TrackPlayer.setupPlayer({});
 		BackgroundTimer.stopBackgroundTimer();
 		const state = await TrackPlayer.getState();
 		setPlayerState(state);
@@ -45,10 +49,7 @@ export default function Player({ route }) {
 			setChapter(currentTrack.title);
 			setLoading(false);
 		} else {
-			if (
-				state === TrackPlayer.STATE_PLAYING ||
-				state === TrackPlayer.STATE_PAUSED
-			) {
+			if (state === State.Playing) {
 				await TrackPlayer.stop();
 				await TrackPlayer.destroy();
 			}
@@ -86,10 +87,12 @@ export default function Player({ route }) {
 				const lastSavedChapter = savedBook.data().chapter;
 				const lastPosition = savedBook.data().positionSeconds;
 				await TrackPlayer.skip(lastSavedChapter);
-				console.log("aici" + lastPosition);
 				await TrackPlayer.seekTo(lastPosition);
-				setChapter(lastSavedChapter);
-				playingChapter = lastSavedChapter;
+				const chapterTitle = await TrackPlayer.getTrack(
+					lastSavedChapter
+				);
+				setChapter(chapterTitle.title);
+				playingChapter = chapterTitle.title;
 			} else {
 				setChapter(trackArray[0].title);
 				playingChapter = trackArray[0].title;
@@ -106,7 +109,7 @@ export default function Player({ route }) {
 		//start backgrount timer for logging to db the last position
 		BackgroundTimer.runBackgroundTimer(async () => {
 			const state = await TrackPlayer.getState();
-			if (state === TrackPlayer.STATE_PLAYING) {
+			if (state === State.Playing) {
 				const positionSeconds = await TrackPlayer.getPosition();
 				const track = await TrackPlayer.getCurrentTrack();
 				await saveUserLastPlay(
@@ -122,48 +125,33 @@ export default function Player({ route }) {
 		setLoading(false);
 	};
 
-	useEffect(() => {
-		setUp();
-
-		const listenerStateChange = TrackPlayer.addEventListener(
-			"playback-state",
-			async (state) => {
-				setPlayerState(state["state"]);
-				if (state["state"] === TrackPlayer.STATE_PAUSED) {
-					const positionSeconds = await TrackPlayer.getPosition();
-					const track = await TrackPlayer.getCurrentTrack();
-					await saveUserLastPlay(
-						auth().currentUser.uid,
-						bookInfo.id,
-						track,
-						positionSeconds,
-						db
-					);
-				}
-			}
-		);
-
-		const listenerTrackChange = TrackPlayer.addEventListener(
-			"playback-track-changed",
-			async (data) => {
-				const track = await TrackPlayer.getTrack(data.nextTrack);
+	useTrackPlayerEvents(
+		[Event.PlaybackState, Event.PlaybackTrackChanged],
+		async (event) => {
+			if (event.type === Event.PlaybackTrackChanged) {
+				const track = await TrackPlayer.getTrack(event.nextTrack);
 				setChapter(track.title);
 				setPlayer({ ...player, chapter: track.title });
 			}
-		);
+			if (event.type === Event.PlaybackState) {
+				setPlayerState(event.state);
+			}
 
-		return () => {
-			listenerTrackChange.remove();
-			listenerStateChange.remove();
-		};
+			const state = await TrackPlayer.getState();
+			setPlayerState(state);
+		}
+	);
+
+	useEffect(() => {
+		setUp();
 	}, [player.bookInfo.id]);
 
-	const handlePlayPauseButton = () => {
-		if (playerState === TrackPlayer.STATE_PLAYING) {
+	const handlePlayPauseButton = async () => {
+		if (playerState === State.Playing) {
 			TrackPlayer.pause();
 		}
 
-		if (playerState === TrackPlayer.STATE_PAUSED) {
+		if (playerState === State.Paused) {
 			TrackPlayer.play();
 		}
 	};
@@ -276,7 +264,7 @@ export default function Player({ route }) {
 
 				<IconButton
 					icon={
-						playerState === TrackPlayer.STATE_PLAYING
+						playerState === State.Playing
 							? "pause-circle-outline"
 							: "play-circle-outline"
 					}
@@ -321,7 +309,7 @@ export default function Player({ route }) {
 						currentChapter={chapter}
 						onChangeChapter={async (id) => {
 							await TrackPlayer.skip(id);
-							if (playerState != TrackPlayer.STATE_PLAYING) {
+							if (playerState != State.Playing) {
 								TrackPlayer.play();
 							}
 						}}

@@ -38,7 +38,6 @@ export default function MyBooks({ navigation }) {
 		<ScrollView>
 			{borrowedBookInfo && (
 				<View style={styles.borrowedBookSection}>
-					<Text>Cartea imprumutata</Text>
 					<BookListItem
 						navigation={navigation}
 						bookID={borrowedBookInfo.bookID}
@@ -54,5 +53,7 @@ export default function MyBooks({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-	borrowedBookSection: {},
+	borrowedBookSection: {
+		marginTop: 10,
+	},
 });
