@@ -5,6 +5,7 @@ import {
 	Platform,
 	StyleSheet,
 	TouchableOpacity,
+	Alert
 } from "react-native";
 import {
 	Button,
@@ -35,6 +36,15 @@ function SignIn({ navigation }) {
 
 	const onSubmit = (data) => {
 		signInWithEmailAndPassword(data.email, data.password);
+		if (error) {
+			if(error.code === "auth/user-not-found" || error.code === "auth/wrong-password")
+			Alert.alert("Conectare", "Adresa de email sau parola sunt gresite", [
+				{
+					text: "OK",
+					onPress: () => {},
+				},
+			]);
+		}
 	};
 
 	async function onAppleButtonPress() {
@@ -109,9 +119,6 @@ function SignIn({ navigation }) {
 		</View>;
 	}
 
-	if (error) {
-		console.error(error);
-	}
 
 	return (
 		<>
@@ -253,13 +260,5 @@ function SignIn({ navigation }) {
 		</>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-});
 
 export default SignIn;
