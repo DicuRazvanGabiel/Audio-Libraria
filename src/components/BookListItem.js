@@ -52,10 +52,10 @@ export default function BookListItem({ navigation, bookID, businessBookID }) {
 							{book.data().author}
 						</Text>
 					</View>
-					<Text>
+					<Text style={{textAlign: 'right', width: '90%'}}>
 						{convertMinutesHours(book.data().totalDurarion)}
 					</Text>
-					<RatingStars count={book.data().rating} />
+					{/* For later development <RatingStars count={book.data().rating} /> */}
 				</View>
 			</Surface>
 		</TouchableOpacity>

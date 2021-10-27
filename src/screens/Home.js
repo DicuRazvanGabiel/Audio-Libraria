@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import firestore from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
 
 import LoadingState from "../components/LoadingState";
 import CategoryGrid from "../components/homeScreenComponents/CategoryGrid";
 import BookSection from "../components/homeScreenComponents/BooksSection";
+import SearchBox from "../components/SearchBox";
 
 export default function Home({ navigation }) {
 	const [data, setData] = useState(null);
@@ -53,15 +53,16 @@ export default function Home({ navigation }) {
 	}
 	return (
 		<ScrollView>
+			<SearchBox navigation={navigation} />
 			<CategoryGrid
 				categories={data.categories}
 				navigation={navigation}
 			/>
-			<BookSection
+			{/* <BookSection
 				title="Cele mai apreciate carti:"
 				navigation={navigation}
 				books={data.bestRatingBooks}
-			/>
+			/> */}
 			<BookSection
 				title="Cele mai populare carti:"
 				navigation={navigation}

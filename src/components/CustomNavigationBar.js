@@ -42,7 +42,7 @@ export default function CustomNavigationBar({ navigation, previous }) {
 						}}
 					>
 						{previous ? (
-							<Appbar.BackAction onPress={navigation.goBack} />
+							<Appbar.BackAction onPress={navigation.goBack} color={'#fff'}/>
 						) : (
 							<View style={{ marginLeft: 20 }}>
 								<Image
@@ -51,7 +51,7 @@ export default function CustomNavigationBar({ navigation, previous }) {
 								/>
 							</View>
 						)}
-						<Appbar.Content title={route.name} color="#fff" />
+						<Appbar.Content title={"Audio Libraria"} color="#fff" />
 						{user && (
 							<TouchableOpacity
 								style={{ marginRight: 10, marginBottom: 10 }}

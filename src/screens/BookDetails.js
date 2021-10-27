@@ -4,10 +4,9 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	ScrollView,
-	ActivityIndicator,
 	Alert,
 } from "react-native";
-import { Text, Divider, useTheme } from "react-native-paper";
+import { Text, Divider, useTheme, ActivityIndicator } from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HTML from "react-native-render-html";
 import functions from "@react-native-firebase/functions";
@@ -163,7 +162,6 @@ export default function BookDetails({ navigation, route }) {
 			// await TrackPlayer.reset();
 			await TrackPlayer.stop();
 			await TrackPlayer.destroy();
-			console.log("sTOP DEMO")
 		} else {
 			// await TrackPlayer.stop();
 			// await TrackPlayer.destroy();
@@ -185,15 +183,12 @@ export default function BookDetails({ navigation, route }) {
 	};
 
 	const onFavorite = async () => {
+		setIsFavorite(!isFavorite);
 		functions()
 			.httpsCallable("onFavorite")({
 				bookID: bookID,
 				bookInfo: bookInfo,
 				userID: userID,
-			})
-			.then(async (response) => {
-				console.log(response);
-				setIsFavorite(response.data.favorite);
 			});
 	};
 
@@ -204,15 +199,15 @@ export default function BookDetails({ navigation, route }) {
 			"Cartea pe care o aveti deja imprumutata, va fi returnata",
 			[
 				{
+					text: "NU",
+					onPress: () => {},
+				},
+				{
 					text: "DA",
 					onPress: () => {
 						borrowBook();
 					},
-				},
-				{
-					text: "NU",
-					onPress: () => {},
-				},
+				}
 			]
 		);
 	};
@@ -241,13 +236,13 @@ export default function BookDetails({ navigation, route }) {
 		if (!businessBookID) return;
 		if (loadingBarrowButton)
 			return (
-				<View style={{ marginTop: 20 }}>
+				<View style={{ marginTop: 20, marginRight: 50, alignItems: 'flex-end' }}>
 					<ActivityIndicator size="small" />
 				</View>
 			);
 
 		return (
-			<View style={{ marginTop: 20 }}>
+			<View style={{ marginTop: 20, alignItems: 'flex-end' }}>
 				{borrowedBook ? (
 					<TouchableOpacity
 						style={{
@@ -259,7 +254,7 @@ export default function BookDetails({ navigation, route }) {
 						onPress={showUNBorrowAlert}
 					>
 						<Text style={{ fontSize: 23, textAlign: "center" }}>
-							Preda
+							Returneaza
 						</Text>
 					</TouchableOpacity>
 				) : (
@@ -342,19 +337,22 @@ export default function BookDetails({ navigation, route }) {
 					alignItems: "flex-end",
 				}}
 			>
+				
+				{/* for later development
 				<RatingStars
 					size={30}
 					readOnly={false}
 					onStarPress={onStarPress}
 					count={bookInfo.rating}
-				/>
+				/> */}
 			</View>
-			<View style={styles.bookDescriptionContainer}>
+			
 				<HTML
 					source={{ html: bookInfo.description }}
-					containerStyle={{}}
+					containerStyle={{ backgroundColor:'black'}}
+					baseFontStyle={{color: '#fff', fontSize: 20}}
 				/>
-			</View>
+			
 		</ScrollView>
 	);
 }

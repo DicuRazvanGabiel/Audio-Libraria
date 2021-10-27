@@ -8,12 +8,7 @@ import CategoryItem from "./CategoryItem";
 export default function CategoryGrid({ categories, navigation }) {
 	return (
 		<View>
-			<Text style={{ margin: 10, marginLeft: 40 }}>Categorii</Text>
 			<View style={styles.constainer}>
-				<TouchableOpacity>
-					<Entypo name="chevron-left" size={45} color="#6EA8FF" />
-				</TouchableOpacity>
-
 				<View style={styles.categoryContainer}>
 					{categories.map((cat) => (
 						<CategoryItem
@@ -25,10 +20,6 @@ export default function CategoryGrid({ categories, navigation }) {
 						/>
 					))}
 				</View>
-
-				<TouchableOpacity>
-					<Entypo name="chevron-right" size={45} color="#6EA8FF" />
-				</TouchableOpacity>
 			</View>
 		</View>
 	);
