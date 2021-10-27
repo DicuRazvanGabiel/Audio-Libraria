@@ -4,23 +4,29 @@ import { Switch, Text, Button } from "react-native-paper";
 import { ThemeContext } from "../Context/ThemeContext";
 import auth from "@react-native-firebase/auth";
 import TrackPlayer from "react-native-track-player";
+import { UserContext } from "../Context/UserContext";
 
 export default function Settings() {
 	const [isSwitchOn, setIsSwitchOn] = useState(false);
-	const { toggleTheme, isThemeDark } = React.useContext(ThemeContext);
 
 	const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 	return (
 		<View
 			style={{
 				flex: 1,
-				justifyContent: "space-evenly",
-				alignItems: "center",
+				justifyContent: "space-between",
+				margin: 10
 			}}
 		>
-			<Text>Settings screen</Text>
-			<Switch value={isThemeDark} onValueChange={toggleTheme} />
+			<Text style={{fontSize: 20}}>
+				Email: {auth().currentUser.email}
+			</Text>
+
+			{/* <Text>Settings screen</Text>
+			<Switch value={isThemeDark} onValueChange={toggleTheme} /> */}
 			<Button
+			mode="contained"
+			color="red"
 				onPress={() => {
 					TrackPlayer.stop();
 					TrackPlayer.destroy();
