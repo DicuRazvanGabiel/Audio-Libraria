@@ -4,6 +4,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "web": "expo start --web",
+    "release": "react-native run-android --variant=release",
     "start": "react-native start",
     "test": "jest"
   },
