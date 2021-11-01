@@ -72,7 +72,6 @@ export default function PlayerBar({ navigation }) {
 					}
 
 					if (state === State.Paused) {
-						console.log("aici")
 						TrackPlayer.play();
 					}
 				}}

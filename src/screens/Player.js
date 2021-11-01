@@ -39,16 +39,14 @@ export default function Player({ route }) {
 	const theme = useTheme();
 
 	const setUp = async () => {
-		await TrackPlayer.setupPlayer({});
-		BackgroundTimer.stopBackgroundTimer();
-		const state = await TrackPlayer.getState();
-		setPlayerState(state);
 		if (!firstInit) {
 			const trackID = await TrackPlayer.getCurrentTrack();
 			const currentTrack = await TrackPlayer.getTrack(trackID);
 			setChapter(currentTrack.title);
 			setLoading(false);
 		} else {
+			await TrackPlayer.setupPlayer({});
+			
 			if (state === State.Playing) {
 				await TrackPlayer.stop();
 				await TrackPlayer.destroy();
@@ -105,7 +103,9 @@ export default function Player({ route }) {
 			});
 			TrackPlayer.play();
 		}
-
+		const state = await TrackPlayer.getState();
+		setPlayerState(state);
+		BackgroundTimer.stopBackgroundTimer();
 		//start backgrount timer for logging to db the last position
 		BackgroundTimer.runBackgroundTimer(async () => {
 			const state = await TrackPlayer.getState();
@@ -298,7 +298,6 @@ export default function Player({ route }) {
 						backgroundColor: theme.colors.surface,
 						height: "70%",
 						margin: 10,
-						width: "100%",
 						marginBottom: 20,
 						borderRadius: 20,
 						padding: 20,
@@ -325,7 +324,6 @@ export default function Player({ route }) {
 						backgroundColor: theme.colors.surface,
 						height: "70%",
 						margin: 10,
-						width: "100%",
 						marginBottom: 20,
 						borderRadius: 20,
 						padding: 20,

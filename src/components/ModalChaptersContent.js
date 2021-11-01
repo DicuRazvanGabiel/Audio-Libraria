@@ -30,7 +30,7 @@ export default function ModalChaptersContent({
 					padding: 20,
 				}}
 			>
-				<ScrollView>
+				<ScrollView showsVerticalScrollIndicator={false}>
 					{chapters.map((c,i) => (
 						<ViewTouchable
 							style={{ marginBottom: 20 }}
