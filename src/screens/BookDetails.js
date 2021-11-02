@@ -219,15 +219,16 @@ export default function BookDetails({ navigation, route }) {
 			"Cartea pe care o aveti deja imprumutata, va fi returnata",
 			[
 				{
+					text: "NU",
+					onPress: () => {},
+				},
+				{
 					text: "DA",
 					onPress: () => {
 						unBarrow();
 					},
 				},
-				{
-					text: "NU",
-					onPress: () => {},
-				},
+				
 			]
 		);
 	};
