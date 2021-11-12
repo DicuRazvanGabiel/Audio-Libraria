@@ -210,7 +210,7 @@ function SignIn({ navigation }) {
 							</View>
 						</View>
 
-						<View
+						{/* <View
 							style={{
 								flexDirection: "row",
 								justifyContent: "space-evenly",
@@ -253,7 +253,7 @@ function SignIn({ navigation }) {
 									}
 								/>
 							</View>
-						)}
+						)} */}
 					</View>
 				</View>
 			</View>
