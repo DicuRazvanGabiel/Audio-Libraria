@@ -6,7 +6,7 @@ import {
 	ScrollView,
 	Alert,
 } from "react-native";
-import { Text, Divider, useTheme, ActivityIndicator } from "react-native-paper";
+import { Text, Divider, useTheme, ActivityIndicator, Button } from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HTML from "react-native-render-html";
 import functions from "@react-native-firebase/functions";
@@ -237,41 +237,21 @@ export default function BookDetails({ navigation, route }) {
 		if (!businessBookID) return;
 		if (loadingBarrowButton)
 			return (
-				<View style={{ marginTop: 20, marginRight: 50, alignItems: 'flex-end' }}>
+				<View style={{ marginTop: 20, alignItems: 'center' }}>
 					<ActivityIndicator size="small" />
 				</View>
 			);
 
 		return (
-			<View style={{ marginTop: 20, alignItems: 'flex-end' }}>
+			<View style={{marginTop: 10}}>
 				{borrowedBook ? (
-					<TouchableOpacity
-						style={{
-							backgroundColor: "#FE805C",
-							borderRadius: 30,
-							padding: 4,
-							width: 200,
-						}}
-						onPress={showUNBorrowAlert}
-					>
-						<Text style={{ fontSize: 23, textAlign: "center" }}>
-							Returneaza
-						</Text>
-					</TouchableOpacity>
+					<Button icon="keyboard-return" mode="outlined" onPress={showUNBorrowAlert} color={theme.colors.accent}>
+						Returneaza
+				  	</Button>
 				) : (
-					<TouchableOpacity
-						style={{
-							backgroundColor: "#FE805C",
-							borderRadius: 30,
-							padding: 8,
-							width: 200,
-						}}
-						onPress={showBorrowAlert}
-					>
-						<Text style={{ fontSize: 23, textAlign: "center" }}>
-							Imprumuta
-						</Text>
-					</TouchableOpacity>
+					<Button icon="book" mode="outlined" onPress={showBorrowAlert} color={theme.colors.accent}>
+						Imprumuta
+					</Button>
 				)}
 			</View>
 		);
@@ -316,21 +296,15 @@ export default function BookDetails({ navigation, route }) {
 					/>
 				</TouchableOpacity>
 			</View>
-			<View
-				style={{
-					width: "100%",
-					flexDirection: "row",
-					justifyContent: "space-between",
-				}}
-			>
-				<PlayBookPlayDemoButton
-					borrowedBook={borrowedBook}
-					playBook={playBook}
-					navigation={navigation}
-				/>
-			</View>
+
+			<PlayBookPlayDemoButton
+				borrowedBook={borrowedBook}
+				playBook={playBook}
+				navigation={navigation}
+			/>
 
 			{renderactionButton()}
+
 			<View
 				style={{
 					marginVertical: 10,
@@ -350,7 +324,7 @@ export default function BookDetails({ navigation, route }) {
 			
 				<HTML
 					source={{ html: bookInfo.description }}
-					containerStyle={{ backgroundColor:'black'}}
+					containerStyle={{ backgroundColor: theme.colors.background}}
 					baseFontStyle={{color: '#fff', fontSize: 20}}
 				/>
 			

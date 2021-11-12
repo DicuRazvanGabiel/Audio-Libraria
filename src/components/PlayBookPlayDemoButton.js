@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, Button } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
 import { useProgress } from "react-native-track-player";
 import { PlayerContext } from "../Context/PlayerContext";
@@ -38,12 +38,16 @@ export default function PlayBookPlayDemoButton({
 	}, [player]);
 
 	const getIconName = () => {
-		if((playerState === State.Playing || playerState === State.Ready) && !player) return "pausecircle"
+		if((playerState === State.Playing || playerState === State.Ready) && !player) return "stop"
 		return "play"
 	}
 
 	return (
-		<TouchableOpacity style={styles.demoPlayerContainer} onPress={playBook}>
+		<View style={{marginTop: 10}}>
+			<Button icon={getIconName()} mode="contained" onPress={playBook}>
+					{borrowedBook ? "Asculta cartea" : "Asculta demo"}
+			</Button>
+		{/* <TouchableOpacity style={styles.demoPlayerContainer} onPress={playBook}>
 			<Text style={{ color: "#000", marginLeft: 15 }}>
 				{borrowedBook ? "Asculta cartea" : "Asculta demo"}
 			</Text>
@@ -54,7 +58,8 @@ export default function PlayBookPlayDemoButton({
 					color="#8743FF"
 				/>
 			</View>
-		</TouchableOpacity>
+		</TouchableOpacity> */}
+		</View>
 	);
 }
 
