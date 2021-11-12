@@ -158,7 +158,7 @@ function SignIn({ navigation }) {
 							control={control}
 							render={({ onChange, onBlur, value }) => (
 								<TextInput
-									label="Password"
+									label="Parola"
 									mode="outlined"
 									onBlur={onBlur}
 									onChangeText={(value) => onChange(value)}
