@@ -28,8 +28,7 @@ export default function CustomNavigationBar({ navigation, previous }) {
 			>
 				<LinearGradient
 					style={{
-						width,
-						paddingVertical: Platform.OS === "android" ? 7 : 0,
+						width
 					}}
 					start={[0, 1]}
 					end={[1, 0]}
