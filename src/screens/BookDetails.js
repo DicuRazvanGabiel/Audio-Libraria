@@ -272,30 +272,24 @@ export default function BookDetails({ navigation, route }) {
 	if (!bookInfo) return <LoadingState />;
 
 	return (
-		<ScrollView style={styles.container}>
+		<ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 			<View style={styles.bookImageContainer}>
 				<ImageBook imageUrl={bookInfo.imageSrc} />
 				<View
 					style={{
 						flex: 1,
-						justifyContent: "flex-end",
-						margin: 10,
+						marginLeft: 10,
+						height: 200
 					}}
 				>
-					<Text style={{ fontSize: 30, marginBottom: 5 }}>
+					<Text style={{ fontSize: 30, marginBottom: 5 }} adjustsFontSizeToFit={true}>
 						{bookInfo.title}
 					</Text>
 					<Divider />
-					<Text style={{ fontSize: 20 }}>{bookInfo.author}</Text>
+					<Text style={{ fontSize: 20 }} adjustsFontSizeToFit={true}>{bookInfo.author}</Text>
 				</View>
-				<TouchableOpacity onPress={onFavorite}>
-					<Ionicons
-						name={isFavorite ? "heart" : "heart-outline"}
-						size={29}
-						color={"#fff"}
-					/>
-				</TouchableOpacity>
 			</View>
+			
 
 			<PlayBookPlayDemoButton
 				borrowedBook={borrowedBook}
@@ -305,27 +299,19 @@ export default function BookDetails({ navigation, route }) {
 
 			{renderactionButton()}
 
-			<View
-				style={{
-					marginVertical: 10,
-					width: "100%",
-					alignItems: "flex-end",
-				}}
-			>
-				
-				{/* for later development
-				<RatingStars
-					size={30}
-					readOnly={false}
-					onStarPress={onStarPress}
-					count={bookInfo.rating}
-				/> */}
-			</View>
-			
+			<TouchableOpacity onPress={onFavorite} style={{ alignItems: 'flex-end', marginTop: 10}}>
+				<Ionicons
+					name={isFavorite ? "heart" : "heart-outline"}
+					size={29}
+					color={theme.colors.accent}
+				/>
+			</TouchableOpacity>
+
 				<HTML
 					source={{ html: bookInfo.description }}
 					containerStyle={{ backgroundColor: theme.colors.background}}
 					baseFontStyle={{color: '#fff', fontSize: 20}}
+					defaultTextProps={{allowFontScaling: false}}
 				/>
 			
 		</ScrollView>

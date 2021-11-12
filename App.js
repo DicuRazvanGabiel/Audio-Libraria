@@ -1,4 +1,5 @@
 import React from "react";
+import { Text, TextInput } from "react-native";
 import {
 	DarkTheme as PaperDarkTheme,
 	Provider as PaperProvider,
@@ -36,11 +37,16 @@ export default function App() {
 		},
 	};
 
-
 	let theme = CombinedDarkTheme;
-	console.log(theme)
 	const [employee, setEmployee] = React.useState(null);
 	const [player, setPlayer] = React.useState(null);
+	
+	//for disabling text scaling for accessibility, need to change this in the future
+	Text.defaultProps = Text.defaultProps || {};
+	Text.defaultProps.allowFontScaling = false;
+	TextInput.defaultProps = Text.defaultProps || {};
+	TextInput.defaultProps.allowFontScaling = false;
+	
 
 	// Use a local emulator in development
 	if (!Constants.isDevice) {

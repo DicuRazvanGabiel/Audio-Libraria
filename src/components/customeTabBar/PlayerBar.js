@@ -5,6 +5,7 @@ import {
 	IconButton,
 	Surface,
 	Colors,
+	useTheme
 } from "react-native-paper";
 import TrackPlayer, { useTrackPlayerEvents, Event, State } from "react-native-track-player";
 import { PlayerContext } from "../../Context/PlayerContext";
@@ -12,6 +13,7 @@ import { PlayerContext } from "../../Context/PlayerContext";
 export default function PlayerBar({ navigation }) {
 	const { player } = useContext(PlayerContext);
 	const [playerState, setPlayerState] = useState();
+	const theme = useTheme();
 
 	const setup = async () => {
 		const state = await TrackPlayer.getState();
@@ -62,7 +64,7 @@ export default function PlayerBar({ navigation }) {
 				icon={
 					playerState === State.Playing ? "pause" : "play"
 				}
-				color={Colors.red500}
+				color={theme.colors.primary}
 				size={30}
 				onPress={async () => {
 					const state = await TrackPlayer.getState();
