@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useProgress } from "react-native-track-player";
 import TrackPlayer from "react-native-track-player";
@@ -21,17 +21,9 @@ export default function PlayerSlider() {
 
 	return (
 		<View
-			style={{
-				width: "100%",
-				flexDirection: "row",
-				justifyContent: "center",
-				alignItems: "center",
-			}}
+			style={styles.container}
 		>
-			<Text style={{ width: 50 }}>
-				{convertMinutesHours(Math.round(position))}
-			</Text>
-			<View style={{ flex: 1 }}>
+			<View style={styles.sliderContainer}>
 				<Slider
 					minimumValue={0}
 					maximumValue={duration}
@@ -48,10 +40,33 @@ export default function PlayerSlider() {
 					}}
 				/>
 			</View>
-
-			<Text style={{ width: 50 }}>
-				{convertMinutesHours(Math.round(duration))}
-			</Text>
+			<View style={styles.timeContainer}>
+				<Text>
+					{convertMinutesHours(Math.round(position))}
+				</Text>
+				<Text >
+					{convertMinutesHours(Math.round(duration))}
+				</Text>
+			</View>
 		</View>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		width: "100%",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	sliderContainer: {
+		flex: 1,
+		width: '100%',
+		paddingBottom: Platform.OS === 'android' ? 25 : 40
+	},
+	timeContainer: {
+		width: '100%',
+		flexDirection: 'row',
+		justifyContent:'space-between',
+	
+	}
+})

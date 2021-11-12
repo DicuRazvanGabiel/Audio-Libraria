@@ -15,6 +15,9 @@ import {
 	Modal,
 	Portal,
 	useTheme,
+	Headline,
+	Subheading,
+	Divider
 } from "react-native-paper";
 import PlayerSlider from "./../components/PlayerSlider";
 import { Entypo } from "@expo/vector-icons";
@@ -179,22 +182,17 @@ export default function Player({ route }) {
 	return (
 		<View style={styles.container}>
 			<View
-				style={{
-					width: "100%",
-					flexDirection: "row",
-					justifyContent: "space-between",
-				}}
+				style={styles.bookmarkCaptionContainer}
 			>
 				<TouchableOpacity
-					style={{ marginLeft: 20 }}
 					onPress={() => {
 						setShowBookmarksModal(true);
 					}}
 				>
 					<Entypo name="bookmark" size={24} color="red" />
 				</TouchableOpacity>
+
 				<TouchableOpacity
-					style={{ marginLeft: 20 }}
 					onPress={() => {
 						setShowChaptersModal(true);
 					}}
@@ -207,42 +205,20 @@ export default function Player({ route }) {
 				source={{
 					uri: bookInfo.imageSrc,
 				}}
-				style={{
-					height: 350,
-					width: 350,
-					borderRadius: 15,
-					marginBottom: 5,
-					resizeMode: "cover",
-				}}
+				style={styles.image}
 			/>
+
 			<View
 				style={{
 					justifyContent: "center",
 					alignItems: "center",
-					flexDirection: "row",
-					width: 350,
+					width: '100%'
 				}}
 			>
-				<View>
-					<Text
-						style={{
-							fontSize: 17,
-							fontWeight: "bold",
-							textAlign: "center",
-						}}
-					>
-						{bookInfo.title}
-					</Text>
-					<Text
-						style={{
-							fontSize: 14,
-							fontWeight: "bold",
-							textAlign: "center",
-						}}
-					>
-						{chapter}
-					</Text>
-				</View>
+					<Headline style={{textAlign: 'center'}}>{bookInfo.title}</Headline>
+					<Divider />
+					<Subheading>{chapter}</Subheading>
+			
 			</View>
 
 			<PlayerSlider />
@@ -344,9 +320,22 @@ const playerIconSize = 40;
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		justifyContent: "space-evenly",
+		flex:1,
+		marginHorizontal: 10,
 		alignItems: "center",
+		justifyContent: 'space-evenly'
+	},
+	bookmarkCaptionContainer: {
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	image: {
+		height: '50%',
+		width: '90%',
+		borderRadius: 15,
+		marginBottom: 5,
+		resizeMode: "cover",
 	},
 	mediaPleyerControls: {
 		width: "100%",
