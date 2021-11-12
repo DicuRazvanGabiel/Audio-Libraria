@@ -189,7 +189,7 @@ export default function Player({ route }) {
 						setShowBookmarksModal(true);
 					}}
 				>
-					<Entypo name="bookmark" size={24} color="red" />
+					<Entypo name="bookmark" size={24} color={theme.colors.primary} />
 				</TouchableOpacity>
 
 				<TouchableOpacity
@@ -197,7 +197,7 @@ export default function Player({ route }) {
 						setShowChaptersModal(true);
 					}}
 				>
-					<Entypo name="list" size={30} color="red" />
+					<Entypo name="list" size={30} color={theme.colors.primary} />
 				</TouchableOpacity>
 			</View>
 
@@ -226,14 +226,14 @@ export default function Player({ route }) {
 			<View style={styles.mediaPleyerControls}>
 				<IconButton
 					icon="skip-previous-circle-outline"
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize}
 					onPress={() => TrackPlayer.skipToPrevious()}
 				/>
 
 				<IconButton
 					icon="rewind-10"
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize}
 					onPress={() => handleSeek(-10)}
 				/>
@@ -244,21 +244,21 @@ export default function Player({ route }) {
 							? "pause-circle-outline"
 							: "play-circle-outline"
 					}
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize + 15}
 					onPress={handlePlayPauseButton}
 				/>
 
 				<IconButton
 					icon="fast-forward-10"
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize}
 					onPress={() => handleSeek(10)}
 				/>
 
 				<IconButton
 					icon="skip-next-circle-outline"
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize}
 					onPress={() => TrackPlayer.skipToNext()}
 				/>

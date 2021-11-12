@@ -9,10 +9,8 @@ import { PlayerContext } from "../Context/PlayerContext";
 
 
 export default function Settings() {
-	const [isSwitchOn, setIsSwitchOn] = useState(false);
 	const { setPlayer } = useContext(PlayerContext);
 
-	const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 	return (
 		<View
 			style={{
