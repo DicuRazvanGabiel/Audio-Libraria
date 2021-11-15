@@ -17,15 +17,15 @@ export default function Home({ navigation }) {
 			categories.push({ id: cat.id, ...cat.data() })
 		);
 
-		const bestRatingBooksSnap = await db
-			.collection("books_info")
-			.orderBy("rating", "desc")
-			.limit(5)
-			.get();
-		const bestRatingBooks = [];
-		bestRatingBooksSnap.forEach((book) => {
-			bestRatingBooks.push({ id: book.id, ...book.data() });
-		});
+		// const bestRatingBooksSnap = await db
+		// 	.collection("books_info")
+		// 	.orderBy("rating", "desc")
+		// 	.limit(5)
+		// 	.get();
+		// const bestRatingBooks = [];
+		// bestRatingBooksSnap.forEach((book) => {
+		// 	bestRatingBooks.push({ id: book.id, ...book.data() });
+		// });
 
 		const mostPopularBooksSnap = await db
 			.collection("books_info")
@@ -37,10 +37,22 @@ export default function Home({ navigation }) {
 			mostPopularBooks.push({ id: book.id, ...book.data() });
 		});
 
+		const newestAdditionSnap = await db
+		.collection("books_info")
+		.orderBy("createDate", "desc")
+		.limit(5)
+		.get();
+		const newestAddition = [];
+		newestAdditionSnap.forEach((book) => {
+			newestAddition.push({ id: book.id, ...book.data() });
+		});
+
+
 		setData({
 			categories,
-			bestRatingBooks,
+			// bestRatingBooks,
 			mostPopularBooks,
+			newestAddition
 		});
 	};
 
@@ -52,7 +64,7 @@ export default function Home({ navigation }) {
 		return <LoadingState />;
 	}
 	return (
-		<ScrollView>
+		<ScrollView showsVerticalScrollIndicator={false}>
 			<SearchBox navigation={navigation} />
 			<CategoryGrid
 				categories={data.categories}
@@ -67,6 +79,11 @@ export default function Home({ navigation }) {
 				title="Cele mai populare carti:"
 				navigation={navigation}
 				books={data.mostPopularBooks}
+			/>
+			<BookSection
+				title="Carti adaugate recent:"
+				navigation={navigation}
+				books={data.newestAddition}
 			/>
 		</ScrollView>
 	);

@@ -6,9 +6,11 @@ import auth from "@react-native-firebase/auth";
 import TrackPlayer from "react-native-track-player";
 import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
+import { CommonActions } from '@react-navigation/native';
 
 
-export default function Settings() {
+
+export default function Settings({ navigation }) {
 	const { setPlayer } = useContext(PlayerContext);
 
 	return (
@@ -16,7 +18,7 @@ export default function Settings() {
 			style={{
 				flex: 1,
 				justifyContent: "space-between",
-				margin: 10
+				margin: 30
 			}}
 		>
 			<Text style={{fontSize: 20}}>
@@ -29,6 +31,14 @@ export default function Settings() {
 			mode="contained"
 			color="red"
 				onPress={() => {
+					navigation.dispatch(
+						CommonActions.reset({
+							index: 0,
+							routes: [
+							  { name: 'Settings' },
+							],
+						  })
+					  );
 					setPlayer(null)
 					TrackPlayer.stop();
 					TrackPlayer.destroy();

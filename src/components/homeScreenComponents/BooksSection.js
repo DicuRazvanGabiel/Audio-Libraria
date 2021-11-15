@@ -17,7 +17,7 @@ export default function BooksSection({ navigation, title, books }) {
 			>
 				{title}
 			</Text>
-			<ScrollView horizontal={true}>
+			<ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
 				{books.map((book) => (
 					<BookItem
 						key={book.id}
