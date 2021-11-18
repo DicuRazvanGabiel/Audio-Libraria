@@ -22,12 +22,8 @@ export default function ModalChaptersContent({
 			<View
 				style={{
 					backgroundColor: theme.colors.surface,
-					height: "70%",
-					margin: 10,
 					width: "100%",
-					marginBottom: 20,
 					borderRadius: 20,
-					padding: 20,
 				}}
 			>
 				<ScrollView showsVerticalScrollIndicator={false}>
@@ -74,7 +70,6 @@ export default function ModalChaptersContent({
 									</Subheading>
 								</View>
 							</View>
-
 							<Divider />
 						</ViewTouchable>
 					))}
