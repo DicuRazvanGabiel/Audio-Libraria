@@ -64,8 +64,10 @@ export default function Home({ navigation }) {
 		return <LoadingState />;
 	}
 	return (
+		<>
+		<SearchBox navigation={navigation} />
 		<ScrollView showsVerticalScrollIndicator={false}>
-			<SearchBox navigation={navigation} />
+			
 			<CategoryGrid
 				categories={data.categories}
 				navigation={navigation}
@@ -86,5 +88,6 @@ export default function Home({ navigation }) {
 				books={data.newestAddition}
 			/>
 		</ScrollView>
+		</>
 	);
 }
