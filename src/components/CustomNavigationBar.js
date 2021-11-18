@@ -13,7 +13,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import auth from "@react-native-firebase/auth";
 
 export default function CustomNavigationBar({ navigation, previous }) {
-	const route = useRoute();
 	const { colors } = useTheme();
 	let user = auth().currentUser;
 

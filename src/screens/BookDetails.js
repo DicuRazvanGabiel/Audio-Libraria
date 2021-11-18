@@ -310,7 +310,7 @@ export default function BookDetails({ navigation, route }) {
 				<HTML
 					source={{ html: bookInfo.description }}
 					containerStyle={{ backgroundColor: theme.colors.background}}
-					baseFontStyle={{color: '#fff', fontSize: 20}}
+					baseFontStyle={{color: '#fff', fontSize: 20, textAlign: 'justify'}}
 					defaultTextProps={{allowFontScaling: false}}
 				/>
 			
