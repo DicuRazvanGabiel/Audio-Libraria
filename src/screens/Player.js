@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
@@ -10,8 +10,6 @@ import TrackPlayer, {
 } from "react-native-track-player";
 import {
 	IconButton,
-	Colors,
-	Text,
 	Modal,
 	Portal,
 	useTheme,
@@ -36,6 +34,7 @@ export default function Player({ route }) {
 	const [chapter, setChapter] = useState();
 	const [showChaptersModal, setShowChaptersModal] = useState(false);
 	const [showBookmarksModal, setShowBookmarksModal] = useState(false);
+	const [shouldSeekIOS, setShouldSeekIOS] = useState(false);
 	const { player, setPlayer } = useContext(PlayerContext);
 	const firstInit = route.params ? route.params.firstInit : false;
 	const bookInfo = player.bookInfo;
@@ -89,6 +88,7 @@ export default function Player({ route }) {
 				const lastPosition = savedBook.data().positionSeconds;
 				await TrackPlayer.skip(lastSavedChapter);
 				await TrackPlayer.seekTo(lastPosition);
+				setShouldSeekIOS(lastPosition);
 				const chapterTitle = await TrackPlayer.getTrack(
 					lastSavedChapter
 				);
@@ -141,6 +141,10 @@ export default function Player({ route }) {
 			}
 
 			const state = await TrackPlayer.getState();
+			if(state === State.Playing && shouldSeekIOS && Platform.OS === 'ios'){
+				console.log('aici', shouldSeekIOS);
+				TrackPlayer.seekTo(shouldSeekIOS);
+			}
 			setPlayerState(state);
 		}
 	);
