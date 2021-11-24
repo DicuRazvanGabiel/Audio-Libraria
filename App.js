@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TextInput } from "react-native";
+import { Text, TextInput, StatusBar, BackHandler } from "react-native";
 import {
 	DarkTheme as PaperDarkTheme,
 	Provider as PaperProvider,
@@ -11,7 +11,6 @@ import {
 import functions from "@react-native-firebase/functions";
 import Constants from "expo-constants";
 
-import { ThemeContext } from "./src/Context/ThemeContext";
 import { UserContext } from "./src/Context/UserContext";
 import { PlayerContext } from "./src/Context/PlayerContext";
 
@@ -45,9 +44,7 @@ export default function App() {
 	Text.defaultProps = Text.defaultProps || {};
 	Text.defaultProps.allowFontScaling = false;
 	TextInput.defaultProps = Text.defaultProps || {};
-	TextInput.defaultProps.allowFontScaling = false;
-	
-
+	TextInput.defaultProps.allowFontScaling = false;	
 	// Use a local emulator in development
 	if (!Constants.isDevice) {
 		// If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
@@ -59,6 +56,7 @@ export default function App() {
 		<PlayerContext.Provider value={{ player, setPlayer }}>
 			<UserContext.Provider value={{ employee, setEmployee }}>
 				<PaperProvider theme={theme}>
+				<StatusBar hidden={false} />
 					<NavigationContainer theme={theme}>
 						<AuthenticationNavigator />
 					</NavigationContainer>

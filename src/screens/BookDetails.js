@@ -6,7 +6,7 @@ import {
 	ScrollView,
 	Alert,
 } from "react-native";
-import { Text, Divider, useTheme, ActivityIndicator, Button } from "react-native-paper";
+import { Text, Divider, useTheme, ActivityIndicator, Button, Portal, Modal } from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HTML from "react-native-render-html";
 import functions from "@react-native-firebase/functions";
@@ -37,6 +37,7 @@ export default function BookDetails({ navigation, route }) {
 	const { player, setPlayer } = useContext(PlayerContext);
 	const [loadingBarrowButton, setLoadingBarrowButton] = useState(false);
 	const [isFavorite, setIsFavorite] = useState(false);
+	const [showAvailabilityModal, setShowAvailabilityModal] = useState(route.params.businessBookID ? false : true)
 	const userID = auth().currentUser.uid;
 
 	const fetchBookInfo = async () => {
@@ -55,10 +56,10 @@ export default function BookDetails({ navigation, route }) {
 				.where("books", "==", bookID)
 				.get();
 			if (bussinessBookSnap.size === 1) {
+				setShowAvailabilityModal(false);
 				setBusinessBookID(bussinessBookSnap.docs[0].id);
 			}
 		}
-
 		const favoriteBookSnap = await db
 			.collection("users")
 			.doc(userID)
@@ -313,6 +314,26 @@ export default function BookDetails({ navigation, route }) {
 					baseFontStyle={{color: '#fff', fontSize: 20, textAlign: 'justify'}}
 					defaultTextProps={{allowFontScaling: false}}
 				/>
+
+			<Portal>
+				<Modal
+					visible={showAvailabilityModal}
+					onDismiss={() => {
+						setShowAvailabilityModal(false);
+					}}
+					contentContainerStyle={{
+						backgroundColor: theme.colors.surface,
+						margin: 10,
+						marginBottom: 20,
+						borderRadius: 20,
+						padding: 20,
+					}}
+				>
+					<View>
+						<Text style={{fontSize: 18}}>Aceasta carte nu este detinuta de firma dumneavoastra</Text>
+					</View>
+				</Modal>
+			</Portal>
 			
 		</ScrollView>
 	);

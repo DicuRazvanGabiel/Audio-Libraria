@@ -16,21 +16,26 @@ export const checkBorrowBookForEmployee = async (employee, db) => {
 		.get();
 
 	if (employeeSnap.data().borrowedBook) {
-		const businessBookSnap = await db
+		try {
+			const businessBookSnap = await db
 			.doc(
 				`businesses/${employee.businessID}/businessBooks/${
 					employeeSnap.data().borrowedBook
 				}`
 			)
 			.get();
-		bookID = businessBookSnap.data().books;
-		author = businessBookSnap.data().author;
-		businessBookID = businessBookSnap.id;
-		return {
-			bookID,
-			author,
-			businessBookID,
-		};
+			bookID = businessBookSnap.data().books;
+			author = businessBookSnap.data().author;
+			businessBookID = businessBookSnap.id;
+			return {
+				bookID,
+				author,
+				businessBookID,
+			};
+		} catch (error) {
+			console.error(error)
+			return null;
+		}
 	} else {
 		return null;
 	}

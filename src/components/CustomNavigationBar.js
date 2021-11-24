@@ -50,7 +50,7 @@ export default function CustomNavigationBar({ navigation, previous }) {
 								/>
 							</View>
 						)}
-						<Appbar.Content title={"Audio Libraria"} color="#fff" />
+						<Appbar.Content title={"Audio Libraria"} color="#fff" style={{alignItems: 'center'}}/>
 						{user && (
 							<TouchableOpacity
 								style={{ marginRight: 10, marginBottom: 10 }}

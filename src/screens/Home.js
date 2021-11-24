@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import firestore from "@react-native-firebase/firestore";
 
 import LoadingState from "../components/LoadingState";
