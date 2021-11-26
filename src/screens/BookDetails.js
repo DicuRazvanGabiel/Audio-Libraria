@@ -13,6 +13,7 @@ import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
 import TrackPlayer, { State }  from "react-native-track-player";
 import auth from "@react-native-firebase/auth";
+import { RFPercentage } from "react-native-responsive-fontsize";
 
 import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
@@ -283,7 +284,7 @@ export default function BookDetails({ navigation, route }) {
 						height: 200
 					}}
 				>
-					<Text style={{ fontSize: 30, marginBottom: 5 }} adjustsFontSizeToFit={true}>
+					<Text style={{ fontSize: RFPercentage(3.6), marginBottom: 5 }} numberOfLines={4}>
 						{bookInfo.title}
 					</Text>
 					<Divider />
@@ -341,7 +342,7 @@ export default function BookDetails({ navigation, route }) {
 
 const styles = StyleSheet.create({
 	container: {
-		margin: 20,
+		margin: 7,
 		flex: 1,
 	},
 	bookImageContainer: {

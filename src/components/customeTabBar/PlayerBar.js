@@ -4,10 +4,12 @@ import {
 	Text,
 	IconButton,
 	Surface,
-	Colors,
+	Divider,
 	useTheme
 } from "react-native-paper";
 import TrackPlayer, { useTrackPlayerEvents, Event, State } from "react-native-track-player";
+import { RFPercentage } from "react-native-responsive-fontsize";
+
 import { PlayerContext } from "../../Context/PlayerContext";
 
 export default function PlayerBar({ navigation }) {
@@ -42,7 +44,7 @@ export default function PlayerBar({ navigation }) {
 			}}
 		>
 			<TouchableOpacity
-				style={{ flexDirection: "row", marginLeft: 5 }}
+				style={{ flexDirection: "row", marginLeft: 5, width:'80%' }}
 				onPress={() => navigation.navigate("Player")}
 			>
 				<Image
@@ -56,8 +58,9 @@ export default function PlayerBar({ navigation }) {
 					}}
 				/>
 				<View style={{ margin: 5 }}>
-					<Text>{player.bookInfo.title}</Text>
-					<Text>{player.chapter}</Text>
+					<Text style={{fontSize: RFPercentage(1.8)}} numberOfLines={1}>{player.bookInfo.title}</Text>
+					<Divider />
+					<Text style={{fontSize: RFPercentage(1.7)}} numberOfLines={2}>{player.chapter}</Text>
 				</View>
 			</TouchableOpacity>
 			<IconButton
