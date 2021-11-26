@@ -42,16 +42,19 @@ export default function BookListItem({ navigation, bookID, businessBookID }) {
 					<View style={{flex: 1}}>
 						<View style={{flexDirection: 'row'}}>
 							<Text
+							numberOfLines={2}
 								style={{
 									fontSize: 22,
 									fontWeight: "bold",
 									flex:1,
-									flexWrap: 'wrap'
+									flexWrap: 'wrap',
+									
 								}}
 							>
 								{book.data().title}
 							</Text>
 						</View>
+						<Divider />
 						
 						<Text style={{ fontSize: 18 }}>
 							{book.data().author}
