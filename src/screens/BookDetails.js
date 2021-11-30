@@ -17,7 +17,7 @@ import { RFPercentage } from "react-native-responsive-fontsize";
 
 import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
-import { isCurrentBorrowBook } from "../Utils";
+import { isCurrentBorrowBook, convertMinutesHours } from "../Utils";
 
 import ImageBook from "../components/ImageBook";
 import LoadingState from "../components/LoadingState";
@@ -301,13 +301,19 @@ export default function BookDetails({ navigation, route }) {
 
 			{renderactionButton()}
 
-			<TouchableOpacity onPress={onFavorite} style={{ alignItems: 'flex-end', marginTop: 10}}>
-				<Ionicons
-					name={isFavorite ? "heart" : "heart-outline"}
-					size={29}
-					color={theme.colors.accent}
-				/>
-			</TouchableOpacity>
+			<View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+				<Text style={{fontSize: 17, marginTop: 20, color: theme.colors.accent}}>
+					Durata: {convertMinutesHours(bookInfo.totalDurarion)}
+				</Text>
+
+				<TouchableOpacity onPress={onFavorite} style={{ alignItems: 'flex-end', marginTop: 10}}>
+					<Ionicons
+						name={isFavorite ? "heart" : "heart-outline"}
+						size={29}
+						color={theme.colors.accent}
+					/>
+				</TouchableOpacity>
+			</View>
 
 				<HTML
 					source={{ html: bookInfo.description }}
