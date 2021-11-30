@@ -13,6 +13,7 @@ import {
 	Divider,
 	Text,
 	IconButton,
+	useTheme
 } from "react-native-paper";
 import { Entypo } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
@@ -30,7 +31,7 @@ import {
 
 function SignIn({ navigation }) {
 	const { control, handleSubmit, errors } = useForm();
-
+	const theme = useTheme();
 	const [signInWithEmailAndPassword, user, loading, error] =
 		useSignInWithEmailAndPassword(auth());
 
@@ -190,24 +191,22 @@ function SignIn({ navigation }) {
 								flexDirection: "row",
 							}}
 						>
-							<View style={{ width: "50%" }}>
-								<Button
-									onPress={() =>
-										navigation.navigate("Resetare parola")
-									}
-								>
+							<TouchableOpacity 
+								style={styles.buttonContainer}
+								onPress={() => navigation.navigate("Resetare parola")}
+							>
+								<Text style={{...styles.buttonText, color: theme.colors.primary}}>
 									Ai uitat parola?
-								</Button>
-							</View>
-							<View style={{ width: "50%" }}>
-								<Button
-									onPress={() =>
-										navigation.navigate("Creare cont")
-									}
-								>
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity 
+								style={styles.buttonContainer}
+								onPress={() => navigation.navigate("Creare cont")}
+							>
+								<Text style={{...styles.buttonText, color: theme.colors.primary}}>
 									Creare cont
-								</Button>
-							</View>
+								</Text>
+							</TouchableOpacity>
 						</View>
 
 						{/* <View
@@ -260,5 +259,18 @@ function SignIn({ navigation }) {
 		</>
 	);
 }
+
+styles = StyleSheet.create({
+	buttonContainer: {
+		marginTop: 10,
+		width: '50%',
+		alignItems: 'center'
+	},
+	buttonText: {
+		textAlign: 'center',
+		fontSize: 15,
+		fontWeight: 'bold'
+	}
+})
 
 export default SignIn;

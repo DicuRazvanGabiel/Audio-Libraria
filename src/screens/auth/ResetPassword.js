@@ -6,9 +6,7 @@ import auth from "@react-native-firebase/auth";
 import {
 	Button,
 	TextInput,
-	Divider,
 	Text,
-	IconButton,
 } from "react-native-paper";
 
 export default function ResetPassword({ navigation }) {
@@ -16,6 +14,7 @@ export default function ResetPassword({ navigation }) {
 
 	const onSubmit = (data) => {
 		auth().sendPasswordResetEmail(data.email);
+		console.log(data.email)
 		Alert.alert(
 			"Verificati emailul",
 			"Pentru a putea reseta parola, accesati link-ul din email",
@@ -40,16 +39,17 @@ export default function ResetPassword({ navigation }) {
 							onChangeText={(value) => onChange(value)}
 							value={value}
 							keyboardType="email-address"
-							style={{ marginVertical: 10 }}
+							style={{ marginTop: 10 }}
 						/>
 					)}
 					name="email"
 					rules={{
 						required: true,
+						pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 					}}
 					defaultValue=""
 				/>
-				{errors.email && <Text>This is required.</Text>}
+				{errors.email && <Text style={{color: 'red',marginTop: 2, marginBottom: 5}}>Introduceti un email valid.</Text>}
 				<Button mode="contained" onPress={handleSubmit(onSubmit)}>
 					Resetare parola
 				</Button>
