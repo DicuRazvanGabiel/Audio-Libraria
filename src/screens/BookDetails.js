@@ -14,6 +14,7 @@ import firestore from "@react-native-firebase/firestore";
 import TrackPlayer, { State }  from "react-native-track-player";
 import auth from "@react-native-firebase/auth";
 import { RFPercentage } from "react-native-responsive-fontsize";
+import { Audio } from 'expo-av';
 
 import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
@@ -38,8 +39,12 @@ export default function BookDetails({ navigation, route }) {
 	const { player, setPlayer } = useContext(PlayerContext);
 	const [loadingBarrowButton, setLoadingBarrowButton] = useState(false);
 	const [isFavorite, setIsFavorite] = useState(false);
-	const [showAvailabilityModal, setShowAvailabilityModal] = useState(route.params.businessBookID ? false : true)
+	const [showAvailabilityModal, setShowAvailabilityModal] = useState(route.params.businessBookID ? false : true);
+	const [playButtonIcon, setPlayButtonIcon] = useState("play");
+	const [demoPlayback, setDemoPlayback] = useState(null);
+	
 	const userID = auth().currentUser.uid;
+	const demDuration = 60000;
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -80,12 +85,30 @@ export default function BookDetails({ navigation, route }) {
 		);
 	};
 
+	const unsubscribe = navigation.addListener("beforeRemove", async () => {
+		if (demoPlayback) {
+			await stopDemoPlaybackDemo();
+		}
+	});
+
+	const stopDemoPlaybackDemo = async () => {
+		await demoPlayback.stopAsync();
+		setDemoPlayback(null);
+	}
+
 	useEffect(() => {
 		fetchBookInfo();
+		return () => {
+			unsubscribe();
+		};
 	}, [route.params]);
 
 	const borrowBook = async () => {
 		setLoadingBarrowButton(true);
+		
+		if(demoPlayback) await stopDemoPlaybackDemo(); 
+		setPlayButtonIcon("play")
+
 		functions()
 			.httpsCallable("barrowBook")({
 				businessBookID: businessBookID,
@@ -104,14 +127,13 @@ export default function BookDetails({ navigation, route }) {
 					]);
 				} else {
 					setBorrowedBook(true);
-					const state = await TrackPlayer.getState();
-					if (state === State.Playing) {
+					// const state = await TrackPlayer.getState();
+					// if (state === State.Playing) {
 						await TrackPlayer.stop();
 						await TrackPlayer.destroy();
 						setPlayer(null);
-					}
+					// }
 				}
-
 				setLoadingBarrowButton(false);
 			});
 	};
@@ -149,9 +171,24 @@ export default function BookDetails({ navigation, route }) {
 				setPlayer({ ...player, bookInfo: bookInfo });
 			}
 		} else {
-			playDemoFunction();
+			if(demoPlayback){
+				stopDemoPlaybackDemo(); 
+				setPlayButtonIcon("play")
+			} else {
+				playDemoFunction();
+			}
 		}
 	};
+
+	const onPlayDemoStatusUpdate = async (playbackStatus) => {
+		if (playbackStatus.isPlaying) {
+			setPlayButtonIcon("pause");
+			if(playbackStatus.positionMillis >= demDuration){
+				await stopDemoPlaybackDemo(); 
+				setPlayButtonIcon("play");
+			}
+		}
+	}
 
 	const playDemoFunction = async () => {
 		const bookSnap = await db.collection("books").doc(bookID).get();
@@ -160,28 +197,20 @@ export default function BookDetails({ navigation, route }) {
 			: bookSnap.data().chapters[0].file.src;
 		const state = await TrackPlayer.getState();
 
-		if (state === State.Playing) {
-			// await TrackPlayer.reset();
-			await TrackPlayer.stop();
-			await TrackPlayer.destroy();
-		} else {
-			// await TrackPlayer.stop();
-			// await TrackPlayer.destroy();
-			await TrackPlayer.setupPlayer({});
-			await TrackPlayer.add([
-				{
-					id: 0,
-					url: demoURL,
-					title: bookSnap.data().title,
-					album: bookSnap.data().title,
-					artist: bookInfo.author,
-					duration: 60,
-					artwork: bookInfo.imageSrc,
-				},
-			]);
+		if (state === State.Playing) await TrackPlayer.pause();
 
-			TrackPlayer.play();
-		}
+		if(!demoPlayback){
+			try {
+				const { sound: soundObject } = await Audio.Sound.createAsync(
+					{ uri: demoURL },
+					{ shouldPlay: true }
+				);
+				setDemoPlayback(soundObject);
+				soundObject.setOnPlaybackStatusUpdate(onPlayDemoStatusUpdate);
+			} catch (error) {
+				console.error(error)
+			}
+		}  
 	};
 
 	const onFavorite = async () => {
@@ -292,12 +321,9 @@ export default function BookDetails({ navigation, route }) {
 				</View>
 			</View>
 			
-
-			<PlayBookPlayDemoButton
-				borrowedBook={borrowedBook}
-				playBook={playBook}
-				navigation={navigation}
-			/>
+			<Button icon={playButtonIcon} mode="contained" onPress={() => playBook()}>
+				{borrowedBook ? "Asculta cartea" : "Asculta demo"}
+			</Button>
 
 			{renderactionButton()}
 
