@@ -85,8 +85,9 @@ export default function BookDetails({ navigation, route }) {
 		);
 	};
 
-	const unsubscribe = navigation.addListener("beforeRemove", async () => {
+	const unsubscribe = navigation.addListener("blur", async () => {
 		if (demoPlayback) {
+			setPlayButtonIcon("play")
 			await stopDemoPlaybackDemo();
 		}
 	});
@@ -191,6 +192,7 @@ export default function BookDetails({ navigation, route }) {
 	}
 
 	const playDemoFunction = async () => {
+		setPlayButtonIcon("reload")
 		const bookSnap = await db.collection("books").doc(bookID).get();
 		const demoURL = bookSnap.data().chapters[1]
 			? bookSnap.data().chapters[1].file.src
