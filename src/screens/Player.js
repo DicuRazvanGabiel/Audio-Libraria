@@ -142,7 +142,6 @@ export default function Player({ route }) {
 
 			const state = await TrackPlayer.getState();
 			if(state === State.Playing && shouldSeekIOS && Platform.OS === 'ios'){
-				console.log('aici', shouldSeekIOS);
 				TrackPlayer.seekTo(shouldSeekIOS);
 			}
 			setPlayerState(state);

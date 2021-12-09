@@ -38,7 +38,9 @@ const BookMarkItem = ({
 					width: "100%",
 				}}
 			>
-				<Title>{bookmark.bookmarkName}</Title>
+				<View style={{flex: 1}}>
+					<Title>{bookmark.bookmarkName}</Title>
+				</View>
 				<IconButton
 					icon="delete"
 					color={Colors.red500}

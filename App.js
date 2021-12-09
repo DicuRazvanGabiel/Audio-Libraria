@@ -39,6 +39,8 @@ export default function App() {
 	let theme = CombinedDarkTheme;
 	const [employee, setEmployee] = React.useState(null);
 	const [player, setPlayer] = React.useState(null);
+
+	BackHandler.addEventListener('hardwareBackPress', () => true);
 	
 	//for disabling text scaling for accessibility, need to change this in the future
 	Text.defaultProps = Text.defaultProps || {};

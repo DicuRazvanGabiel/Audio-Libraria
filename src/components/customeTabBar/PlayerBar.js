@@ -41,10 +41,11 @@ export default function PlayerBar({ navigation }) {
 				flexDirection: "row",
 				justifyContent: "space-between",
 				alignItems: "center",
+				width: '100%'
 			}}
 		>
 			<TouchableOpacity
-				style={{ flexDirection: "row", marginLeft: 5, width:'80%' }}
+				style={{ flexDirection: "row", marginLeft: 5, flex: 1}}
 				onPress={() => navigation.navigate("Player")}
 			>
 				<Image
@@ -57,12 +58,13 @@ export default function PlayerBar({ navigation }) {
 						resizeMode: "contain",
 					}}
 				/>
-				<View style={{ margin: 5 }}>
-					<Text style={{fontSize: RFPercentage(1.8)}} numberOfLines={1}>{player.bookInfo.title}</Text>
+				<View style={{ margin: 5, flex: 1 }}>
+					<Text style={{fontSize: RFPercentage(1.8), flexShrink:1 }} numberOfLines={1}>{player.bookInfo.title}</Text>
 					<Divider />
-					<Text style={{fontSize: RFPercentage(1.7)}} numberOfLines={2}>{player.chapter}</Text>
+					<Text style={{fontSize: RFPercentage(1.7), flexShrink:1 }} numberOfLines={2}>{player.chapter}</Text>
 				</View>
 			</TouchableOpacity>
+			
 			<IconButton
 				icon={
 					playerState === State.Playing ? "pause" : "play"
