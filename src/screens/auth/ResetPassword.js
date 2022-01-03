@@ -39,7 +39,7 @@ export default function ResetPassword({ navigation }) {
 							onChangeText={(value) => onChange(value)}
 							value={value}
 							keyboardType="email-address"
-							style={{ marginTop: 10 }}
+							style={{ marginTop: 10, marginBottom: 30 }}
 						/>
 					)}
 					name="email"

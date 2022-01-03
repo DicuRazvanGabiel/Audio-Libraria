@@ -192,18 +192,33 @@ function SignIn({ navigation }) {
 							}}
 						>
 							<TouchableOpacity 
-								style={styles.buttonContainer}
+								style={{
+									marginTop: 10,
+									width: '50%',
+									alignItems: 'center'}}
 								onPress={() => navigation.navigate("Resetare parola")}
 							>
-								<Text style={{...styles.buttonText, color: theme.colors.primary}}>
+								<Text style={{
+									textAlign: 'center',
+									fontSize: 15,
+									fontWeight: 'bold', 
+									color: theme.colors.primary
+									}}>
 									Ai uitat parola?
 								</Text>
 							</TouchableOpacity>
 							<TouchableOpacity 
-								style={styles.buttonContainer}
+								style={{
+									marginTop: 10,
+									width: '50%',
+									alignItems: 'center'}}
 								onPress={() => navigation.navigate("Creare cont")}
 							>
-								<Text style={{...styles.buttonText, color: theme.colors.primary}}>
+								<Text style={{
+									textAlign: 'center',
+									fontSize: 15,
+									fontWeight: 'bold', 
+									color: theme.colors.primary}}>
 									Creare cont
 								</Text>
 							</TouchableOpacity>

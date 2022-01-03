@@ -5,11 +5,34 @@ import { Entypo } from "@expo/vector-icons";
 
 import CategoryItem from "./CategoryItem";
 
+styles = StyleSheet.create({
+	constainer: {
+		flexDirection: "row",
+		justifyContent: "space-around",
+		alignItems: "center",
+	},
+
+	categoryContainer: {
+		flexWrap: "wrap",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		flex: 1,
+	},
+});
+
 export default function CategoryGrid({ categories, navigation }) {
 	return (
 		<View>
-			<View style={styles.constainer}>
-				<View style={styles.categoryContainer}>
+			<View style={{
+				flexDirection: "row",
+				justifyContent: "space-around",
+				alignItems: "center",}}>
+				<View style={{
+					flexWrap: "wrap",
+					flexDirection: "row",
+					justifyContent: "space-between",
+					flex: 1,
+				}}>
 					{categories.map((cat) => (
 						<CategoryItem
 							key={cat.id}
@@ -25,17 +48,4 @@ export default function CategoryGrid({ categories, navigation }) {
 	);
 }
 
-styles = StyleSheet.create({
-	constainer: {
-		flexDirection: "row",
-		justifyContent: "space-around",
-		alignItems: "center",
-	},
 
-	categoryContainer: {
-		flexWrap: "wrap",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		flex: 1,
-	},
-});

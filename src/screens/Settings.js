@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { View } from "react-native";
-import { Switch, Text, Button } from "react-native-paper";
+import { Switch, Text, Button, List } from "react-native-paper";
 import { ThemeContext } from "../Context/ThemeContext";
 import auth from "@react-native-firebase/auth";
 import TrackPlayer from "react-native-track-player";
@@ -17,16 +17,19 @@ export default function Settings({ navigation }) {
 		<View
 			style={{
 				flex: 1,
-				justifyContent: "space-between",
-				margin: 30
 			}}
 		>
-			<Text style={{fontSize: 20}}>
-				Email: {auth().currentUser.email}
-			</Text>
-
-			{/* <Text>Settings screen</Text>
-			<Switch value={isThemeDark} onValueChange={toggleTheme} /> */}
+			
+		<List.Item 
+			title={`Email: ${auth().currentUser.email}`} 
+			left={props => <List.Icon {...props} icon="email"/>} 	
+		/>
+		<List.Item 
+			title={`Termeni si Conditii`} 
+			left={props => <List.Icon {...props} icon="folder"/>} 	
+		/>
+      			
+		<View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 20, marginHorizontal: 20}}>
 			<Button
 			mode="contained"
 			color="red"
@@ -35,10 +38,10 @@ export default function Settings({ navigation }) {
 						CommonActions.reset({
 							index: 0,
 							routes: [
-							  { name: 'Settings' },
+							{ name: 'Settings' },
 							],
-						  })
-					  );
+						})
+					);
 					setPlayer(null)
 					TrackPlayer.stop();
 					TrackPlayer.destroy();
@@ -47,6 +50,8 @@ export default function Settings({ navigation }) {
 			>
 				Logout
 			</Button>
+		</View>
+			
 		</View>
 	);
 }
