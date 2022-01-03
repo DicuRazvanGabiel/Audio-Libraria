@@ -1,17 +1,23 @@
 import React from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { Button, TextInput, Text, IconButton } from "react-native-paper";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useForm, Controller } from "react-hook-form";
 import auth from "@react-native-firebase/auth";
 
 function SignUn() {
-	const { control, handleSubmit, errors } = useForm();
-	const [createUserWithEmailAndPassword, user, loading, error] =
+	const { control, handleSubmit, errors, setError } = useForm();
+	const [createUserWithEmailAndPassword, loading, error] =
 		useCreateUserWithEmailAndPassword(auth());
 
 	const onSubmit = (data) => {
 		console.log(data.email, data.password);
+		if(data.password !== data.repassword){
+			setError("repassword", {
+				type: "manual",
+				message: "Cele doua parole sunt diferite"
+			});
+		}
 		createUserWithEmailAndPassword(data.email, data.password);
 	};
 
@@ -41,16 +47,18 @@ function SignUn() {
 							mode="outlined"
 							onChangeText={(value) => onChange(value)}
 							value={value}
+							style={styles.input}
 							keyboardType="email-address"
 						/>
 					)}
 					name="email"
 					rules={{
 						required: true,
+						pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 					}}
 					defaultValue=""
 				/>
-				{errors.email && <Text>This is required.</Text>}
+				{errors.email && <Text style={styles.errorText}>Introduceti un email valid.</Text>}
 				<Controller
 					control={control}
 					render={({ onChange, onBlur, value }) => (
@@ -60,6 +68,7 @@ function SignUn() {
 							onBlur={onBlur}
 							onChangeText={(value) => onChange(value)}
 							value={value}
+							style={styles.input}
 							secureTextEntry={true}
 						/>
 					)}
@@ -70,7 +79,7 @@ function SignUn() {
 					}}
 					defaultValue=""
 				/>
-				{errors.password && <Text>This is required.</Text>}
+				{errors.password && <Text style={styles.errorText}>Parola este obligatorie si trebuie sa contina minim 6 caractere.</Text>}
 
 				<Controller
 					control={control}
@@ -81,6 +90,7 @@ function SignUn() {
 							mode="outlined"
 							onChangeText={(value) => onChange(value)}
 							value={value}
+							style={styles.input}
 							secureTextEntry={true}
 						/>
 					)}
@@ -91,7 +101,7 @@ function SignUn() {
 					}}
 					defaultValue=""
 				/>
-				{errors.password && <Text>This is required.</Text>}
+				{errors.repassword && <Text style={styles.errorText}>{errors.repassword.message}</Text>}
 				<Button
 					mode="contained"
 					onPress={handleSubmit(onSubmit)}
@@ -103,5 +113,16 @@ function SignUn() {
 		</View>
 	);
 }
+
+styles = StyleSheet.create({
+	errorText: {
+		color: 'red',
+		marginTop: 2,
+		marginBottom: 5
+	},
+	input: {
+		marginBottom: 5
+	}
+})
 
 export default SignUn;

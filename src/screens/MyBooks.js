@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
-import { Text, Divider, useTheme } from "react-native-paper";
+import { Text, Divider, useTheme, Title } from "react-native-paper";
 import { UserContext } from "../Context/UserContext";
 import firestore from "@react-native-firebase/firestore";
 import LoadingState from "../components/LoadingState";
@@ -35,24 +35,32 @@ export default function MyBooks({ navigation }) {
 	if (loading) return <LoadingState />;
 
 	return (
-		<ScrollView>
-			{borrowedBookInfo && (
-				<View style={styles.borrowedBookSection}>
-					<Text>Cartea imprumutata</Text>
-					<BookListItem
-						navigation={navigation}
-						bookID={borrowedBookInfo.bookID}
-						author={borrowedBookInfo.author}
-						businessBookID={borrowedBookInfo.businessBookID}
-					/>
+		<>
+			{borrowedBookInfo ? (
+				<ScrollView>
+					<View style={styles.borrowedBookSection}>
+						<BookListItem
+							navigation={navigation}
+							bookID={borrowedBookInfo.bookID}
+							author={borrowedBookInfo.author}
+							businessBookID={borrowedBookInfo.businessBookID}
+						/>
 
-					<Divider />
+						<Divider />
+					</View>
+				</ScrollView>
+			): (
+				<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+					<Title>Nu exista carti imprumutate</Title>
 				</View>
+				
 			)}
-		</ScrollView>
+		</>
 	);
 }
 
 const styles = StyleSheet.create({
-	borrowedBookSection: {},
+	borrowedBookSection: {
+		marginTop: 10,
+	},
 });

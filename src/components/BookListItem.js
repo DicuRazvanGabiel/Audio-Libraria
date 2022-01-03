@@ -36,26 +36,34 @@ export default function BookListItem({ navigation, bookID, businessBookID }) {
 						marginLeft: 10,
 						marginTop: 10,
 						justifyContent: "space-between",
-						width: "80%",
+						flex: 1
 					}}
 				>
-					<View>
-						<Text
-							style={{
-								fontSize: 22,
-								fontWeight: "bold",
-							}}
-						>
-							{book.data().title}
-						</Text>
+					<View style={{flex: 1}}>
+						<View style={{flexDirection: 'row'}}>
+							<Text
+							numberOfLines={2}
+								style={{
+									fontSize: 22,
+									fontWeight: "bold",
+									flex:1,
+									flexWrap: 'wrap',
+									
+								}}
+							>
+								{book.data().title}
+							</Text>
+						</View>
+						<Divider />
+						
 						<Text style={{ fontSize: 18 }}>
 							{book.data().author}
 						</Text>
 					</View>
-					<Text>
+					<Text style={{textAlign: 'right'}}>
 						{convertMinutesHours(book.data().totalDurarion)}
 					</Text>
-					<RatingStars count={book.data().rating} />
+					{/* For later development <RatingStars count={book.data().rating} /> */}
 				</View>
 			</Surface>
 		</TouchableOpacity>
@@ -64,7 +72,7 @@ export default function BookListItem({ navigation, bookID, businessBookID }) {
 
 const styles = StyleSheet.create({
 	surface: {
-		height: 150,
+		height: 130,
 		padding: 10,
 		flex: 1,
 		elevation: 4,
@@ -72,10 +80,11 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		flexDirection: "row",
 		marginBottom: 10,
+		alignItems: 'center'
 	},
 	image: {
-		height: 130,
-		width: 90,
+		height: 100,
+		width: 100,
 		resizeMode: "stretch",
 	},
 });

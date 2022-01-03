@@ -1,45 +1,52 @@
 import React from "react";
+import { Text, TextInput, StatusBar, BackHandler } from "react-native";
 import {
 	DarkTheme as PaperDarkTheme,
-	DefaultTheme as PaperDefaultTheme,
 	Provider as PaperProvider,
 } from "react-native-paper";
 import {
 	NavigationContainer,
 	DarkTheme as NavigationDarkTheme,
-	DefaultTheme as NavigationDefaultTheme,
 } from "@react-navigation/native";
-import merge from "deepmerge";
 import functions from "@react-native-firebase/functions";
 import Constants from "expo-constants";
 
-import { ThemeContext } from "./src/Context/ThemeContext";
 import { UserContext } from "./src/Context/UserContext";
 import { PlayerContext } from "./src/Context/PlayerContext";
-
-const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
-const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
 
 import AuthenticationNavigator from "./src/navigation/AuthenticationNavigator";
 
 export default function App() {
-	const [isThemeDark, setIsThemeDark] = React.useState(true);
-	let theme = isThemeDark ? CombinedDarkTheme : CombinedDefaultTheme;
+	const costumePaperDarkTheme = {
+		...PaperDarkTheme,
+		colors: {
+			...PaperDarkTheme.colors,
+			primary: '#feb765',
+			accent: '#f66eb4',
+		},
+	}
+
+	const CombinedDarkTheme = {
+		...costumePaperDarkTheme,
+		...NavigationDarkTheme,
+		colors: {
+			...NavigationDarkTheme.colors,
+			...costumePaperDarkTheme.colors,
+			
+		},
+	};
+
+	let theme = CombinedDarkTheme;
 	const [employee, setEmployee] = React.useState(null);
 	const [player, setPlayer] = React.useState(null);
 
-	const toggleTheme = React.useCallback(() => {
-		return setIsThemeDark(!isThemeDark);
-	}, [isThemeDark]);
-
-	const preferences = React.useMemo(
-		() => ({
-			toggleTheme,
-			isThemeDark,
-		}),
-		[toggleTheme, isThemeDark]
-	);
-
+	BackHandler.addEventListener('hardwareBackPress', () => true);
+	
+	//for disabling text scaling for accessibility, need to change this in the future
+	Text.defaultProps = Text.defaultProps || {};
+	Text.defaultProps.allowFontScaling = false;
+	TextInput.defaultProps = Text.defaultProps || {};
+	TextInput.defaultProps.allowFontScaling = false;	
 	// Use a local emulator in development
 	if (!Constants.isDevice) {
 		// If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
@@ -50,13 +57,12 @@ export default function App() {
 	return (
 		<PlayerContext.Provider value={{ player, setPlayer }}>
 			<UserContext.Provider value={{ employee, setEmployee }}>
-				<ThemeContext.Provider value={preferences}>
-					<PaperProvider theme={theme}>
-						<NavigationContainer theme={theme}>
-							<AuthenticationNavigator />
-						</NavigationContainer>
-					</PaperProvider>
-				</ThemeContext.Provider>
+				<PaperProvider theme={theme}>
+				<StatusBar hidden={false} />
+					<NavigationContainer theme={theme}>
+						<AuthenticationNavigator />
+					</NavigationContainer>
+				</PaperProvider>
 			</UserContext.Provider>
 		</PlayerContext.Provider>
 	);

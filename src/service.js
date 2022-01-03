@@ -1,20 +1,20 @@
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, {Capability} from "react-native-track-player";
 module.exports = async function () {
 	TrackPlayer.updateOptions({
 		stopWithApp: true,
 		capabilities: [
-			TrackPlayer.CAPABILITY_PLAY,
-			TrackPlayer.CAPABILITY_STOP,
-			TrackPlayer.CAPABILITY_PAUSE,
+			Capability.Play,
+			Capability.Stop,
+			Capability.Pause,
 		],
 		notificationCapabilities: [
-			TrackPlayer.CAPABILITY_PLAY,
-			TrackPlayer.CAPABILITY_STOP,
-			TrackPlayer.CAPABILITY_PAUSE,
+			Capability.Play,
+			Capability.Stop,
+			Capability.Pause,
 		],
 		compactCapabilities: [
-			TrackPlayer.CAPABILITY_PLAY,
-			TrackPlayer.CAPABILITY_PAUSE,
+			Capability.Play,
+			Capability.Pause,
 		],
 	});
 

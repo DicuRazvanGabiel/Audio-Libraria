@@ -4,20 +4,21 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	ScrollView,
-	ActivityIndicator,
 	Alert,
 } from "react-native";
-import { Text, Divider, useTheme } from "react-native-paper";
+import { Text, Divider, useTheme, ActivityIndicator, Button, Portal, Modal } from "react-native-paper";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HTML from "react-native-render-html";
 import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, { State }  from "react-native-track-player";
 import auth from "@react-native-firebase/auth";
+import { RFPercentage } from "react-native-responsive-fontsize";
+import { Audio } from 'expo-av';
 
 import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
-import { isCurrentBorrowBook } from "../Utils";
+import { isCurrentBorrowBook, convertMinutesHours } from "../Utils";
 
 import ImageBook from "../components/ImageBook";
 import LoadingState from "../components/LoadingState";
@@ -38,7 +39,12 @@ export default function BookDetails({ navigation, route }) {
 	const { player, setPlayer } = useContext(PlayerContext);
 	const [loadingBarrowButton, setLoadingBarrowButton] = useState(false);
 	const [isFavorite, setIsFavorite] = useState(false);
+	const [showAvailabilityModal, setShowAvailabilityModal] = useState(route.params.businessBookID ? false : true);
+	const [playButtonIcon, setPlayButtonIcon] = useState("play");
+	const [demoPlayback, setDemoPlayback] = useState(null);
+	
 	const userID = auth().currentUser.uid;
+	const demDuration = 60000;
 
 	const fetchBookInfo = async () => {
 		let book = {};
@@ -56,10 +62,10 @@ export default function BookDetails({ navigation, route }) {
 				.where("books", "==", bookID)
 				.get();
 			if (bussinessBookSnap.size === 1) {
+				setShowAvailabilityModal(false);
 				setBusinessBookID(bussinessBookSnap.docs[0].id);
 			}
 		}
-
 		const favoriteBookSnap = await db
 			.collection("users")
 			.doc(userID)
@@ -79,12 +85,31 @@ export default function BookDetails({ navigation, route }) {
 		);
 	};
 
+	const unsubscribe = navigation.addListener("blur", async () => {
+		if (demoPlayback) {
+			setPlayButtonIcon("play")
+			await stopDemoPlaybackDemo();
+		}
+	});
+
+	const stopDemoPlaybackDemo = async () => {
+		await demoPlayback.stopAsync();
+		setDemoPlayback(null);
+	}
+
 	useEffect(() => {
 		fetchBookInfo();
+		return () => {
+			unsubscribe();
+		};
 	}, [route.params]);
 
 	const borrowBook = async () => {
 		setLoadingBarrowButton(true);
+		
+		if(demoPlayback) await stopDemoPlaybackDemo(); 
+		setPlayButtonIcon("play")
+
 		functions()
 			.httpsCallable("barrowBook")({
 				businessBookID: businessBookID,
@@ -103,14 +128,13 @@ export default function BookDetails({ navigation, route }) {
 					]);
 				} else {
 					setBorrowedBook(true);
-					const state = await TrackPlayer.getState();
-					if (state === TrackPlayer.STATE_PLAYING) {
+					// const state = await TrackPlayer.getState();
+					// if (state === State.Playing) {
 						await TrackPlayer.stop();
 						await TrackPlayer.destroy();
 						setPlayer(null);
-					}
+					// }
 				}
-
 				setLoadingBarrowButton(false);
 			});
 	};
@@ -148,92 +172,119 @@ export default function BookDetails({ navigation, route }) {
 				setPlayer({ ...player, bookInfo: bookInfo });
 			}
 		} else {
-			playDemoFunction();
+			if(demoPlayback){
+				stopDemoPlaybackDemo(); 
+				setPlayButtonIcon("play")
+			} else {
+				playDemoFunction();
+			}
 		}
 	};
 
+	const onPlayDemoStatusUpdate = async (playbackStatus) => {
+		if (playbackStatus.isPlaying) {
+			setPlayButtonIcon("pause");
+			if(playbackStatus.positionMillis >= demDuration){
+				await stopDemoPlaybackDemo(); 
+				setPlayButtonIcon("play");
+			}
+		}
+	}
+
 	const playDemoFunction = async () => {
+		setPlayButtonIcon("reload")
 		const bookSnap = await db.collection("books").doc(bookID).get();
 		const demoURL = bookSnap.data().chapters[1]
 			? bookSnap.data().chapters[1].file.src
 			: bookSnap.data().chapters[0].file.src;
 		const state = await TrackPlayer.getState();
 
-		if (state === TrackPlayer.STATE_PLAYING) {
-			await TrackPlayer.stop();
-			await TrackPlayer.destroy();
-		} else {
-			await TrackPlayer.stop();
-			await TrackPlayer.destroy();
-			await TrackPlayer.setupPlayer();
-			await TrackPlayer.add([
-				{
-					id: "Demo",
-					url: demoURL,
-					title: bookSnap.data().title,
-					album: bookSnap.data().title,
-					artist: bookInfo.author,
-					duration: 60,
-					artwork: bookInfo.imageSrc,
-				},
-			]);
+		if (state === State.Playing) await TrackPlayer.pause();
 
-			TrackPlayer.play();
-		}
+		if(!demoPlayback){
+			try {
+				const { sound: soundObject } = await Audio.Sound.createAsync(
+					{ uri: demoURL },
+					{ shouldPlay: true }
+				);
+				setDemoPlayback(soundObject);
+				soundObject.setOnPlaybackStatusUpdate(onPlayDemoStatusUpdate);
+			} catch (error) {
+				console.error(error)
+			}
+		}  
 	};
 
 	const onFavorite = async () => {
+		setIsFavorite(!isFavorite);
 		functions()
 			.httpsCallable("onFavorite")({
 				bookID: bookID,
 				bookInfo: bookInfo,
 				userID: userID,
-			})
-			.then(async (response) => {
-				console.log(response);
-				setIsFavorite(response.data.favorite);
 			});
+	};
+
+	//method for showing alert message befor borrow
+	const showBorrowAlert = () => {
+		Alert.alert(
+			"Sunteti sigur...? ",
+			"Cartea pe care o aveti deja imprumutata, va fi returnata",
+			[
+				{
+					text: "NU",
+					onPress: () => {},
+				},
+				{
+					text: "DA",
+					onPress: () => {
+						borrowBook();
+					},
+				}
+			]
+		);
+	};
+
+	//method for showing alert message befor UNborrow
+	const showUNBorrowAlert = () => {
+		Alert.alert(
+			"Sunteti sigur...? ",
+			"Cartea pe care o aveti deja imprumutata, va fi returnata",
+			[
+				{
+					text: "NU",
+					onPress: () => {},
+				},
+				{
+					text: "DA",
+					onPress: () => {
+						unBarrow();
+					},
+				},
+				
+			]
+		);
 	};
 
 	const renderactionButton = () => {
 		if (!businessBookID) return;
 		if (loadingBarrowButton)
 			return (
-				<View style={{ marginTop: 20 }}>
+				<View style={{ marginTop: 20, alignItems: 'center' }}>
 					<ActivityIndicator size="small" />
 				</View>
 			);
 
 		return (
-			<View style={{ marginTop: 20 }}>
+			<View style={{marginTop: 10}}>
 				{borrowedBook ? (
-					<TouchableOpacity
-						style={{
-							backgroundColor: "#FE805C",
-							borderRadius: 30,
-							padding: 4,
-							width: 200,
-						}}
-						onPress={unBarrow}
-					>
-						<Text style={{ fontSize: 23, textAlign: "center" }}>
-							Preda
-						</Text>
-					</TouchableOpacity>
+					<Button icon="keyboard-return" mode="outlined" onPress={showUNBorrowAlert} color={theme.colors.accent}>
+						Returneaza
+				  	</Button>
 				) : (
-					<TouchableOpacity
-						style={{
-							backgroundColor: "#FE805C",
-							borderRadius: 30,
-							padding: 8,
-							width: 200,
-						}}
-						onPress={borrowBook}
-					>
-						<Text style={{ fontSize: 23, textAlign: "center" }}>
-							Imprumuta
-						</Text>
-					</TouchableOpacity>
+					<Button icon="book" mode="outlined" onPress={showBorrowAlert} color={theme.colors.accent}>
+						Imprumuta
+					</Button>
 				)}
 			</View>
 		);
@@ -254,72 +305,78 @@ export default function BookDetails({ navigation, route }) {
 	if (!bookInfo) return <LoadingState />;
 
 	return (
-		<ScrollView style={styles.container}>
+		<ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 			<View style={styles.bookImageContainer}>
 				<ImageBook imageUrl={bookInfo.imageSrc} />
 				<View
 					style={{
 						flex: 1,
-						justifyContent: "flex-end",
-						margin: 10,
+						marginLeft: 10,
+						height: 200
 					}}
 				>
-					<Text style={{ fontSize: 30, marginBottom: 5 }}>
+					<Text style={{ fontSize: RFPercentage(3.6), marginBottom: 5 }} numberOfLines={4}>
 						{bookInfo.title}
 					</Text>
 					<Divider />
-					<Text style={{ fontSize: 20 }}>{bookInfo.author}</Text>
+					<Text style={{ fontSize: 20 }} adjustsFontSizeToFit={true}>{bookInfo.author}</Text>
 				</View>
-				<TouchableOpacity onPress={onFavorite}>
+			</View>
+			
+			<Button icon={playButtonIcon} mode="contained" onPress={() => playBook()}>
+				{borrowedBook ? "Asculta cartea" : "Asculta demo"}
+			</Button>
+
+			{renderactionButton()}
+
+			<View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+				<Text style={{fontSize: 17, marginTop: 20, color: theme.colors.accent}}>
+					Durata: {convertMinutesHours(bookInfo.totalDurarion)}
+				</Text>
+
+				<TouchableOpacity onPress={onFavorite} style={{ alignItems: 'flex-end', marginTop: 10}}>
 					<Ionicons
 						name={isFavorite ? "heart" : "heart-outline"}
 						size={29}
-						color={"#fff"}
+						color={theme.colors.accent}
 					/>
 				</TouchableOpacity>
 			</View>
-			<View
-				style={{
-					width: "100%",
-					flexDirection: "row",
-					justifyContent: "space-between",
-				}}
-			>
-				<PlayBookPlayDemoButton
-					borrowedBook={borrowedBook}
-					playBook={playBook}
-					navigation={navigation}
-				/>
-			</View>
 
-			{renderactionButton()}
-			<View
-				style={{
-					marginVertical: 10,
-					width: "100%",
-					alignItems: "flex-end",
-				}}
-			>
-				<RatingStars
-					size={30}
-					readOnly={false}
-					onStarPress={onStarPress}
-					count={bookInfo.rating}
-				/>
-			</View>
-			<View style={styles.bookDescriptionContainer}>
 				<HTML
 					source={{ html: bookInfo.description }}
-					containerStyle={{}}
+					containerStyle={{ backgroundColor: theme.colors.background}}
+					baseFontStyle={{color: '#fff', fontSize: 20, textAlign: 'justify'}}
+					defaultTextProps={{allowFontScaling: false}}
 				/>
-			</View>
+
+			<Portal>
+				<Modal
+					visible={showAvailabilityModal}
+					onDismiss={() => {
+						setShowAvailabilityModal(false);
+					}}
+					contentContainerStyle={{
+						backgroundColor: theme.colors.surface,
+						margin: 10,
+						marginBottom: 20,
+						borderRadius: 20,
+						padding: 20,
+					}}
+				>
+					<View>
+						<Text style={{fontSize: 18}}>Aceasta carte nu este detinuta de firma dumneavoastra</Text>
+					</View>
+				</Modal>
+			</Portal>
+			
 		</ScrollView>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
-		margin: 20,
+		margin: 7,
 		flex: 1,
 	},
 	bookImageContainer: {

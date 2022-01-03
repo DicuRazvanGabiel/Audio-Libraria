@@ -2,32 +2,37 @@ import React, { useContext, useEffect, useState } from "react";
 import { View, Image, TouchableOpacity } from "react-native";
 import {
 	Text,
-	Divider,
-	useTheme,
 	IconButton,
 	Surface,
-	Colors,
+	Divider,
+	useTheme
 } from "react-native-paper";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, { useTrackPlayerEvents, Event, State } from "react-native-track-player";
+import { RFPercentage } from "react-native-responsive-fontsize";
 
 import { PlayerContext } from "../../Context/PlayerContext";
 
 export default function PlayerBar({ navigation }) {
 	const { player } = useContext(PlayerContext);
-	const [playerState, setPlayerState] = useState("play");
+	const [playerState, setPlayerState] = useState();
+	const theme = useTheme();
+
+	const setup = async () => {
+		const state = await TrackPlayer.getState();
+		setPlayerState(state)
+	}
 
 	useEffect(() => {
-		const listenerStateChange = TrackPlayer.addEventListener(
-			"playback-state",
-			async (state) => {
-				setPlayerState(state["state"]);
-			}
-		);
-
-		return () => {
-			listenerStateChange.remove();
-		};
+		setup()
 	}, [player]);
+
+	useTrackPlayerEvents([Event.PlaybackState], async (event) => {
+		if (event.type === Event.PlaybackState) {
+			setPlayerState(event.state);
+		}
+		const state = await TrackPlayer.getState();
+		setPlayerState(state)
+	});
 
 	if (!player) return <View />;
 	return (
@@ -36,10 +41,11 @@ export default function PlayerBar({ navigation }) {
 				flexDirection: "row",
 				justifyContent: "space-between",
 				alignItems: "center",
+				width: '100%'
 			}}
 		>
 			<TouchableOpacity
-				style={{ flexDirection: "row", marginLeft: 5 }}
+				style={{ flexDirection: "row", marginLeft: 5, flex: 1}}
 				onPress={() => navigation.navigate("Player")}
 			>
 				<Image
@@ -52,24 +58,27 @@ export default function PlayerBar({ navigation }) {
 						resizeMode: "contain",
 					}}
 				/>
-				<View style={{ margin: 5 }}>
-					<Text>{player.bookInfo.title}</Text>
-					<Text>{player.chapter}</Text>
+				<View style={{ margin: 5, flex: 1 }}>
+					<Text style={{fontSize: RFPercentage(1.8), flexShrink:1 }} numberOfLines={1}>{player.bookInfo.title}</Text>
+					<Divider />
+					<Text style={{fontSize: RFPercentage(1.7), flexShrink:1 }} numberOfLines={2}>{player.chapter}</Text>
 				</View>
 			</TouchableOpacity>
+			
 			<IconButton
 				icon={
-					playerState === TrackPlayer.STATE_PLAYING ? "pause" : "play"
+					playerState === State.Playing ? "pause" : "play"
 				}
-				color={Colors.red500}
+				color={theme.colors.primary}
 				size={30}
 				onPress={async () => {
 					const state = await TrackPlayer.getState();
-					if (state === TrackPlayer.STATE_PLAYING) {
+					
+					if (state === State.Playing) {
 						TrackPlayer.pause();
 					}
 
-					if (state === TrackPlayer.STATE_PAUSED) {
+					if (state === State.Paused) {
 						TrackPlayer.play();
 					}
 				}}

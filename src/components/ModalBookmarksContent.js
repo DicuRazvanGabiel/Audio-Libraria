@@ -38,7 +38,9 @@ const BookMarkItem = ({
 					width: "100%",
 				}}
 			>
-				<Title>{bookmark.bookmarkName}</Title>
+				<View style={{flex: 1}}>
+					<Title>{bookmark.bookmarkName}</Title>
+				</View>
 				<IconButton
 					icon="delete"
 					color={Colors.red500}
@@ -53,7 +55,7 @@ const BookMarkItem = ({
 					justifyContent: "space-between",
 				}}
 			>
-				<Subheading>{bookmark.chapter}</Subheading>
+				<Subheading>{bookmark.chapterTitle}</Subheading>
 				<Subheading>
 					{convertMinutesHours(Math.round(bookmark.positionSeconds))}
 				</Subheading>
@@ -80,6 +82,7 @@ export default function ModalBookmarksContent({ bookTitle, bookID, chapter }) {
 		setAddBookmarkView(false);
 		if (bookmarkName === "") return;
 		const positionSeconds = await TrackPlayer.getPosition();
+		const trackID = await TrackPlayer.getCurrentTrack();
 
 		firestore()
 			.collection("users")
@@ -88,7 +91,8 @@ export default function ModalBookmarksContent({ bookTitle, bookID, chapter }) {
 			.add({
 				bookID,
 				bookTitle,
-				chapter,
+				chapter: trackID,
+				chapterTitle: chapter,
 				positionSeconds,
 				bookmarkName,
 			});
@@ -109,8 +113,6 @@ export default function ModalBookmarksContent({ bookTitle, bookID, chapter }) {
 	};
 
 	if (loading) return <LoadingState />;
-
-	console.log(bookmarksSnap.size);
 
 	return (
 		<View
@@ -141,7 +143,7 @@ export default function ModalBookmarksContent({ bookTitle, bookID, chapter }) {
 				<>
 					<View style={{ flex: 1 }}>
 						{bookmarksSnap.size > 0 ? (
-							<ScrollView>
+							<ScrollView showsVerticalScrollIndicator={false}>
 								{bookmarksSnap.docs.map((doc) => (
 									<BookMarkItem
 										key={doc.id}

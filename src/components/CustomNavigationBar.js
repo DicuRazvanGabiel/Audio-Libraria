@@ -13,7 +13,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import auth from "@react-native-firebase/auth";
 
 export default function CustomNavigationBar({ navigation, previous }) {
-	const route = useRoute();
 	const { colors } = useTheme();
 	let user = auth().currentUser;
 
@@ -28,8 +27,7 @@ export default function CustomNavigationBar({ navigation, previous }) {
 			>
 				<LinearGradient
 					style={{
-						width,
-						paddingVertical: Platform.OS === "android" ? 7 : 0,
+						width
 					}}
 					start={[0, 1]}
 					end={[1, 0]}
@@ -42,27 +40,32 @@ export default function CustomNavigationBar({ navigation, previous }) {
 						}}
 					>
 						{previous ? (
-							<Appbar.BackAction onPress={navigation.goBack} />
+							<Appbar.BackAction onPress={navigation.goBack} color={'#fff'}/>
 						) : (
 							<View style={{ marginLeft: 20 }}>
 								<Image
 									style={{ height: 45, width: 45 }}
+									resizeMode="contain"
 									source={require("../../assets/logo/white.png")}
 								/>
 							</View>
 						)}
-						<Appbar.Content title={route.name} color="#fff" />
+						<Appbar.Content title={"Audio Libraria"} color="#fff" style={{alignItems: 'center'}}/>
 						{user && (
 							<TouchableOpacity
 								style={{ marginRight: 10, marginBottom: 10 }}
 								onPress={() => navigation.navigate("Settings")}
 							>
-								<Avatar.Image
-									size={45}
-									source={{
-										uri: user.photoURL,
-									}}
-								/>
+								{user.photoURL ? (
+									<Avatar.Image
+										size={45}
+										source={{
+											uri: user.photoURL,
+										}}
+									/>
+								) : (
+									<Avatar.Icon size={45} icon="account" />
+								)}
 							</TouchableOpacity>
 						)}
 					</Appbar.Header>

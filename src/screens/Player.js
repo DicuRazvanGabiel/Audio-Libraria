@@ -1,22 +1,26 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, {
+	useTrackPlayerEvents,
+	Event,
+	State,
+} from "react-native-track-player";
 import {
 	IconButton,
-	Colors,
-	Text,
 	Modal,
 	Portal,
 	useTheme,
+	Headline,
+	Subheading,
+	Divider
 } from "react-native-paper";
 import PlayerSlider from "./../components/PlayerSlider";
 import { Entypo } from "@expo/vector-icons";
 import ModalChaptersContent from "../components/ModalChaptersContent";
 import ModalBookmarksContent from "../components/ModalBookmarksContent";
-// import Modal from "react-native-modal";
 import BackgroundTimer from "react-native-background-timer";
 
 import { saveUserLastPlay, saveBookProgress } from "../Utils";
@@ -27,29 +31,25 @@ const db = firestore();
 export default function Player({ route }) {
 	const [loading, setLoading] = useState(true);
 	const [playerState, setPlayerState] = useState("play");
-	const [chapter, setChapter] = useState("");
+	const [chapter, setChapter] = useState();
 	const [showChaptersModal, setShowChaptersModal] = useState(false);
 	const [showBookmarksModal, setShowBookmarksModal] = useState(false);
+	const [shouldSeekIOS, setShouldSeekIOS] = useState(false);
 	const { player, setPlayer } = useContext(PlayerContext);
 	const firstInit = route.params ? route.params.firstInit : false;
 	const bookInfo = player.bookInfo;
 	const theme = useTheme();
 
 	const setUp = async () => {
-		BackgroundTimer.stopBackgroundTimer();
-		const state = await TrackPlayer.getState();
-		setPlayerState(state);
-		debugger;
 		if (!firstInit) {
 			const trackID = await TrackPlayer.getCurrentTrack();
 			const currentTrack = await TrackPlayer.getTrack(trackID);
 			setChapter(currentTrack.title);
 			setLoading(false);
 		} else {
-			if (
-				state === TrackPlayer.STATE_PLAYING ||
-				state === TrackPlayer.STATE_PAUSED
-			) {
+			await TrackPlayer.setupPlayer({});
+			
+			if (state === State.Playing) {
 				await TrackPlayer.stop();
 				await TrackPlayer.destroy();
 			}
@@ -87,10 +87,13 @@ export default function Player({ route }) {
 				const lastSavedChapter = savedBook.data().chapter;
 				const lastPosition = savedBook.data().positionSeconds;
 				await TrackPlayer.skip(lastSavedChapter);
-				console.log("aici" + lastPosition);
 				await TrackPlayer.seekTo(lastPosition);
-				setChapter(lastSavedChapter);
-				playingChapter = lastSavedChapter;
+				setShouldSeekIOS(lastPosition);
+				const chapterTitle = await TrackPlayer.getTrack(
+					lastSavedChapter
+				);
+				setChapter(chapterTitle.title);
+				playingChapter = chapterTitle.title;
 			} else {
 				setChapter(trackArray[0].title);
 				playingChapter = trackArray[0].title;
@@ -103,11 +106,13 @@ export default function Player({ route }) {
 			});
 			TrackPlayer.play();
 		}
-
+		const state = await TrackPlayer.getState();
+		setPlayerState(state);
+		BackgroundTimer.stopBackgroundTimer();
 		//start backgrount timer for logging to db the last position
 		BackgroundTimer.runBackgroundTimer(async () => {
 			const state = await TrackPlayer.getState();
-			if (state === TrackPlayer.STATE_PLAYING) {
+			if (state === State.Playing) {
 				const positionSeconds = await TrackPlayer.getPosition();
 				const track = await TrackPlayer.getCurrentTrack();
 				await saveUserLastPlay(
@@ -123,48 +128,36 @@ export default function Player({ route }) {
 		setLoading(false);
 	};
 
-	useEffect(() => {
-		setUp();
-
-		const listenerStateChange = TrackPlayer.addEventListener(
-			"playback-state",
-			async (state) => {
-				setPlayerState(state["state"]);
-				if (state["state"] === TrackPlayer.STATE_PAUSED) {
-					const positionSeconds = await TrackPlayer.getPosition();
-					const track = await TrackPlayer.getCurrentTrack();
-					await saveUserLastPlay(
-						auth().currentUser.uid,
-						bookInfo.id,
-						track,
-						positionSeconds,
-						db
-					);
-				}
-			}
-		);
-
-		const listenerTrackChange = TrackPlayer.addEventListener(
-			"playback-track-changed",
-			async (data) => {
-				const track = await TrackPlayer.getTrack(data.nextTrack);
+	useTrackPlayerEvents(
+		[Event.PlaybackState, Event.PlaybackTrackChanged],
+		async (event) => {
+			if (event.type === Event.PlaybackTrackChanged) {
+				const track = await TrackPlayer.getTrack(event.nextTrack);
 				setChapter(track.title);
 				setPlayer({ ...player, chapter: track.title });
 			}
-		);
+			if (event.type === Event.PlaybackState) {
+				setPlayerState(event.state);
+			}
 
-		return () => {
-			listenerTrackChange.remove();
-			listenerStateChange.remove();
-		};
+			const state = await TrackPlayer.getState();
+			if(state === State.Playing && shouldSeekIOS && Platform.OS === 'ios'){
+				TrackPlayer.seekTo(shouldSeekIOS);
+			}
+			setPlayerState(state);
+		}
+	);
+
+	useEffect(() => {
+		setUp();
 	}, [player.bookInfo.id]);
 
-	const handlePlayPauseButton = () => {
-		if (playerState === TrackPlayer.STATE_PLAYING) {
+	const handlePlayPauseButton = async () => {
+		if (playerState === State.Playing) {
 			TrackPlayer.pause();
 		}
 
-		if (playerState === TrackPlayer.STATE_PAUSED) {
+		if (playerState === State.Paused) {
 			TrackPlayer.play();
 		}
 	};
@@ -192,27 +185,22 @@ export default function Player({ route }) {
 	return (
 		<View style={styles.container}>
 			<View
-				style={{
-					width: "100%",
-					flexDirection: "row",
-					justifyContent: "space-between",
-				}}
+				style={styles.bookmarkCaptionContainer}
 			>
 				<TouchableOpacity
-					style={{ marginLeft: 20 }}
 					onPress={() => {
 						setShowBookmarksModal(true);
 					}}
 				>
-					<Entypo name="bookmark" size={24} color="red" />
+					<Entypo name="bookmark" size={24} color={theme.colors.primary} />
 				</TouchableOpacity>
+
 				<TouchableOpacity
-					style={{ marginLeft: 20 }}
 					onPress={() => {
 						setShowChaptersModal(true);
 					}}
 				>
-					<Entypo name="list" size={30} color="red" />
+					<Entypo name="list" size={30} color={theme.colors.primary} />
 				</TouchableOpacity>
 			</View>
 
@@ -220,42 +208,20 @@ export default function Player({ route }) {
 				source={{
 					uri: bookInfo.imageSrc,
 				}}
-				style={{
-					height: 350,
-					width: 350,
-					borderRadius: 15,
-					marginBottom: 5,
-					resizeMode: "cover",
-				}}
+				style={styles.image}
 			/>
+
 			<View
 				style={{
 					justifyContent: "center",
 					alignItems: "center",
-					flexDirection: "row",
-					width: 350,
+					width: '100%'
 				}}
 			>
-				<View>
-					<Text
-						style={{
-							fontSize: 17,
-							fontWeight: "bold",
-							textAlign: "center",
-						}}
-					>
-						{bookInfo.title}
-					</Text>
-					<Text
-						style={{
-							fontSize: 14,
-							fontWeight: "bold",
-							textAlign: "center",
-						}}
-					>
-						{chapter}
-					</Text>
-				</View>
+					<Headline style={{textAlign: 'center'}}>{bookInfo.title}</Headline>
+					<Divider />
+					<Subheading>{chapter}</Subheading>
+			
 			</View>
 
 			<PlayerSlider />
@@ -263,39 +229,39 @@ export default function Player({ route }) {
 			<View style={styles.mediaPleyerControls}>
 				<IconButton
 					icon="skip-previous-circle-outline"
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize}
 					onPress={() => TrackPlayer.skipToPrevious()}
 				/>
 
 				<IconButton
 					icon="rewind-10"
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize}
 					onPress={() => handleSeek(-10)}
 				/>
 
 				<IconButton
 					icon={
-						playerState === TrackPlayer.STATE_PLAYING
+						playerState === State.Playing
 							? "pause-circle-outline"
 							: "play-circle-outline"
 					}
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize + 15}
 					onPress={handlePlayPauseButton}
 				/>
 
 				<IconButton
 					icon="fast-forward-10"
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize}
 					onPress={() => handleSeek(10)}
 				/>
 
 				<IconButton
 					icon="skip-next-circle-outline"
-					color={Colors.red500}
+					color={theme.colors.primary}
 					size={playerIconSize}
 					onPress={() => TrackPlayer.skipToNext()}
 				/>
@@ -311,7 +277,6 @@ export default function Player({ route }) {
 						backgroundColor: theme.colors.surface,
 						height: "70%",
 						margin: 10,
-						width: "100%",
 						marginBottom: 20,
 						borderRadius: 20,
 						padding: 20,
@@ -322,7 +287,7 @@ export default function Player({ route }) {
 						currentChapter={chapter}
 						onChangeChapter={async (id) => {
 							await TrackPlayer.skip(id);
-							if (playerState != TrackPlayer.STATE_PLAYING) {
+							if (playerState != State.Playing) {
 								TrackPlayer.play();
 							}
 						}}
@@ -338,7 +303,6 @@ export default function Player({ route }) {
 						backgroundColor: theme.colors.surface,
 						height: "70%",
 						margin: 10,
-						width: "100%",
 						marginBottom: 20,
 						borderRadius: 20,
 						padding: 20,
@@ -359,9 +323,22 @@ const playerIconSize = 40;
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		justifyContent: "space-evenly",
+		flex:1,
+		marginHorizontal: 10,
 		alignItems: "center",
+		justifyContent: 'space-evenly'
+	},
+	bookmarkCaptionContainer: {
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	image: {
+		height: '50%',
+		width: '90%',
+		borderRadius: 15,
+		marginBottom: 5,
+		resizeMode: "cover",
 	},
 	mediaPleyerControls: {
 		width: "100%",

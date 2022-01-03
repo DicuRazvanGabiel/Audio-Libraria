@@ -72,9 +72,9 @@ export default function MainTabNavigator() {
 				component={HomeScreen}
 				options={({ route }) => ({
 					tabBarIcon: ({ focused, color, size }) => {
-						let iconName = "home-outline";
+						let iconName = "compass-outline";
 						if (focused) {
-							iconName = "home-sharp";
+							iconName = "compass-sharp";
 						}
 						return (
 							<Ionicons
@@ -84,6 +84,7 @@ export default function MainTabNavigator() {
 							/>
 						);
 					},
+					title: "Exploreaza"
 				})}
 			/>
 			<Screen
@@ -103,10 +104,11 @@ export default function MainTabNavigator() {
 							/>
 						);
 					},
+					title: "Cartile mele"
 				})}
 			/>
 			<Screen
-				name="Wishlist"
+				name="Favorite"
 				component={FavoriteBooks}
 				options={({ route }) => ({
 					tabBarIcon: ({ focused, color, size }) => {

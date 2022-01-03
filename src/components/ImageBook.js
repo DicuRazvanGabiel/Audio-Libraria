@@ -1,7 +1,7 @@
 import React from "react";
 import { Image } from "react-native";
 
-export default function ImageBook({ imageUrl, height = 200, width = 140 }) {
+export default function ImageBook({ imageUrl, height = 150, width = 150 }) {
 	return (
 		<Image
 			style={{

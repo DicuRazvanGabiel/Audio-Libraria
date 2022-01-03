@@ -5,6 +5,7 @@ import {
 	Platform,
 	StyleSheet,
 	TouchableOpacity,
+	Alert
 } from "react-native";
 import {
 	Button,
@@ -12,6 +13,7 @@ import {
 	Divider,
 	Text,
 	IconButton,
+	useTheme
 } from "react-native-paper";
 import { Entypo } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
@@ -29,12 +31,21 @@ import {
 
 function SignIn({ navigation }) {
 	const { control, handleSubmit, errors } = useForm();
-
+	const theme = useTheme();
 	const [signInWithEmailAndPassword, user, loading, error] =
 		useSignInWithEmailAndPassword(auth());
 
 	const onSubmit = (data) => {
 		signInWithEmailAndPassword(data.email, data.password);
+		if (error) {
+			if(error.code === "auth/user-not-found" || error.code === "auth/wrong-password")
+			Alert.alert("Conectare", "Adresa de email sau parola sunt gresite", [
+				{
+					text: "OK",
+					onPress: () => {},
+				},
+			]);
+		}
 	};
 
 	async function onAppleButtonPress() {
@@ -109,9 +120,6 @@ function SignIn({ navigation }) {
 		</View>;
 	}
 
-	if (error) {
-		console.error(error);
-	}
 
 	return (
 		<>
@@ -151,7 +159,7 @@ function SignIn({ navigation }) {
 							control={control}
 							render={({ onChange, onBlur, value }) => (
 								<TextInput
-									label="Password"
+									label="Parola"
 									mode="outlined"
 									onBlur={onBlur}
 									onChangeText={(value) => onChange(value)}
@@ -183,27 +191,40 @@ function SignIn({ navigation }) {
 								flexDirection: "row",
 							}}
 						>
-							<View style={{ width: "50%" }}>
-								<Button
-									onPress={() =>
-										navigation.navigate("Resetare parola")
-									}
-								>
+							<TouchableOpacity 
+								style={{
+									marginTop: 10,
+									width: '50%',
+									alignItems: 'center'}}
+								onPress={() => navigation.navigate("Resetare parola")}
+							>
+								<Text style={{
+									textAlign: 'center',
+									fontSize: 15,
+									fontWeight: 'bold', 
+									color: theme.colors.primary
+									}}>
 									Ai uitat parola?
-								</Button>
-							</View>
-							<View style={{ width: "50%" }}>
-								<Button
-									onPress={() =>
-										navigation.navigate("Creare cont")
-									}
-								>
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity 
+								style={{
+									marginTop: 10,
+									width: '50%',
+									alignItems: 'center'}}
+								onPress={() => navigation.navigate("Creare cont")}
+							>
+								<Text style={{
+									textAlign: 'center',
+									fontSize: 15,
+									fontWeight: 'bold', 
+									color: theme.colors.primary}}>
 									Creare cont
-								</Button>
-							</View>
+								</Text>
+							</TouchableOpacity>
 						</View>
 
-						<View
+						{/* <View
 							style={{
 								flexDirection: "row",
 								justifyContent: "space-evenly",
@@ -246,7 +267,7 @@ function SignIn({ navigation }) {
 									}
 								/>
 							</View>
-						)}
+						)} */}
 					</View>
 				</View>
 			</View>
@@ -254,12 +275,17 @@ function SignIn({ navigation }) {
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
+styles = StyleSheet.create({
+	buttonContainer: {
+		marginTop: 10,
+		width: '50%',
+		alignItems: 'center'
 	},
+	buttonText: {
+		textAlign: 'center',
+		fontSize: 15,
+		fontWeight: 'bold'
+	}
 });
 
 export default SignIn;

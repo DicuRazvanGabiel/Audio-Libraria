@@ -5,16 +5,34 @@ import { Entypo } from "@expo/vector-icons";
 
 import CategoryItem from "./CategoryItem";
 
+styles = StyleSheet.create({
+	constainer: {
+		flexDirection: "row",
+		justifyContent: "space-around",
+		alignItems: "center",
+	},
+
+	categoryContainer: {
+		flexWrap: "wrap",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		flex: 1,
+	},
+});
+
 export default function CategoryGrid({ categories, navigation }) {
 	return (
 		<View>
-			<Text style={{ margin: 10, marginLeft: 40 }}>Categorii</Text>
-			<View style={styles.constainer}>
-				<TouchableOpacity>
-					<Entypo name="chevron-left" size={45} color="#6EA8FF" />
-				</TouchableOpacity>
-
-				<View style={styles.categoryContainer}>
+			<View style={{
+				flexDirection: "row",
+				justifyContent: "space-around",
+				alignItems: "center",}}>
+				<View style={{
+					flexWrap: "wrap",
+					flexDirection: "row",
+					justifyContent: "space-between",
+					flex: 1,
+				}}>
 					{categories.map((cat) => (
 						<CategoryItem
 							key={cat.id}
@@ -25,25 +43,9 @@ export default function CategoryGrid({ categories, navigation }) {
 						/>
 					))}
 				</View>
-
-				<TouchableOpacity>
-					<Entypo name="chevron-right" size={45} color="#6EA8FF" />
-				</TouchableOpacity>
 			</View>
 		</View>
 	);
 }
 
-styles = StyleSheet.create({
-	constainer: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
 
-	categoryContainer: {
-		flexWrap: "wrap",
-		flexDirection: "row",
-		flex: 1,
-	},
-});

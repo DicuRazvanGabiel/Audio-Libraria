@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { Text, Divider, useTheme } from "react-native-paper";
+import { Text, Title } from "react-native-paper";
 import LoadingState from "../components/LoadingState";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
@@ -29,8 +29,8 @@ export default function FavoriteBooks({ navigation }) {
 					))}
 				</ScrollView>
 			) : (
-				<View>
-					<Text>Nu ai nici o carte favorita</Text>
+				<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+					<Title>Nu exista carti favorite</Title>
 				</View>
 			)}
 		</View>

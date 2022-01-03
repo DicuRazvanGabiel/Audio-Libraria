@@ -16,21 +16,26 @@ export const checkBorrowBookForEmployee = async (employee, db) => {
 		.get();
 
 	if (employeeSnap.data().borrowedBook) {
-		const businessBookSnap = await db
+		try {
+			const businessBookSnap = await db
 			.doc(
 				`businesses/${employee.businessID}/businessBooks/${
 					employeeSnap.data().borrowedBook
 				}`
 			)
 			.get();
-		bookID = businessBookSnap.data().books;
-		author = businessBookSnap.data().author;
-		businessBookID = businessBookSnap.id;
-		return {
-			bookID,
-			author,
-			businessBookID,
-		};
+			bookID = businessBookSnap.data().books;
+			author = businessBookSnap.data().author;
+			businessBookID = businessBookSnap.id;
+			return {
+				bookID,
+				author,
+				businessBookID,
+			};
+		} catch (error) {
+			console.error(error)
+			return null;
+		}
 	} else {
 		return null;
 	}
@@ -109,7 +114,6 @@ export const convertMinutesHours = (totalSeconds) => {
 
 //save the chapter that is playing to track progress on book lisenning
 export const saveBookProgress = async (bookID) => {
-	console.log(bookID);
 	const userID = auth().currentUser.uid;
 	const currentTrackIndex = await TrackPlayer.getCurrentTrack();
 	const currentTrack = await TrackPlayer.getTrack(currentTrackIndex);
