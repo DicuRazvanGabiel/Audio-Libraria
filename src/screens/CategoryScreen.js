@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, FlatList } from "react-native";
 import firestore from "@react-native-firebase/firestore";
-import { Text, Divider, Surface, useTheme } from "react-native-paper";
+import { Divider } from "react-native-paper";
 
 import BookListItem from "../components/BookListItem";
 import CategoryStrip from "../components/CategoryStrip";

@@ -42,11 +42,13 @@ export default function BookDetails({ navigation, route }) {
 	const [showAvailabilityModal, setShowAvailabilityModal] = useState(route.params.businessBookID ? false : true);
 	const [playButtonIcon, setPlayButtonIcon] = useState("play");
 	const [demoPlayback, setDemoPlayback] = useState(null);
+	const [loadingState, setLoadingState] = useState(true);
 	
 	const userID = auth().currentUser.uid;
 	const demDuration = 60000;
 
 	const fetchBookInfo = async () => {
+		setLoadingState(true);
 		let book = {};
 		const bookSnap = await db.collection("books_info").doc(bookID).get();
 		book = {
@@ -83,6 +85,7 @@ export default function BookDetails({ navigation, route }) {
 		setBorrowedBook(
 			await isCurrentBorrowBook(employee, businessBookID, db)
 		);
+		setLoadingState(false);
 	};
 
 	const unsubscribe = navigation.addListener("blur", async () => {
@@ -268,15 +271,10 @@ export default function BookDetails({ navigation, route }) {
 
 	const renderactionButton = () => {
 		if (!businessBookID) return;
-		if (loadingBarrowButton)
-			return (
-				<View style={{ marginTop: 20, alignItems: 'center' }}>
-					<ActivityIndicator size="small" />
-				</View>
-			);
+		
 
 		return (
-			<View style={{marginTop: 10}}>
+			<View style={{marginBottom: 10}}>
 				{borrowedBook ? (
 					<Button icon="keyboard-return" mode="outlined" onPress={showUNBorrowAlert} color={theme.colors.accent}>
 						Returneaza
@@ -302,7 +300,7 @@ export default function BookDetails({ navigation, route }) {
 			});
 	};
 
-	if (!bookInfo) return <LoadingState />;
+	if (loadingState) return <LoadingState />;
 
 	return (
 		<ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -323,11 +321,14 @@ export default function BookDetails({ navigation, route }) {
 				</View>
 			</View>
 			
-			<Button icon={playButtonIcon} mode="contained" onPress={() => playBook()}>
+			{renderactionButton()}
+
+			<Button icon={playButtonIcon} mode="contained" onPress={() => playBook()} 
+				disabled={playButtonIcon === "reload" ? true : false}>
 				{borrowedBook ? "Asculta cartea" : "Asculta demo"}
 			</Button>
 
-			{renderactionButton()}
+			
 
 			<View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
 				<Text style={{fontSize: 17, marginTop: 20, color: theme.colors.accent}}>
@@ -366,6 +367,19 @@ export default function BookDetails({ navigation, route }) {
 				>
 					<View>
 						<Text style={{fontSize: 18}}>Aceasta carte nu este detinuta de firma dumneavoastra</Text>
+					</View>
+				</Modal>
+
+				<Modal
+					visible={loadingBarrowButton}
+					contentContainerStyle={{
+						flex: 1,
+						justifyContent: 'center',
+						alignItems: 'center',
+					}}
+				>
+					<View>
+						<ActivityIndicator size="large"/>
 					</View>
 				</Modal>
 			</Portal>

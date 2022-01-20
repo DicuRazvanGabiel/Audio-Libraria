@@ -14,7 +14,7 @@ export default function BusinessAccount({ navigation }) {
 		firestore()
 			.collection("businesses")
 			.doc(employee.businessID)
-			.collection("businessBooks")
+			.collection("businessBooks").orderBy("title", "asc")
 	);
 
 	if (loading) return <LoadingState />;

@@ -11,12 +11,20 @@ function SignUn() {
 		useCreateUserWithEmailAndPassword(auth());
 
 	const onSubmit = (data) => {
-		console.log(data.email, data.password);
+		if(data.password.lenght < 6){
+			setError("repassword", {
+				type: "manual",
+				message: "Parola trebuie sa contina cel putin 6 caractere"
+			});
+			return;
+		}
+
 		if(data.password !== data.repassword){
 			setError("repassword", {
 				type: "manual",
 				message: "Cele doua parole sunt diferite"
 			});
+			return;
 		}
 		createUserWithEmailAndPassword(data.email, data.password);
 	};

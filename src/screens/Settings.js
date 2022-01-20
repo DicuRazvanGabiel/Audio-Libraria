@@ -1,10 +1,9 @@
 import React, { useState, useContext } from "react";
-import { View } from "react-native";
-import { Switch, Text, Button, List } from "react-native-paper";
+import { View, Linking } from "react-native";
+import {  Button, List } from "react-native-paper";
 import { ThemeContext } from "../Context/ThemeContext";
 import auth from "@react-native-firebase/auth";
 import TrackPlayer from "react-native-track-player";
-import { UserContext } from "../Context/UserContext";
 import { PlayerContext } from "../Context/PlayerContext";
 import { CommonActions } from '@react-navigation/native';
 
@@ -12,6 +11,10 @@ import { CommonActions } from '@react-navigation/native';
 
 export default function Settings({ navigation }) {
 	const { setPlayer } = useContext(PlayerContext);
+	
+	const openLinkInBrowser = (link) =>{
+		Linking.openURL(link)
+	}
 
 	return (
 		<View
@@ -25,7 +28,13 @@ export default function Settings({ navigation }) {
 			left={props => <List.Icon {...props} icon="email"/>} 	
 		/>
 		<List.Item 
+			onPress={() => openLinkInBrowser('https://audiobiblioteca.ro/wp-content/uploads/2022/01/Termeni.pdf')}
 			title={`Termeni si Conditii`} 
+			left={props => <List.Icon {...props} icon="folder"/>} 	
+		/>
+		<List.Item
+			onPress={() => openLinkInBrowser('https://audiobiblioteca.ro/wp-content/uploads/2022/01/GDPR.pdf')} 
+			title={`Protectia datelor cu carater personal`} 
 			left={props => <List.Icon {...props} icon="folder"/>} 	
 		/>
       			
