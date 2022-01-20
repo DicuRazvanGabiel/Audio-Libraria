@@ -1,9 +1,9 @@
 {
-  "name": "Audio Libraria",
-  "displayName": "Audio Libraria",
+  "name": "Audio Biblioteca",
+  "displayName": "Audio Biblioteca",
   "expo": {
-    "name": "AudioLibraria",
-    "slug": "AudioLibraria",
+    "name": "Audio Biblioteca",
+    "slug": "AudioBiblioteca",
     "version": "1.0.1",
     "assetBundlePatterns": [
       "**/*"

@@ -34,7 +34,7 @@ export default function Settings({ navigation }) {
 		/>
 		<List.Item
 			onPress={() => openLinkInBrowser('https://audiobiblioteca.ro/wp-content/uploads/2022/01/GDPR.pdf')} 
-			title={`Protectia datelor cu carater personal`} 
+			title={`Protectia datelor cu caracter personal`} 
 			left={props => <List.Icon {...props} icon="folder"/>} 	
 		/>
       			
